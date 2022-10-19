@@ -1,5 +1,6 @@
 use aoc_table::table_gen::TableGen;
 mod aoc_2018;
+mod utils;
 
 fn main() {
     TableGen::new("2018 solutions")

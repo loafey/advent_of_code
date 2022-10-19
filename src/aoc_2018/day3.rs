@@ -1,5 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
+use crate::utils::parse_next;
+
 pub fn part1() -> usize {
     let mut map = HashMap::new();
     include_str!("input/day3.input").split('\n').for_each(|s| {
@@ -9,8 +11,8 @@ pub fn part1() -> usize {
             .map(|s| {
                 let mut split = s.split(|c| c == ':' || c == ',');
                 (
-                    split.next().and_then(|s| s.parse::<usize>().ok()).unwrap(),
-                    split.next().and_then(|s| s.parse::<usize>().ok()).unwrap(),
+                    parse_next::<usize>(&mut split),
+                    parse_next::<usize>(&mut split),
                 )
             })
             .unwrap();
@@ -19,8 +21,8 @@ pub fn part1() -> usize {
             .map(|s| {
                 let mut split = s.split('x');
                 (
-                    split.next().and_then(|s| s.parse::<usize>().ok()).unwrap(),
-                    split.next().and_then(|s| s.parse::<usize>().ok()).unwrap(),
+                    parse_next::<usize>(&mut split),
+                    parse_next::<usize>(&mut split),
                 )
             })
             .unwrap();
@@ -78,8 +80,8 @@ pub fn part2() -> usize {
                 .map(|s| {
                     let mut split = s.split('x');
                     (
-                        split.next().and_then(|s| s.parse::<usize>().ok()).unwrap(),
-                        split.next().and_then(|s| s.parse::<usize>().ok()).unwrap(),
+                        parse_next::<usize>(&mut split),
+                        parse_next::<usize>(&mut split),
                     )
                 })
                 .unwrap();
