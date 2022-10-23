@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 pub fn parse_next<'l, T: FromStr>(iter: &mut impl Iterator<Item = &'l str>) -> T {
-    iter.next()
-        .and_then(|s| s.parse::<T>().ok())
-        .expect("Failed to parse string")
+    let s = iter.next();
+    s.and_then(|s| s.parse::<T>().ok())
+        .expect(&format!("Failed to parse string: \"{s:?}\""))
 }
