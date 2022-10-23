@@ -1,5 +1,5 @@
 use crate::utils::parse_next;
-use std::collections::{BTreeSet, HashSet};
+use std::collections::BTreeSet;
 
 fn parse_data() -> (usize, usize, Vec<(usize, usize)>) {
     let mut max_x = 0;
@@ -38,6 +38,7 @@ pub fn part1() -> usize {
             for (i, (px, py)) in points.iter().enumerate() {
                 let dist = manhattan_distance((x as i32, y as i32), (*px as i32, *py as i32));
 
+                #[allow(clippy::comparison_chain)]
                 if dist == closest_distance {
                     clash = true;
                 } else if dist < closest_distance {
