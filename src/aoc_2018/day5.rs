@@ -1,3 +1,5 @@
+use rayon::prelude::*;
+
 fn react_polymer(mut polymer: Vec<char>) -> usize {
     let mut i = 0;
     while i < polymer.len() - 1 {
@@ -22,6 +24,7 @@ pub fn part1() -> usize {
 pub fn part2() -> usize {
     let base = include_str!("input/day5.input");
     ('a'..='z')
+        .into_par_iter()
         .map(|c| {
             react_polymer(
                 base.replace([c, c.to_ascii_uppercase()], "")
@@ -29,6 +32,8 @@ pub fn part2() -> usize {
                     .collect::<Vec<_>>(),
             )
         })
-        .reduce(|accum, current| if accum <= current { accum } else { current })
-        .unwrap_or(usize::MAX)
+        .reduce(
+            || usize::MAX,
+            |accum, current| if accum <= current { accum } else { current },
+        )
 }

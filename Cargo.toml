@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 aoc_table = { path = "../aoc_table" }
 chrono = "0.4.22"
+rayon = "1.5.3"
