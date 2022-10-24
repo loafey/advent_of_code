@@ -12,5 +12,5 @@ fn main() {
         .add(aoc_2018::day5::part1, aoc_2018::day5::part2)
         .add(aoc_2018::day6::part1, aoc_2018::day6::part2)
         .add(aoc_2018::day7::part1, aoc_2018::day7::part2)
-        .run() //_day(7);
+        .run_day(7);
 }
