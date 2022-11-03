@@ -1,5 +1,3 @@
-use std::io::Write;
-
 use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 
 fn power_level(input: i32, x: i32, y: i32) -> i32 {
