@@ -1,13 +1,21 @@
+const EXTRA_LEN: usize = 70;
+
 fn parse_input() -> (Vec<char>, Vec<(Vec<char>, char)>) {
     let mut dat = include_str!("input/day12.input").split('\n');
-    let initial_state = dat
+    let mut initial_state = dat
         .next()
         .unwrap()
         .split_whitespace()
         .nth(2)
         .unwrap()
         .chars()
-        .collect();
+        .collect::<Vec<_>>();
+
+    for _ in 0..EXTRA_LEN {
+        initial_state.insert(0, '.');
+    }
+    initial_state.resize(initial_state.len() + EXTRA_LEN, '.');
+
     dat.next();
 
     let rules = dat
@@ -24,15 +32,16 @@ fn parse_input() -> (Vec<char>, Vec<(Vec<char>, char)>) {
 }
 
 fn print_state(v: &[char]) {
-    v.iter().for_each(|c| print!("{c}"));
+    v /*[EXTRA_LEN - 3..v.len()]*/
+        .iter()
+        .for_each(|c| print!("{c}"));
     println!()
 }
 
-pub fn part1() -> i32 {
-    let (mut state, rules) = parse_input();
-
-    for _ in 0..20 {
-        print_state(&state);
+fn calc(limit: usize, mut state: Vec<char>, rules: Vec<(Vec<char>, char)>) -> i32 {
+    for _ in 0..limit {
+        // print!("{i}:\t");
+        // print_state(&state);
         let mut new = vec![state[0], state[1]];
 
         for i in 2..state.len() - 2 {
@@ -54,10 +63,113 @@ pub fn part1() -> i32 {
 
         state = new;
     }
-    print_state(&state);
-    0
+
+    state
+        .into_iter()
+        .enumerate()
+        .filter(|(_, c)| *c == '#')
+        .map(|(p, _)| p as i32 - (EXTRA_LEN) as i32)
+        .sum()
+}
+
+pub fn part1() -> i32 {
+    println!(
+        "{:#?}",
+        [
+            "...#..#.#..##......###...###..........."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "...#...#....#.....#..#..#..#..........."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "...##..##...##....#..#..#..##.........."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "..#.#...#..#.#....#..#..#...#.........."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "...#.#..#...#.#...#..#..##..##........."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "....#...##...#.#..#..#...#...#........."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "....##.#.#....#...#..##..##..##........"
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "...#..###.#...##..#...#...#...#........"
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "...#....##.#.#.#..##..##..##..##......."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "...##..#..#####....#...#...#...#......."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "..#.#..#...#.##....##..##..##..##......"
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "...#...##...#.#...#.#...#...#...#......"
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "...##.#.#....#.#...#.#..##..##..##....."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "..#..###.#....#.#...#....#...#...#....."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "..#....##.#....#.#..##...##..##..##...."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "..##..#..#.#....#....#..#.#...#...#...."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            ".#.#..#...#.#...##...#...#.#..##..##..."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "..#...##...#.#.#.#...##...#....#...#..."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            "..##.#.#....#####.#.#.#...##...##..##.."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            ".#..###.#..#.#.#######.#.#.#..#.#...#.."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+            ".#....##....#####...#######....#.#..##."
+                .chars()
+                .filter(|c| *c == '#')
+                .count(),
+        ]
+    );
+
+    let (state, rules) = parse_input();
+
+    calc(20, state, rules)
 }
 
 pub fn part2() -> i32 {
-    0
+    let (state, rules) = parse_input();
+
+    calc(50000000000, state, rules)
 }
