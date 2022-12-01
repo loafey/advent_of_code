@@ -1,27 +1,28 @@
 use std::collections::BTreeSet;
 
-pub fn part1() -> usize {
+pub fn part1() -> i32 {
     include_str!("input/day1.input")
         .split("\n\n")
         .map(|r| {
             r.split('\n')
-                .filter_map(|r| r.parse::<usize>().ok())
-                .sum::<usize>()
+                .filter_map(|r| r.parse::<i32>().ok())
+                .sum::<i32>()
         })
         .max()
         .unwrap_or_default()
 }
 
-pub fn part2() -> Option<usize> {
+pub fn part2() -> i32 {
     let mut set = include_str!("input/day1.input")
         .split("\n\n")
         .map(|r| {
             r.split('\n')
-                .filter_map(|r| r.parse::<usize>().ok())
-                .sum::<usize>()
+                .filter_map(|v| v.parse::<i32>().ok())
+                .sum::<i32>()
         })
-        .collect::<BTreeSet<usize>>();
-    set.pop_last().unwrap_or_default()
-        + set.pop_last().unwrap_or_default()
-        + set.pop_last().unwrap_or_default()
+        .map(|u| -1 * u)
+        .collect::<BTreeSet<i32>>();
+    (-1 * set.pop_first().unwrap())
+        + (-1 * set.pop_first().unwrap())
+        + (-1 * set.pop_first().unwrap())
 }

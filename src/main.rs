@@ -22,5 +22,5 @@ fn main() {
 
     TableGen::new("2022 solutions")
         .add(aoc_2022::day1::part1, aoc_2022::day1::part2)
-        .run_day(1);
+        .run();
 }
