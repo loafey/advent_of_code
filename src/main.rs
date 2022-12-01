@@ -20,7 +20,7 @@ fn main() {
     //     .add(aoc_2018::day12::part1, aoc_2018::day12::part2)
     //     .run();
 
-    TableGen::new("2022 solutions")
+    TableGen::new("22' Rust AoC solutions 🤠")
         .add(aoc_2022::day1::part1, aoc_2022::day1::part2)
         .run();
 }

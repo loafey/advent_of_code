@@ -20,9 +20,7 @@ pub fn part2() -> i32 {
                 .filter_map(|v| v.parse::<i32>().ok())
                 .sum::<i32>()
         })
-        .map(|u| -1 * u)
+        .map(|u| -u)
         .collect::<BTreeSet<i32>>();
-    (-1 * set.pop_first().unwrap())
-        + (-1 * set.pop_first().unwrap())
-        + (-1 * set.pop_first().unwrap())
+    (-set.pop_first().unwrap()) + (-set.pop_first().unwrap()) + (-set.pop_first().unwrap())
 }
