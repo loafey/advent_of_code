@@ -4,27 +4,20 @@ enum Hand {
     Paper,
     Scissor,
 }
-impl Hand {
-    fn value(self) -> i32 {
+impl std::ops::Neg for Hand {
+    type Output = i32;
+
+    fn neg(self) -> Self::Output {
         match self {
             Hand::Rock => 1,
             Hand::Paper => 2,
             Hand::Scissor => 3,
         }
     }
-    fn game(self, me: Self) -> i32 {
-        me.value()
-            + match (self, me) {
-                (Hand::Rock, Hand::Rock)
-                | (Hand::Paper, Hand::Paper)
-                | (Hand::Scissor, Hand::Scissor) => 3,
-                (Hand::Rock, Hand::Paper)
-                | (Hand::Paper, Hand::Scissor)
-                | (Hand::Scissor, Hand::Rock) => 6,
-                _ => 0,
-            }
-    }
-    fn enter_gamer_mode(self, rhs: Strat) -> Self {
+}
+impl std::ops::BitXor<Strat> for Hand {
+    type Output = Self;
+    fn bitxor(self, rhs: Strat) -> Self::Output {
         match (self, rhs) {
             (Hand::Rock, Strat::Win) => Hand::Paper,
             (Hand::Rock, Strat::Lose) => Hand::Scissor,
@@ -35,50 +28,74 @@ impl Hand {
             _ => self,
         }
     }
-    fn from_char(c: char) -> Self {
+}
+
+#[derive(Clone, Copy)]
+struct CChar(char);
+impl std::ops::Neg for CChar {
+    type Output = Hand;
+    fn neg(self) -> Self::Output {
+        let CChar(c) = self;
         match c {
             'A' => Hand::Rock,
             'B' => Hand::Paper,
             'C' => Hand::Scissor,
-            'Y' => Hand::Paper,
             'X' => Hand::Rock,
+            'Y' => Hand::Paper,
             'Z' => Hand::Scissor,
             _ => unreachable!(),
         }
     }
 }
-
-enum Strat {
-    Win,
-    Lose,
-    Draw,
-}
-impl Strat {
-    fn from_char(c: char) -> Strat {
+impl std::ops::Not for CChar {
+    type Output = Strat;
+    fn not(self) -> Self::Output {
+        let CChar(c) = self;
         match c {
-            'Y' => Strat::Draw,
             'X' => Strat::Lose,
+            'Y' => Strat::Draw,
             'Z' => Strat::Win,
             _ => unreachable!(),
         }
     }
 }
 
-fn str_to_choice(s: &str) -> (char, char) {
+impl std::ops::Shr for Hand {
+    type Output = i32;
+    fn shr(self, rhs: Self) -> Self::Output {
+        #![allow(clippy::suspicious_arithmetic_impl)]
+        -rhs + match (self, rhs) {
+            (Hand::Rock, Hand::Rock)
+            | (Hand::Paper, Hand::Paper)
+            | (Hand::Scissor, Hand::Scissor) => 3,
+            (Hand::Rock, Hand::Paper)
+            | (Hand::Paper, Hand::Scissor)
+            | (Hand::Scissor, Hand::Rock) => 6,
+            _ => 0,
+        }
+    }
+}
+
+enum Strat {
+    Lose,
+    Draw,
+    Win,
+}
+
+fn str_to_choice(s: &str) -> (CChar, CChar) {
     let mut split = s.chars();
     let first = split.next().unwrap();
     split.next();
     let second = split.next().unwrap();
 
-    (first, second)
+    (CChar(first), CChar(second))
 }
 
 pub fn part1() -> i32 {
     include_str!("input/day2.input")
         .lines()
         .map(str_to_choice)
-        .map(|(a, b)| (Hand::from_char(a), Hand::from_char(b)))
-        .map(|(o, y)| o.game(y))
+        .map(|(o, y)| -o >> -y)
         .sum()
 }
 
@@ -86,8 +103,6 @@ pub fn part2() -> i32 {
     include_str!("input/day2.input")
         .lines()
         .map(str_to_choice)
-        .map(|(a, b)| (Hand::from_char(a), Strat::from_char(b)))
-        .map(|(o, s)| (o, o.enter_gamer_mode(s)))
-        .map(|(o, y)| o.game(y))
+        .map(|(o, y)| -o >> (-o ^ !y))
         .sum()
 }
