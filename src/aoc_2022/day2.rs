@@ -1,8 +1,13 @@
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy)]
 enum Hand {
     Rock,
     Paper,
     Scissor,
+}
+enum Strat {
+    Lose,
+    Draw,
+    Win,
 }
 impl std::ops::Neg for Hand {
     type Output = i32;
@@ -76,19 +81,11 @@ impl std::ops::Shr for Hand {
     }
 }
 
-enum Strat {
-    Lose,
-    Draw,
-    Win,
-}
-
 fn str_to_choice(s: &str) -> (CChar, CChar) {
-    let mut split = s.chars();
-    let first = split.next().unwrap();
-    split.next();
-    let second = split.next().unwrap();
-
-    (CChar(first), CChar(second))
+    match s.as_bytes() {
+        [a, b' ', b, ..] => (CChar(*a as char), CChar(*b as char)),
+        _ => unreachable!(),
+    }
 }
 
 pub fn part1() -> i32 {
