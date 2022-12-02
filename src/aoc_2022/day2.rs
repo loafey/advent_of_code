@@ -24,7 +24,7 @@ impl Hand {
                 _ => 0,
             }
     }
-    fn strat(self, rhs: Strat) -> Self {
+    fn enter_gamer_mode(self, rhs: Strat) -> Self {
         match (self, rhs) {
             (Hand::Rock, Strat::Win) => Hand::Paper,
             (Hand::Rock, Strat::Lose) => Hand::Scissor,
@@ -87,7 +87,7 @@ pub fn part2() -> i32 {
         .lines()
         .map(str_to_choice)
         .map(|(a, b)| (Hand::from_char(a), Strat::from_char(b)))
-        .map(|(o, s)| (o, o.strat(s)))
+        .map(|(o, s)| (o, o.enter_gamer_mode(s)))
         .map(|(o, y)| o.game(y))
         .sum()
 }
