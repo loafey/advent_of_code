@@ -4,93 +4,90 @@ enum Hand {
     Paper,
     Scissor,
 }
-fn char_to_hand(c: char) -> Hand {
-    match c {
-        'A' => Hand::Rock,
-        'B' => Hand::Paper,
-        'C' => Hand::Scissor,
-        'Y' => Hand::Paper,
-        'X' => Hand::Rock,
-        'Z' => Hand::Scissor,
-        _ => unreachable!(),
+impl Hand {
+    fn value(self) -> i32 {
+        match self {
+            Hand::Rock => 1,
+            Hand::Paper => 2,
+            Hand::Scissor => 3,
+        }
+    }
+    fn game(self, me: Self) -> i32 {
+        me.value()
+            + match (self, me) {
+                (Hand::Rock, Hand::Rock)
+                | (Hand::Paper, Hand::Paper)
+                | (Hand::Scissor, Hand::Scissor) => 3,
+                (Hand::Rock, Hand::Paper)
+                | (Hand::Paper, Hand::Scissor)
+                | (Hand::Scissor, Hand::Rock) => 6,
+                _ => 0,
+            }
+    }
+    fn strat(self, rhs: Strat) -> Self {
+        match (self, rhs) {
+            (Hand::Rock, Strat::Win) => Hand::Paper,
+            (Hand::Rock, Strat::Lose) => Hand::Scissor,
+            (Hand::Paper, Strat::Win) => Hand::Scissor,
+            (Hand::Paper, Strat::Lose) => Hand::Rock,
+            (Hand::Scissor, Strat::Win) => Hand::Rock,
+            (Hand::Scissor, Strat::Lose) => Hand::Paper,
+            _ => self,
+        }
+    }
+    fn from_char(c: char) -> Self {
+        match c {
+            'A' => Hand::Rock,
+            'B' => Hand::Paper,
+            'C' => Hand::Scissor,
+            'Y' => Hand::Paper,
+            'X' => Hand::Rock,
+            'Z' => Hand::Scissor,
+            _ => unreachable!(),
+        }
     }
 }
+
 enum Strat {
     Win,
     Lose,
     Draw,
 }
-fn char_to_strat(c: char) -> Strat {
-    match c {
-        'Y' => Strat::Draw,
-        'X' => Strat::Lose,
-        'Z' => Strat::Win,
-        _ => unreachable!(),
+impl Strat {
+    fn from_char(c: char) -> Strat {
+        match c {
+            'Y' => Strat::Draw,
+            'X' => Strat::Lose,
+            'Z' => Strat::Win,
+            _ => unreachable!(),
+        }
     }
+}
+
+fn str_to_choice(s: &str) -> (char, char) {
+    let mut split = s.chars();
+    let first = split.next().unwrap();
+    split.next();
+    let second = split.next().unwrap();
+
+    (first, second)
 }
 
 pub fn part1() -> i32 {
     include_str!("input/day2.input")
         .lines()
-        .map(|r| {
-            let mut split = r.chars();
-            let first = split.next().unwrap();
-            split.next();
-            let second = split.next().unwrap();
-
-            (char_to_hand(first), char_to_hand(second))
-        })
-        .map(|(o, y)| match (o, y) {
-            (Hand::Rock, Hand::Rock) => 1 + 3,
-            (Hand::Rock, Hand::Paper) => 2 + 6,
-            (Hand::Rock, Hand::Scissor) => 3 + 0,
-            (Hand::Paper, Hand::Rock) => 1 + 0,
-            (Hand::Paper, Hand::Paper) => 2 + 3,
-            (Hand::Paper, Hand::Scissor) => 3 + 6,
-            (Hand::Scissor, Hand::Rock) => 1 + 6,
-            (Hand::Scissor, Hand::Paper) => 2 + 0,
-            (Hand::Scissor, Hand::Scissor) => 3 + 3,
-        })
+        .map(str_to_choice)
+        .map(|(a, b)| (Hand::from_char(a), Hand::from_char(b)))
+        .map(|(o, y)| o.game(y))
         .sum()
 }
 
 pub fn part2() -> i32 {
     include_str!("input/day2.input")
         .lines()
-        .map(|r| {
-            let mut split = r.chars();
-            let first = split.next().unwrap();
-            split.next();
-            let second = split.next().unwrap();
-
-            (char_to_hand(first), char_to_strat(second))
-        })
-        .map(|(o, s)| {
-            (
-                o,
-                match (o, s) {
-                    (Hand::Rock, Strat::Win) => Hand::Paper,
-                    (Hand::Rock, Strat::Lose) => Hand::Scissor,
-                    (Hand::Rock, Strat::Draw) => Hand::Rock,
-                    (Hand::Paper, Strat::Win) => Hand::Scissor,
-                    (Hand::Paper, Strat::Lose) => Hand::Rock,
-                    (Hand::Paper, Strat::Draw) => Hand::Paper,
-                    (Hand::Scissor, Strat::Win) => Hand::Rock,
-                    (Hand::Scissor, Strat::Lose) => Hand::Paper,
-                    (Hand::Scissor, Strat::Draw) => Hand::Scissor,
-                },
-            )
-        })
-        .map(|(o, y)| match (o, y) {
-            (Hand::Rock, Hand::Rock) => 1 + 3,
-            (Hand::Rock, Hand::Paper) => 2 + 6,
-            (Hand::Rock, Hand::Scissor) => 3 + 0,
-            (Hand::Paper, Hand::Rock) => 1 + 0,
-            (Hand::Paper, Hand::Paper) => 2 + 3,
-            (Hand::Paper, Hand::Scissor) => 3 + 6,
-            (Hand::Scissor, Hand::Rock) => 1 + 6,
-            (Hand::Scissor, Hand::Paper) => 2 + 0,
-            (Hand::Scissor, Hand::Scissor) => 3 + 3,
-        })
+        .map(str_to_choice)
+        .map(|(a, b)| (Hand::from_char(a), Strat::from_char(b)))
+        .map(|(o, s)| (o, o.strat(s)))
+        .map(|(o, y)| o.game(y))
         .sum()
 }
