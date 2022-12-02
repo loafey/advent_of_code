@@ -1,89 +1,54 @@
-#[derive(Clone, Copy)]
-enum Hand {
-    Rock,
-    Paper,
-    Scissor,
-}
-enum Strat {
-    Lose,
-    Draw,
-    Win,
-}
-impl std::ops::Neg for Hand {
-    type Output = i32;
-
-    fn neg(self) -> Self::Output {
-        match self {
-            Hand::Rock => 1,
-            Hand::Paper => 2,
-            Hand::Scissor => 3,
-        }
-    }
-}
-impl std::ops::BitXor<Strat> for Hand {
-    type Output = Self;
-    fn bitxor(self, rhs: Strat) -> Self::Output {
-        match (self, rhs) {
-            (Hand::Rock, Strat::Win) => Hand::Paper,
-            (Hand::Rock, Strat::Lose) => Hand::Scissor,
-            (Hand::Paper, Strat::Win) => Hand::Scissor,
-            (Hand::Paper, Strat::Lose) => Hand::Rock,
-            (Hand::Scissor, Strat::Win) => Hand::Rock,
-            (Hand::Scissor, Strat::Lose) => Hand::Paper,
-            _ => self,
-        }
-    }
-}
+use std::ops::{BitXor, Neg, Shr};
 
 #[derive(Clone, Copy)]
-struct CChar(char);
-impl std::ops::Neg for CChar {
-    type Output = Hand;
-    fn neg(self) -> Self::Output {
-        let CChar(c) = self;
-        match c {
-            'A' => Hand::Rock,
-            'B' => Hand::Paper,
-            'C' => Hand::Scissor,
-            'X' => Hand::Rock,
-            'Y' => Hand::Paper,
-            'Z' => Hand::Scissor,
-            _ => unreachable!(),
-        }
-    }
-}
-impl std::ops::Not for CChar {
-    type Output = Strat;
-    fn not(self) -> Self::Output {
-        let CChar(c) = self;
-        match c {
-            'X' => Strat::Lose,
-            'Y' => Strat::Draw,
-            'Z' => Strat::Win,
-            _ => unreachable!(),
-        }
-    }
-}
+struct C(i32);
 
-impl std::ops::Shr for Hand {
+impl Shr for C {
     type Output = i32;
     fn shr(self, rhs: Self) -> Self::Output {
-        #![allow(clippy::suspicious_arithmetic_impl)]
-        -rhs + match (self, rhs) {
-            (Hand::Rock, Hand::Rock)
-            | (Hand::Paper, Hand::Paper)
-            | (Hand::Scissor, Hand::Scissor) => 3,
-            (Hand::Rock, Hand::Paper)
-            | (Hand::Paper, Hand::Scissor)
-            | (Hand::Scissor, Hand::Rock) => 6,
-            _ => 0,
+        let (C(c1), C(c2)) = (self, rhs);
+        -rhs + match match (c2 - c1).abs() {
+            0 => -1,
+            1 => c1.max(c2),
+            _ => c1.min(c2),
+        } {
+            x if c1 == x => 0,
+            x if c2 == x => 6,
+            _ => 3,
         }
     }
 }
 
-fn str_to_choice(s: &str) -> (CChar, CChar) {
+impl Neg for C {
+    type Output = i32;
+    fn neg(self) -> Self::Output {
+        let C(c1) = self;
+        c1 + 1
+    }
+}
+
+impl BitXor for C {
+    type Output = Self;
+    fn bitxor(self, rhs: C) -> Self::Output {
+        let (C(c1), C(c2)) = (self, rhs);
+        C(match (c1, c2) {
+            (1, 0) | (2, 2) => 0,
+            (0, 2) | (2, 0) => 1,
+            (0, 0) | (1, 2) => 2,
+            _ => c1,
+        })
+    }
+}
+
+fn str_to_choice(s: &str) -> (C, C) {
     match s.as_bytes() {
-        [a, b' ', b, ..] => (CChar(*a as char), CChar(*b as char)),
+        [a, b' ', b, ..] => (
+            C(*a as i32 - 65),
+            C(match *b >= 88 {
+                true => *b as i32 - 88,
+                _ => *b as i32 - 65,
+            }),
+        ),
         _ => unreachable!(),
     }
 }
@@ -92,7 +57,7 @@ pub fn part1() -> i32 {
     include_str!("input/day2.input")
         .lines()
         .map(str_to_choice)
-        .map(|(o, y)| -o >> -y)
+        .map(|(o, y)| o >> y)
         .sum()
 }
 
@@ -100,6 +65,6 @@ pub fn part2() -> i32 {
     include_str!("input/day2.input")
         .lines()
         .map(str_to_choice)
-        .map(|(o, y)| -o >> (-o ^ !y))
+        .map(|(o, y)| o >> (o ^ y))
         .sum()
 }
