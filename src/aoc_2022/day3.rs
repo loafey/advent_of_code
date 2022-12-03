@@ -1,5 +1,3 @@
-use std::collections::BTreeSet;
-
 pub fn part1() -> i32 {
     include_str!("input/day3.input")
         .lines()

@@ -46,5 +46,5 @@ fn main() {
         .add(aoc_2022::day23::part1, aoc_2022::day23::part2)
         .add(aoc_2022::day24::part1, aoc_2022::day24::part2)
         .add(aoc_2022::day25::part1, aoc_2022::day25::part2)
-        .run();
+        .run_current_day();
 }
