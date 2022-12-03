@@ -1,4 +1,4 @@
-use std::mem::transmute;
+use std::hint::unreachable_unchecked;
 
 pub fn part1() -> i32 {
     include_str!("input/day3.input")
@@ -26,7 +26,7 @@ pub fn part2() -> i32 {
         .chunks_exact(3)
         .into_iter()
         .map(|s| {
-            let ([s1, s2, s3], _) = unsafe { transmute::<_, (&[&str; 3], i64)>(s) };
+            let [s1, s2, s3] = s else {unsafe { unreachable_unchecked() }};
             let b2 = s2.chars().collect::<Vec<_>>();
             let b3 = s3.chars().collect::<Vec<_>>();
             s1.chars()
