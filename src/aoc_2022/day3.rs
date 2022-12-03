@@ -1,3 +1,5 @@
+use std::mem::transmute;
+
 pub fn part1() -> i32 {
     include_str!("input/day3.input")
         .lines()
@@ -28,15 +30,12 @@ pub fn part2() -> i32 {
         .chunks_exact(3)
         .into_iter()
         .map(|s| {
-            if let [s1, s2, s3, ..] = s {
-                let b2 = s2.chars().collect::<Vec<_>>();
-                let b3 = s3.chars().collect::<Vec<_>>();
-                s1.chars()
-                    .find(|c| b2.contains(c) && b3.contains(c))
-                    .unwrap()
-            } else {
-                unreachable!()
-            }
+            let ([s1, s2, s3], _) = unsafe { transmute::<_, (&[&str; 3], i64)>(s) };
+            let b2 = s2.chars().collect::<Vec<_>>();
+            let b3 = s3.chars().collect::<Vec<_>>();
+            s1.chars()
+                .find(|c| b2.contains(c) && b3.contains(c))
+                .unwrap()
         })
         .map(char_to_value)
         .sum()
