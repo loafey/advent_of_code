@@ -16,11 +16,7 @@ pub fn part1() -> i32 {
 }
 
 fn char_to_value(c: char) -> i32 {
-    if c.is_uppercase() {
-        (c as u8 - 38) as i32
-    } else {
-        (c as u8 - 96) as i32
-    }
+    (c as u8 - if c.is_uppercase() { 38 } else { 96 }) as i32
 }
 
 pub fn part2() -> i32 {
