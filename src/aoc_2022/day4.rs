@@ -1,45 +1,20 @@
+use crate::utils::parse;
+
+fn load_input() -> impl Iterator<Item = (i32, i32, i32, i32)> {
+    include_str!("input/day4.input").lines().map(|s| {
+        let [a,b,x,y] = s.split(|c|c==','||c=='-').collect::<Vec<_>>()[..] else {unreachable!()};
+        (parse(a), parse(b), parse(x), parse(y))
+    })
+}
+
 pub fn part1() -> usize {
-    include_str!("input/day4.input")
-        .lines()
-        .filter(|s| !s.is_empty())
-        .map(|s| {
-            let [p1,p2] = s.split(',')
-                .map(|pair| {
-                    let [n1, n2] = pair.split('-').collect::<Vec<_>>()[..] else {unreachable!()};
-                    (n1,n2)
-                })
-                .collect::<Vec<_>>()[..] else {unreachable!()};
-            (p1, p2)
-        })
-        .map(|((a, b), (x, y))| {
-            (
-                (a.parse::<i32>().unwrap(), b.parse::<i32>().unwrap()),
-                (x.parse::<i32>().unwrap(), y.parse::<i32>().unwrap()),
-            )
-        })
-        .filter(|((a, b), (x, y))| (a >= x && b <= y) || (x >= a && y <= b))
+    load_input()
+        .filter(|(a, b, x, y)| (a >= x && b <= y) || (x >= a && y <= b))
         .count()
 }
 
 pub fn part2() -> usize {
-    include_str!("input/day4.input")
-        .lines()
-        .filter(|s| !s.is_empty())
-        .map(|s| {
-            let [p1,p2] = s.split(',')
-            .map(|pair| {
-                let [n1, n2] = pair.split('-').collect::<Vec<_>>()[..] else {unreachable!()};
-                (n1,n2)
-            })
-            .collect::<Vec<_>>()[..] else {unreachable!()};
-            (p1, p2)
-        })
-        .map(|((a, b), (x, y))| {
-            (
-                (a.parse::<i32>().unwrap(), b.parse::<i32>().unwrap()),
-                (x.parse::<i32>().unwrap(), y.parse::<i32>().unwrap()),
-            )
-        })
-        .filter(|((a, b), (x, y))| (a <= y && b >= x))
+    load_input()
+        .filter(|(a, b, x, y)| (a <= y && b >= x))
         .count()
 }
