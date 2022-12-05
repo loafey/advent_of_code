@@ -1,10 +1,10 @@
 use crate::utils::{bset_pop_top, bset_push_top, parse};
 use std::collections::{BTreeMap, VecDeque};
 
-fn parse_input(func: fn(&mut VecDeque<char>, char)) -> String {
+fn parse_input(deque_func: fn(&mut VecDeque<char>, char)) -> String {
     let mut split = include_str!("input/day5.input").split("\n\n");
-    let top = split.next().unwrap();
-    let bottom = split.next().unwrap();
+    let (Some(top), Some(bottom)) = (split.next(), split.next()) else {unreachable!()};
+
     let mut stacks = {
         const MOD: usize = 1;
         let mut map = BTreeMap::new();
@@ -26,19 +26,12 @@ fn parse_input(func: fn(&mut VecDeque<char>, char)) -> String {
         .lines()
         .map(|s| {
             let splat = s.split(' ').collect::<Vec<_>>();
-            let [_, amount, _, from, _ ,to] = &splat[..] else {unreachable!()};
-            (
-                parse::<usize>(amount),
-                parse::<usize>(from),
-                parse::<usize>(to),
-            )
+            let [_, a, _, f, _ ,t] = &splat[..] else {unreachable!()};
+            (parse::<usize>(a), parse::<usize>(f), parse::<usize>(t))
         })
         .for_each(|(amount, from, to)| {
             let mut temp_stack = VecDeque::new();
-            for _ in 0..amount {
-                let moved = bset_pop_top(&mut stacks, &from);
-                func(&mut temp_stack, moved);
-            }
+            (0..amount).for_each(|_| deque_func(&mut temp_stack, bset_pop_top(&mut stacks, &from)));
             stacks.get_mut(&to).unwrap().extend(temp_stack.into_iter());
         });
 
