@@ -1,12 +1,11 @@
+use crate::utils::parse;
 use std::{
-    collections::{HashMap, VecDeque},
+    collections::{BTreeMap, VecDeque},
     hash::Hash,
 };
 
-use crate::utils::parse;
-
 fn parse_input() -> (
-    HashMap<usize, Vec<char>>,
+    BTreeMap<usize, Vec<char>>,
     impl Iterator<Item = (usize, usize, usize)>,
 ) {
     let mut split = include_str!("input/day5.input").split("\n\n");
@@ -14,20 +13,18 @@ fn parse_input() -> (
     let bottom = split.next().unwrap();
     let stacks = {
         const MOD: usize = 1;
-        let mut map: HashMap<usize, Vec<char>> = HashMap::new();
+        let mut map = BTreeMap::new();
         top.split('\n')
             .rev()
-            .map(|s| {
+            .flat_map(|s| {
                 s.chars()
                     .enumerate()
                     .filter(|(i, _)| (i + MOD) % 2 == 0)
                     .step_by(2)
                     .filter(|(_, c)| c.is_alphabetic())
                     .map(|(i, c)| ((i / 4) + 1, c))
-                    .for_each(|(i, c)| push_top(&mut map, i, c))
             })
-            .for_each(|_| {});
-
+            .for_each(|(i, c)| push_top(&mut map, i, c));
         map
     };
 
@@ -52,19 +49,17 @@ pub fn part1() -> String {
             push_top(&mut stacks, to, moved);
         }
     });
-    let mut picked_out = stacks.into_iter().collect::<Vec<_>>();
-    picked_out.sort_by_key(|(i, _)| *i);
-    picked_out
+    stacks
         .into_iter()
         .filter_map(|(_, mut v)| v.pop())
         .collect()
 }
 
-fn pop_top<K: Eq + Hash, V>(map: &mut HashMap<K, Vec<V>>, key: &K) -> V {
+fn pop_top<K: Eq + Hash + Ord, V>(map: &mut BTreeMap<K, Vec<V>>, key: &K) -> V {
     map.get_mut(key).unwrap().pop().unwrap()
 }
 
-fn push_top<K: Eq + Hash, V>(map: &mut HashMap<K, Vec<V>>, key: K, val: V) {
+fn push_top<K: Eq + Hash + Ord, V>(map: &mut BTreeMap<K, Vec<V>>, key: K, val: V) {
     if let Some(vec) = map.get_mut(&key) {
         vec.push(val)
     } else {
@@ -82,9 +77,7 @@ pub fn part2() -> String {
         }
         stacks.get_mut(&to).unwrap().extend(temp_stack.into_iter());
     });
-    let mut picked_out = stacks.into_iter().collect::<Vec<_>>();
-    picked_out.sort_by_key(|(i, _)| *i);
-    picked_out
+    stacks
         .into_iter()
         .filter_map(|(_, mut v)| v.pop())
         .collect()
