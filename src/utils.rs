@@ -1,6 +1,6 @@
+#![allow(unused)]
 use std::{collections::BTreeMap, fmt::Debug, str::FromStr};
 
-#[allow(unused)]
 pub fn parse_next<'l, T: FromStr>(iter: &mut impl Iterator<Item = &'l str>) -> T {
     let s = iter.next();
     s.and_then(|s| s.parse::<T>().ok())
@@ -21,4 +21,8 @@ pub fn bset_push_top<K: Eq + Ord, V>(map: &mut BTreeMap<K, Vec<V>>, key: K, val:
     } else {
         map.insert(key, vec![val]);
     }
+}
+
+pub fn flip<A, B, C, F1: Fn(A, B) -> C + 'static>(f: F1) -> Box<dyn Fn(B, A) -> C> {
+    Box::new(move |b: B, a: A| f(a, b))
 }
