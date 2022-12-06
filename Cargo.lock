@@ -23,7 +23,7 @@ dependencies = [
 [[package]]
 name = "aoc_table"
 version = "0.1.0"
-source = "git+https://github.com/samhamnam/aoc_table#0f6ba4e866fabaf391afd8ceff688e09d1e098fa"
+source = "git+https://github.com/samhamnam/aoc_table#f98c1c20fa10be0c35c8ac35264dbe0c1b6dbbe8"
 dependencies = [
  "chrono",
  "crossterm",
