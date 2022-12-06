@@ -1,18 +1,25 @@
+use std::collections::VecDeque;
+
 fn solver(window_size: usize) -> usize {
-    for c in include_str!("input/day6.input")
+    let mut stack = VecDeque::new();
+    for (i, c) in include_str!("input/day6.input")
         .chars()
         .filter(|c| !c.is_whitespace())
         .enumerate()
         .map(|(i, c)| (i + 1, c))
-        .collect::<Vec<_>>()
-        .windows(window_size)
     {
-        let mut v = c.to_vec();
-        v.sort_by_key(|(_, c)| *c);
-        v.dedup_by_key(|(_, c)| *c);
-        v.sort_by_key(|(i, _)| *i);
-        if v.len() == window_size {
-            return v.last().unwrap().0;
+        if !stack.contains(&c) {
+            stack.push_front(c);
+        } else {
+            while stack.contains(&c) {
+                stack.pop_back();
+            }
+            stack.push_front(c);
+        }
+
+        if stack.len() == window_size {
+            println!("{stack:?}",);
+            return i;
         }
     }
     0
