@@ -18,7 +18,6 @@ fn solver(window_size: usize) -> usize {
         }
 
         if stack.len() == window_size {
-            println!("{stack:?}",);
             return i;
         }
     }
