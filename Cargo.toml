@@ -8,4 +8,5 @@ edition = "2021"
 [dependencies]
 aoc_table = { git = "https://github.com/samhamnam/aoc_table" }
 chrono = "0.4.22"
-rayon = "1.5.3"
+rayon = "1.6.0"
+rand = "0.8.5"

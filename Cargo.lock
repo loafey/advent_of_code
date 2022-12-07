@@ -8,6 +8,7 @@ version = "0.1.0"
 dependencies = [
  "aoc_table",
  "chrono",
+ "rand",
  "rayon",
 ]
 
