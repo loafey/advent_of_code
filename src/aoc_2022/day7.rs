@@ -1,16 +1,14 @@
+use crate::utils::hmap_insert_vec;
 use std::collections::HashMap;
-
-use crate::utils::{hmap_insert, hmap_insert_vec};
 
 type Id = &'static str;
 
-#[derive(Debug)]
 enum Command {
     Ls(Vec<LsOutput>),
     Cd(Id),
 }
-impl From<&'static str> for Command {
-    fn from(value: &'static str) -> Self {
+impl From<Id> for Command {
+    fn from(value: Id) -> Self {
         match &value.split_whitespace().collect::<Vec<_>>()[..] {
             ["cd", arg] => Command::Cd(arg),
             ["ls", rest @ ..] => {
@@ -21,7 +19,6 @@ impl From<&'static str> for Command {
     }
 }
 
-#[derive(Debug)]
 enum LsOutput {
     Directory(Id),
     File(usize),
@@ -46,8 +43,8 @@ impl LsOutput {
         }
     }
 }
-impl From<&[&'static str]> for LsOutput {
-    fn from(val: &[&'static str]) -> Self {
+impl From<&[Id]> for LsOutput {
+    fn from(val: &[Id]) -> Self {
         let f = val[0];
         let name = val[1];
         match f.parse::<usize>() {
