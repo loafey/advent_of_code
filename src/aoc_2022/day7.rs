@@ -1,14 +1,16 @@
 use std::collections::HashMap;
 
-type Id<'l> = &'l str;
+use crate::utils::{hmap_insert, hmap_insert_vec};
+
+type Id = &'static str;
 
 #[derive(Debug)]
-enum Command<'l> {
-    Ls(Vec<LsOutput<'l>>),
-    Cd(Id<'l>),
+enum Command {
+    Ls(Vec<LsOutput>),
+    Cd(Id),
 }
-impl<'l> From<&'l str> for Command<'l> {
-    fn from(value: &'l str) -> Self {
+impl From<&'static str> for Command {
+    fn from(value: &'static str) -> Self {
         match &value.split_whitespace().collect::<Vec<_>>()[..] {
             ["cd", arg] => Command::Cd(arg),
             ["ls", rest @ ..] => {
@@ -20,12 +22,32 @@ impl<'l> From<&'l str> for Command<'l> {
 }
 
 #[derive(Debug)]
-enum LsOutput<'l> {
-    Directory(Id<'l>),
+enum LsOutput {
+    Directory(Id),
     File(usize),
 }
-impl<'l> From<&[&'l str]> for LsOutput<'l> {
-    fn from(val: &[&'l str]) -> Self {
+impl LsOutput {
+    fn is_file(&self) -> bool {
+        match self {
+            LsOutput::Directory(_) => false,
+            LsOutput::File(_) => true,
+        }
+    }
+    fn size(&self) -> usize {
+        match self {
+            LsOutput::Directory(_) => panic!(),
+            LsOutput::File(u) => *u,
+        }
+    }
+    fn dir_name(&self) -> Option<&str> {
+        match self {
+            LsOutput::Directory(d) => Some(d),
+            LsOutput::File(_) => None,
+        }
+    }
+}
+impl From<&[&'static str]> for LsOutput {
+    fn from(val: &[&'static str]) -> Self {
         let f = val[0];
         let name = val[1];
         match f.parse::<usize>() {
@@ -35,7 +57,7 @@ impl<'l> From<&[&'l str]> for LsOutput<'l> {
     }
 }
 
-pub fn part1() -> usize {
+fn solver() -> HashMap<String, usize> {
     let input = include_str!("input/day7.input");
     let mut stack = Vec::new();
     let mut memory = HashMap::new();
@@ -45,9 +67,10 @@ pub fn part1() -> usize {
         .filter(|s| !s.is_empty())
         .map(Command::from)
     {
+        let stacks = stack.join("");
         match p {
             Command::Ls(v) => {
-                memory.insert(stack[stack.len() - 1], v);
+                hmap_insert_vec(&mut memory, stacks, v);
             }
             Command::Cd(dir) => match dir {
                 ".." => {
@@ -55,49 +78,55 @@ pub fn part1() -> usize {
                 }
                 dir => {
                     stack.push(dir);
+                    hmap_insert_vec(&mut memory, format!("{stacks}{dir}"), Vec::new())
                 }
             },
         }
     }
-    println!("\n");
-    let mut sizes = HashMap::new();
-    let mut stack = vec!["/"];
-    let mut pairs = Vec::new();
-    while let Some(top) = stack.pop() {
-        for f in &memory[top] {
-            match f {
-                LsOutput::File(s) => {
-                    if let Some(r) = sizes.get_mut(top) {
-                        *r += s;
-                    } else {
-                        sizes.insert(top, *s);
+    let mut annotated = HashMap::new();
+    while !memory.is_empty() {
+        let mut to_remove = Vec::new();
+        memory
+            .iter()
+            .filter(|(_, v)| v.iter().map(|l| l.is_file()).all(|x| x))
+            .for_each(|(key, l)| {
+                annotated.insert(key.clone(), l.iter().map(|l| l.size()).sum::<usize>());
+                to_remove.push(key.clone());
+            });
+        to_remove.into_iter().for_each(|k| {
+            memory.remove(&k);
+        });
+        memory.iter_mut().for_each(|(base, v)| {
+            v.iter_mut().for_each(|ls| {
+                if let Some(dir_name) = ls.dir_name() {
+                    let dir_name = format!("{base}{dir_name}");
+                    if annotated.contains_key(&dir_name) {
+                        *ls = LsOutput::File(*annotated.get(&dir_name).unwrap());
                     }
                 }
-                LsOutput::Directory(dir) => {
-                    stack.push(dir);
-                    pairs.push((top, *dir));
-                    stack.iter().for_each(|d| pairs.push((d, dir)));
-                    if !sizes.contains_key(dir) {
-                        sizes.insert(dir, 0);
-                    }
-                }
-            }
-        }
-        println!("{stack:?}")
+            });
+        });
     }
-    let mut sizes_clone = sizes.clone();
-    println!(
-        "{}",
-        sizes.values().filter(|u| **u <= 100000).sum::<usize>()
-    );
-    for (whom, whale) in pairs {
-        //println!("{whom} {whale}");
-        *sizes_clone.get_mut(whom).unwrap() += sizes[whale];
-    }
+    annotated
+}
 
-    sizes_clone.values().filter(|u| **u <= 100000).sum()
+pub fn part1() -> usize {
+    solver()
+        .into_iter()
+        .filter(|(_, k)| *k <= 100000)
+        .map(|(_, u)| u)
+        .sum()
 }
 
 pub fn part2() -> usize {
-    0
+    let solver = solver();
+    let total = 70000000;
+    let needed = 30000000;
+    let size = solver["/"];
+    solver
+        .into_iter()
+        .filter(|(_, current)| total - needed >= size - current)
+        .map(|(_, c)| c)
+        .min()
+        .unwrap()
 }
