@@ -86,6 +86,10 @@ impl<'l, T> From<&'l Vec<Vec<T>>> for Zipper2D<'l, T> {
     }
 }
 impl<'l, T> Iterator for Zipper2D<'l, T> {
+    // Could this be nicely done without allocating vecs? 🤔
+    // Maybe one could use sized arrays instead, but those are
+    // still not continuously allocated in the stack which the
+    // vertical slices would require.
     type Item = (&'l [T], &'l [T], &'l T, Vec<&'l T>, Vec<&'l T>);
 
     fn next(&mut self) -> Option<Self::Item> {

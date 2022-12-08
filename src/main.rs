@@ -1,4 +1,5 @@
 use aoc_table::table_gen::TableGen;
+use utils::Zipper2D;
 //mod aoc_2018;
 mod aoc_2022;
 mod utils;
@@ -46,5 +47,5 @@ fn main() {
         .add(aoc_2022::day23::part1, aoc_2022::day23::part2)
         .add(aoc_2022::day24::part1, aoc_2022::day24::part2)
         .add(aoc_2022::day25::part1, aoc_2022::day25::part2)
-        .run_current_day();
+        .run();
 }
