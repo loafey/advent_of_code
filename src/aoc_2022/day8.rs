@@ -1,7 +1,7 @@
 use crate::utils::{parse, Zipper2D};
 
-pub fn part1() -> usize {
-    let trees = include_str!("input/day8.input")
+fn load_input() -> Vec<Vec<usize>> {
+    include_str!("input/day8.input")
         .lines()
         .map(|r| {
             r.split("")
@@ -9,9 +9,11 @@ pub fn part1() -> usize {
                 .map(parse::<usize>)
                 .collect::<Vec<_>>()
         })
-        .collect::<Vec<_>>();
+        .collect::<Vec<_>>()
+}
 
-    Zipper2D::from(&trees)
+pub fn part1() -> usize {
+    Zipper2D::from(&load_input())
         .filter(|(left, right, tree, up, down)| {
             left.iter().map(|i| i < tree).all(|c| c)
                 || right.iter().map(|i| i < tree).all(|c| c)
@@ -42,17 +44,7 @@ where
 }
 
 pub fn part2() -> usize {
-    let trees = include_str!("input/day8.input")
-        .lines()
-        .map(|r| {
-            r.split("")
-                .filter(|s| !s.is_empty())
-                .map(parse::<usize>)
-                .collect::<Vec<_>>()
-        })
-        .collect::<Vec<_>>();
-
-    Zipper2D::from(&trees)
+    Zipper2D::from(&load_input())
         .map(|(left, right, tree, up, down)| {
             get_view_len(*tree, left.iter().rev())
                 * get_view_len(*tree, right.iter())
