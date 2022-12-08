@@ -89,10 +89,6 @@ impl<'l, T> Iterator for Zipper2D<'l, T> {
     type Item = (&'l [T], &'l [T], &'l T, Vec<&'l T>, Vec<&'l T>);
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.index_x == 0 {
-            println!() // remove me!!!
-        }
-
         let middle = self.inner.get(self.index_y)?.get(self.index_x)?;
 
         let left = &self.inner.get(self.index_y)?[0..self.index_x];
