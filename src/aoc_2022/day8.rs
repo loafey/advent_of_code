@@ -1,4 +1,4 @@
-use crate::utils::Zipper2D;
+use zipperoni::Zipper2D;
 
 fn load_input() -> Vec<Vec<u32>> {
     include_str!("input/day8.input")
