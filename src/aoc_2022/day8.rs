@@ -1,14 +1,9 @@
-use crate::utils::{parse, Zipper2D};
+use crate::utils::Zipper2D;
 
-fn load_input() -> Vec<Vec<usize>> {
+fn load_input() -> Vec<Vec<u32>> {
     include_str!("input/day8.input")
         .lines()
-        .map(|r| {
-            r.split("")
-                .filter(|s| !s.is_empty())
-                .map(parse::<usize>)
-                .collect::<Vec<_>>()
-        })
+        .map(|r| r.chars().filter_map(|c| c.to_digit(10)).collect::<Vec<_>>())
         .collect::<Vec<_>>()
 }
 
