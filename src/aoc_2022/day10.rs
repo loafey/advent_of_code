@@ -1,3 +1,5 @@
+use crate::utils::ascii_4_art_to_string;
+
 enum Instruction {
     NoOp,
     AddX(i32),
@@ -40,29 +42,33 @@ pub fn part1() -> i32 {
     signal_strenght
 }
 
-pub fn part2() -> &'static str {
+pub fn part2() -> String {
     let mut x = 1;
     let mut cycle = 0;
-    let mut canvas = vec![vec!["-"; 40]; 6];
+    let mut canvas = [
+        Vec::new(),
+        Vec::new(),
+        Vec::new(),
+        Vec::new(),
+        Vec::new(),
+        Vec::new(),
+    ];
     parse_ops().for_each(|i| {
         let (adder, wait) = i.into();
         for i in 0..wait {
             let index_x = cycle % 40;
             let index_y = cycle / 40;
             cycle += 1;
-            canvas[index_y][index_x] = if index_x as i32 >= x - 1 && index_x as i32 <= x + 1 {
-                "#"
+            canvas[index_y].push(if index_x as i32 >= x - 1 && index_x as i32 <= x + 1 {
+                '#'
             } else {
-                "."
-            };
+                '.'
+            });
 
             if i == wait - 1 {
                 x += adder;
             }
         }
     });
-    canvas.into_iter().for_each(|r| {
-        println!("{}", r.join(""));
-    });
-    "FECZELHE (question returns ascii art)"
+    ascii_4_art_to_string(&canvas, 1)
 }
