@@ -99,18 +99,16 @@ fn parse_input() -> impl Iterator<Item = Monkey> {
         })
 }
 
-pub fn part1() -> u128 {
-    let mut monkeys = parse_input().collect::<Vec<_>>();
+fn solver<const N: usize>(mut monkeys: Vec<Monkey>, differ: Box<dyn Fn(u128) -> u128>) -> u128 {
     let mut inspect_amounts = vec![u128::from(0u32); monkeys.len()];
-    for _ in 0..20 {
-        //let mut new_monkeys = monkeys.clone();
+    for _ in 0..N {
         for m in 0..monkeys.len() {
             for _ in 0..monkeys[m].items.len() {
                 inspect_amounts[m] += u128::from(1u32);
-                let new = match &monkeys[m].operation {
+                let new = differ(match &monkeys[m].operation {
                     (fun, Value::Num(x)) => fun(monkeys[m].items[0], *x),
                     (fun, Value::Old) => fun(monkeys[m].items[0], monkeys[m].items[0]),
-                } / u128::from(3u32);
+                });
                 monkeys[m].items.remove(0);
                 if new % monkeys[m].test == 0 {
                     let trur = monkeys[m].true_action;
@@ -121,43 +119,22 @@ pub fn part1() -> u128 {
                 }
             }
         }
-        //monkeys = new_monkeys
     }
-    println!("{inspect_amounts:?}");
     inspect_amounts.sort();
     inspect_amounts[inspect_amounts.len() - 1] * inspect_amounts[inspect_amounts.len() - 2]
 }
 
+pub fn part1() -> u128 {
+    let monkeys = parse_input().collect::<Vec<_>>();
+    solver::<20>(monkeys, Box::new(|a| a / 3))
+}
+
 pub fn part2() -> u128 {
-    let mut monkeys = parse_input().collect::<Vec<_>>();
-    let mut inspect_amounts = vec![u128::from(0u32); monkeys.len()];
-    let modder = monkeys
+    let monkeys = parse_input().collect::<Vec<_>>();
+    let diff = monkeys
         .iter()
         .map(|m| m.test)
         .reduce(|a, b| a * b)
         .unwrap_or_default();
-    for _ in 0..10000 {
-        for m in 0..monkeys.len() {
-            for _ in 0..monkeys[m].items.len() {
-                inspect_amounts[m] += u128::from(1u32);
-                let i = monkeys[m].items.pop().unwrap();
-                let new = match &monkeys[m].operation {
-                    (fun, Value::Num(x)) => fun(i, *x),
-                    (fun, Value::Old) => fun(i, i),
-                } % (modder);
-                //monkeys[m].items.remove(0);
-                if new % monkeys[m].test == 0 {
-                    let trur = monkeys[m].true_action;
-                    monkeys[trur].items.push(new)
-                } else {
-                    let flur = monkeys[m].false_action;
-                    monkeys[flur].items.push(new)
-                }
-            }
-        }
-        //monkeys = new_monkeys
-    }
-    println!("{inspect_amounts:?}");
-    inspect_amounts.sort();
-    inspect_amounts[inspect_amounts.len() - 1] * inspect_amounts[inspect_amounts.len() - 2]
+    solver::<10000>(monkeys, Box::new(move |a| a % diff))
 }
