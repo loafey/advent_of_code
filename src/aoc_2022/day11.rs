@@ -1,35 +1,25 @@
 use std::ops::{Add, Mul};
 
-#[derive(Debug, Clone)]
-enum Value {
-    Old,
-    Num(u128),
-}
-
 struct Monkey {
     items: Vec<u128>,
-    operation: (fn(u128, u128) -> u128, Value),
+    operation: (fn(u128, u128) -> u128, u128),
     test: u128,
     actions: [usize; 2],
     count: u128,
 }
 
-fn parse_splat(
-    splat: &mut impl Iterator<Item = &'static str>,
-) -> impl Iterator<Item = &'static str> {
+type Is<'l> = &'l mut dyn Iterator<Item = &'static str>;
+fn parse_splat(splat: Is) -> impl Iterator<Item = &'static str> {
     splat
         .next()
         .unwrap()
         .split(|c| c == ' ' || c == ':' || c == ',')
         .filter(|s| !s.is_empty())
 }
-fn parse_splat_skip(
-    skip: usize,
-    splat: &mut impl Iterator<Item = &'static str>,
-) -> impl Iterator<Item = &'static str> {
+fn parse_splat_skip(skip: usize, splat: Is) -> impl Iterator<Item = &'static str> {
     parse_splat(splat).skip(skip)
 }
-fn parse_splat_nth(nth: usize, splat: &mut impl Iterator<Item = &'static str>) -> &'static str {
+fn parse_splat_nth(nth: usize, splat: Is) -> &'static str {
     parse_splat(splat).nth(nth).unwrap()
 }
 
@@ -44,16 +34,15 @@ fn parse_input() -> impl Iterator<Item = Monkey> {
                     .collect::<Vec<_>>(),
                 operation: {
                     let mut splat = parse_splat_skip(4, &mut splat);
-                    (
-                        match splat.next().unwrap() {
-                            "*" => u128::mul,
-                            _ => u128::add,
-                        },
-                        match splat.next().unwrap() {
-                            "old" => Value::Old,
-                            x => Value::Num(x.parse::<u128>().unwrap()),
-                        },
-                    )
+                    let op = match splat.next().unwrap() {
+                        "*" => u128::mul,
+                        _ => u128::add,
+                    };
+                    let val = match splat.next().unwrap() {
+                        "old" => 0,
+                        x => x.parse::<u128>().unwrap(),
+                    };
+                    (op, val)
                 },
                 test: parse_splat_nth(3, &mut splat).parse::<u128>().unwrap(),
                 actions: [
@@ -72,8 +61,8 @@ fn solver<const N: usize>(mut monkeys: Vec<Monkey>, differ: Box<dyn Fn(u128) -> 
                 monkeys[m].count += 1;
                 let i = monkeys[m].items.pop().unwrap();
                 let new = differ(match &monkeys[m].operation {
-                    (fun, Value::Num(x)) => fun(i, *x),
-                    (fun, Value::Old) => fun(i, i),
+                    (fun, 0) => fun(i, i),
+                    (fun, x) => fun(i, *x),
                 });
                 let monke = monkeys[m].actions[(new % monkeys[m].test != 0) as usize];
                 monkeys[monke].items.push(new)
