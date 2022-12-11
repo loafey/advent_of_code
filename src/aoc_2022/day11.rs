@@ -1,14 +1,9 @@
+use std::ops::{Add, Mul};
+
 #[derive(Debug, Clone)]
 enum Value {
     Old,
     Num(u128),
-}
-
-fn cringe_mul(a: u128, b: u128) -> u128 {
-    a * b
-}
-fn cringe_add(a: u128, b: u128) -> u128 {
-    a + b
 }
 
 struct Monkey {
@@ -50,11 +45,9 @@ fn parse_input() -> impl Iterator<Item = Monkey> {
 
                 (
                     match splat.next().unwrap() {
-                        "*" => cringe_mul,
-                        "+" => cringe_add,
-                        _ => {
-                            unreachable!()
-                        }
+                        "*" => u128::mul,
+                        "+" => u128::add,
+                        _ => unreachable!(),
                     },
                     match splat.next().unwrap() {
                         "old" => Value::Old,
