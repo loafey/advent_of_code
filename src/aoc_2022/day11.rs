@@ -1,5 +1,3 @@
-use num::integer::lcm;
-
 #[derive(Debug, Clone)]
 enum Value {
     Old,
@@ -133,17 +131,20 @@ pub fn part1() -> u128 {
 pub fn part2() -> u128 {
     let mut monkeys = parse_input().collect::<Vec<_>>();
     let mut inspect_amounts = vec![u128::from(0u32); monkeys.len()];
+    let modder = monkeys
+        .iter()
+        .map(|m| m.test)
+        .reduce(|a, b| a * b)
+        .unwrap_or_default();
     for _ in 0..10000 {
         for m in 0..monkeys.len() {
             for _ in 0..monkeys[m].items.len() {
                 inspect_amounts[m] += u128::from(1u32);
                 let i = monkeys[m].items.pop().unwrap();
                 let new = match &monkeys[m].operation {
-                    //(Op::Mul, _, Value::Num(x)) if i > monkeys[m].test => (i * x) % monkeys[m].test,
                     (fun, Value::Num(x)) => fun(i, *x),
-                    //(Op::Mul, _, Value::Old) if i > monkeys[m].test => i % monkeys[m].test + 1,
                     (fun, Value::Old) => fun(i, i),
-                } % (2 * 17 * 19 * 3 * 5 * 13 * 7 * 11);
+                } % (modder);
                 //monkeys[m].items.remove(0);
                 if new % monkeys[m].test == 0 {
                     let trur = monkeys[m].true_action;
