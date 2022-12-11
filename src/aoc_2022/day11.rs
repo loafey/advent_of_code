@@ -10,111 +10,78 @@ struct Monkey {
     items: Vec<u128>,
     operation: (fn(u128, u128) -> u128, Value),
     test: u128,
-    true_action: usize,
-    false_action: usize,
+    actions: [usize; 2],
+    count: u128,
+}
+
+fn parse_splat(
+    splat: &mut impl Iterator<Item = &'static str>,
+) -> impl Iterator<Item = &'static str> {
+    splat
+        .next()
+        .unwrap()
+        .split(|c| c == ' ' || c == ':' || c == ',')
+        .filter(|s| !s.is_empty())
+}
+fn parse_splat_skip(
+    skip: usize,
+    splat: &mut impl Iterator<Item = &'static str>,
+) -> impl Iterator<Item = &'static str> {
+    parse_splat(splat).skip(skip)
+}
+fn parse_splat_nth(nth: usize, splat: &mut impl Iterator<Item = &'static str>) -> &'static str {
+    parse_splat(splat).nth(nth).unwrap()
 }
 
 fn parse_input() -> impl Iterator<Item = Monkey> {
     include_str!("input/day11.input")
         .split("\n\n")
         .map(|monkey_block| {
-            let mut splat = monkey_block.lines();
-            let _monkey_num = splat
-                .next()
-                .unwrap()
-                .split(|c| c == ' ' || c == ':')
-                .nth(1)
-                .unwrap()
-                .parse::<usize>()
-                .unwrap();
-            let items = splat
-                .next()
-                .unwrap()
-                .split(|c| c == ' ' || c == ':' || c == ',')
-                .filter(|s| !s.is_empty())
-                .skip(2)
-                .map(|s| s.parse::<u128>().unwrap())
-                .collect::<Vec<_>>();
-            let operation: (fn(u128, u128) -> u128, _) = {
-                let mut splat = splat
-                    .next()
-                    .unwrap()
-                    .split(|c| c == ' ' || c == ':')
-                    .filter(|s| !s.is_empty())
-                    .skip(4);
-
-                (
-                    match splat.next().unwrap() {
-                        "*" => u128::mul,
-                        "+" => u128::add,
-                        _ => unreachable!(),
-                    },
-                    match splat.next().unwrap() {
-                        "old" => Value::Old,
-                        x => Value::Num(x.parse::<u128>().unwrap()),
-                    },
-                )
-            };
-            let test = splat
-                .next()
-                .unwrap()
-                .split(|c| c == ' ' || c == ':')
-                .filter(|s| !s.is_empty())
-                .nth(3)
-                .unwrap()
-                .parse::<u128>()
-                .unwrap();
-            let true_action = splat
-                .next()
-                .unwrap()
-                .split(|c| c == ' ' || c == ':')
-                .filter(|s| !s.is_empty())
-                .nth(5)
-                .unwrap()
-                .parse::<usize>()
-                .unwrap();
-            let false_action = splat
-                .next()
-                .unwrap()
-                .split(|c| c == ' ' || c == ':')
-                .filter(|s| !s.is_empty())
-                .nth(5)
-                .unwrap()
-                .parse::<usize>()
-                .unwrap();
+            let mut splat = monkey_block.lines().skip(1);
             Monkey {
-                items,
-                operation,
-                test,
-                true_action,
-                false_action,
+                items: parse_splat_skip(2, &mut splat)
+                    .map(|s| s.parse::<u128>().unwrap())
+                    .collect::<Vec<_>>(),
+                operation: {
+                    let mut splat = parse_splat_skip(4, &mut splat);
+                    (
+                        match splat.next().unwrap() {
+                            "*" => u128::mul,
+                            _ => u128::add,
+                        },
+                        match splat.next().unwrap() {
+                            "old" => Value::Old,
+                            x => Value::Num(x.parse::<u128>().unwrap()),
+                        },
+                    )
+                },
+                test: parse_splat_nth(3, &mut splat).parse::<u128>().unwrap(),
+                actions: [
+                    parse_splat_nth(5, &mut splat).parse::<usize>().unwrap(),
+                    parse_splat_nth(5, &mut splat).parse::<usize>().unwrap(),
+                ],
+                count: 0,
             }
         })
 }
 
 fn solver<const N: usize>(mut monkeys: Vec<Monkey>, differ: Box<dyn Fn(u128) -> u128>) -> u128 {
-    let mut inspect_amounts = vec![u128::from(0u32); monkeys.len()];
     for _ in 0..N {
         for m in 0..monkeys.len() {
             for _ in 0..monkeys[m].items.len() {
-                inspect_amounts[m] += u128::from(1u32);
+                monkeys[m].count += 1;
+                let i = monkeys[m].items.pop().unwrap();
                 let new = differ(match &monkeys[m].operation {
-                    (fun, Value::Num(x)) => fun(monkeys[m].items[0], *x),
-                    (fun, Value::Old) => fun(monkeys[m].items[0], monkeys[m].items[0]),
+                    (fun, Value::Num(x)) => fun(i, *x),
+                    (fun, Value::Old) => fun(i, i),
                 });
-                monkeys[m].items.remove(0);
-                if new % monkeys[m].test == 0 {
-                    let trur = monkeys[m].true_action;
-                    monkeys[trur].items.push(new)
-                } else {
-                    let flur = monkeys[m].false_action;
-                    monkeys[flur].items.push(new)
-                }
+                let monke = monkeys[m].actions[(new % monkeys[m].test != 0) as usize];
+                monkeys[monke].items.push(new)
             }
         }
     }
-    inspect_amounts.sort();
-    inspect_amounts[inspect_amounts.len() - 1] * inspect_amounts[inspect_amounts.len() - 2]
+    monkeys.sort_by_key(|f| f.count);
+    monkeys[monkeys.len() - 1].count * monkeys[monkeys.len() - 2].count
 }
 
 pub fn part1() -> u128 {
