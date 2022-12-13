@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet};
+use std::collections::{BTreeMap, HashSet};
 
 fn char_to_height(c: char) -> isize {
     (c as u8 - 97) as isize

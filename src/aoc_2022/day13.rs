@@ -23,6 +23,24 @@ impl Data {
             Data::Value(_) => true,
         }
     }
+    fn is_less(&self, x: &Data) -> bool {
+        match (self, x) {
+            (Data::Value(x), Data::Value(y)) => x < y,
+            (Data::List(l1), Data::List(l2)) => {
+                battle(Data::List(l1.clone()), Data::List(l2.clone()), 0)
+            }
+            _ => false,
+        }
+    }
+    fn is_same(&self, x: &Data) -> bool {
+        match (self, x) {
+            (Data::Value(x), Data::Value(y)) => x == y,
+            (Data::List(l1), Data::List(l2)) => {
+                battle(Data::List(l1.clone()), Data::List(l2.clone()), 0)
+            }
+            _ => false,
+        }
+    }
 }
 #[derive(Debug, Deserialize)]
 struct Pair {
@@ -43,67 +61,90 @@ pub fn part1() -> usize {
         .collect::<Vec<_>>();
     #[allow(clippy::never_loop)]
     for (i, Pair { data1, data2 }) in input.iter().enumerate() {
-        println!("{}: {}", i + 1, battle(data1.clone(), data2.clone()));
+        println!("{}: {}", i + 1, battle(data1.clone(), data2.clone(), 0));
+        println!()
     }
     input
         .into_iter()
         .enumerate()
-        .filter(|(_, Pair { data1, data2 })| battle(data1.clone(), data2.clone()))
+        .filter(|(_, Pair { data1, data2 })| battle(data1.clone(), data2.clone(), 0))
         .map(|(i, _)| i + 1)
         .sum()
+    //0
 }
-fn battle(data1: Data, data2: Data) -> bool {
-    let mut rights = true;
+fn battle(data1: Data, data2: Data, indent: usize) -> bool {
+    let i = "\t".repeat(indent + 1);
     match (data1, data2) {
         (Data::List(mut v1), Data::List(mut v2)) if v1.len() == 1 && v1[0].is_value() => {
+            println!("{i}list[int] list: {v1:?} {v2:?}");
             let val = v1.pop_front().unwrap();
             while let Some(right) = v2.pop_front() {
-                rights = rights && battle(val.clone(), right)
-            }
-        }
-        (Data::List(mut v1), Data::List(mut v2)) if v2.len() == 1 && v2[0].is_value() => {
-            let val = v2.pop_front().unwrap();
-            while let Some(left) = v1.pop_front() {
-                rights = rights && battle(left, val.clone())
-            }
-        }
-        (Data::List(mut v1), Data::List(mut v2)) => {
-            //println!("list list: {v1:?} {v2:?}");
-            if v1.len() > v2.len() {
-                return false;
-            }
-
-            while let Some(right) = v2.pop_front() {
-                if let Some(left) = v1.pop_front() {
-                    let res = battle(left, right);
-                    if !res {
-                        rights = false;
-                        break;
-                    }
-                    rights = rights && res;
+                println!("{i}int int: {val:?} {right:?}");
+                if val.is_less(&right) {
+                    return true;
+                } else if val.is_same(&right) {
+                    continue;
                 } else {
-                    //rights = rights && true;
-                    break;
+                    return false;
                 }
             }
+            true
         }
-        (Data::Value(left), Data::Value(right)) => {
-            //println!("val val: {left:?} {right:?}");
-            if left > right {
-                rights = false;
+        (Data::List(mut v1), Data::List(mut v2)) if v2.len() == 1 && v2[0].is_value() => {
+            println!("{i}list list[int]: {v1:?} {v2:?}");
+            let val = v2.pop_front().unwrap();
+            while let Some(left) = v1.pop_front() {
+                println!("{i}int int: {left:?} {val:?}");
+                if left.is_less(&val) {
+                    return true;
+                } else if left.is_same(&val) {
+                    continue;
+                } else {
+                    return false;
+                }
             }
+            true
         }
+        (Data::List(mut v1), Data::List(mut v2)) => {
+            println!("{i}list list: {v1:?} {v2:?}");
+            while let Some(right) = v2.pop_front() {
+                if let Some(left) = v1.pop_front() {
+                    println!("{i}int int: {left:?} {right:?}");
+                    if left.is_less(&right) {
+                        return true;
+                    } else if left.is_same(&right) {
+                        continue;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return true;
+                }
+            }
+            !v2.is_empty() || v1.is_empty()
+        }
+
         (Data::List(l), Data::Value(x)) => {
-            //println!("list val: {l:?} {x:?}");
-            rights = rights && battle(Data::List(l), Data::List(vec![Data::Value(x)].into()));
+            println!("{i}list val: {l:?} {x:?}");
+            battle(
+                Data::List(l),
+                Data::List(vec![Data::Value(x)].into()),
+                indent + 1,
+            )
         }
         (Data::Value(x), Data::List(l)) => {
-            //println!("val list: {x:?} {l:?}");
-            rights = rights && battle(Data::List(vec![Data::Value(x)].into()), Data::List(l));
+            println!("{i}val list: {x:?} {l:?}");
+            battle(
+                Data::List(vec![Data::Value(x)].into()),
+                Data::List(l),
+                indent + 1,
+            )
         }
+        _ => unreachable!(), //(Data::Value(left), Data::Value(right)) => {
+                             //    println!("{i}val val: {left:?} {right:?}");
+                             //    left < right
+                             //}
     }
-
-    rights
 }
 
 pub fn part2() -> i32 {
