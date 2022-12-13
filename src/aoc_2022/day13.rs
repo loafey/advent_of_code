@@ -91,10 +91,9 @@ pub fn part2() -> usize {
         .split("\n\n")
         .map(|pair| {
             let mut lines = pair.lines();
-            let d1 = lines.next().unwrap();
-            let d2 = lines.next().unwrap();
-            let str = format!("{{\"data1\": {d1}, \"data2\": {d2}}}");
-            serde_json::from_str::<Pair>(&str).unwrap()
+            let data1 = serde_json::from_str::<Data>(lines.next().unwrap()).unwrap();
+            let data2 = serde_json::from_str::<Data>(lines.next().unwrap()).unwrap();
+            Pair { data1, data2 }
         })
         .flat_map(|Pair { data1, data2 }| [data1, data2])
         .collect::<Vec<_>>();
