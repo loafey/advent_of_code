@@ -16,7 +16,11 @@ impl std::fmt::Debug for Data {
         }
     }
 }
-impl Data {}
+impl<const N: usize> From<[Data; N]> for Data {
+    fn from(value: [Data; N]) -> Self {
+        Self::List(value.into())
+    }
+}
 #[derive(Debug, Deserialize)]
 struct Pair {
     data1: Data,
@@ -74,10 +78,8 @@ fn battle(data1: Data, data2: Data) -> Status {
                 Status::Ok
             }
         }
-
-        (Data::List(l), v) => battle(Data::List(l), Data::List(vec![v].into())),
-        (v, Data::List(l)) => battle(Data::List(vec![v].into()), Data::List(l)),
-
+        (Data::List(l), v) => battle(Data::List(l), Data::from([v])),
+        (v, Data::List(l)) => battle(Data::from([v]), Data::List(l)),
         (Data::Value(l), Data::Value(r)) if l < r => Status::Ok,
         (Data::Value(l), Data::Value(r)) if l == r => Status::Continue,
         (Data::Value(_), Data::Value(_)) => Status::Bad,
@@ -97,8 +99,8 @@ pub fn part2() -> usize {
         .flat_map(|Pair { data1, data2 }| [data1, data2])
         .collect::<Vec<_>>();
 
-    let d2 = Data::List(vec![Data::List(vec![Data::Value(2)].into())].into());
-    let d6 = Data::List(vec![Data::List(vec![Data::Value(6)].into())].into());
+    let d2 = Data::from([Data::from([Data::Value(2)])]);
+    let d6 = Data::from([Data::from([Data::Value(6)])]);
     input.append(&mut vec![d2.clone(), d6.clone()]);
 
     input.sort_by(|d1, d2| match battle(d1.clone(), d2.clone()) {
