@@ -34,18 +34,18 @@ pub fn part1() -> usize {
             serde_json::from_str::<Pair>(&str).unwrap()
         })
         .collect::<Vec<_>>();
-    let mut sum = 0;
-    #[allow(clippy::never_loop)]
-    for (i, Pair { data1, data2 }) in input.iter().enumerate() {
-        //println!("{data1:?}\n{data2:?}");
-        let i = i + 1;
-        let res = battle(data1.clone(), data2.clone());
-        println!("{i}: {res:?}");
-        if let Status::Ok = res {
-            sum += i
-        }
-    }
-    sum
+    input
+        .iter()
+        .enumerate()
+        .filter_map(|(i, Pair { data1, data2 })| {
+            let i = i + 1;
+            let res = battle(data1.clone(), data2.clone());
+            match res {
+                Status::Ok => Some(i),
+                _ => None,
+            }
+        })
+        .sum()
 }
 #[derive(Debug, PartialEq, Eq)]
 enum Status {
@@ -84,6 +84,33 @@ fn battle(data1: Data, data2: Data) -> Status {
     }
 }
 
-pub fn part2() -> i32 {
-    0
+pub fn part2() -> usize {
+    let mut input = include_str!("input/day13.input")
+        .split("\n\n")
+        .map(|pair| {
+            let mut lines = pair.lines();
+            let d1 = lines.next().unwrap();
+            let d2 = lines.next().unwrap();
+            let str = format!("{{\"data1\": {d1}, \"data2\": {d2}}}");
+            serde_json::from_str::<Pair>(&str).unwrap()
+        })
+        .flat_map(|Pair { data1, data2 }| [data1, data2])
+        .collect::<Vec<_>>();
+
+    let d2 = Data::List(vec![Data::List(vec![Data::Value(2)].into())].into());
+    let d6 = Data::List(vec![Data::List(vec![Data::Value(6)].into())].into());
+    input.append(&mut vec![d2.clone(), d6.clone()]);
+
+    input.sort_by(|d1, d2| match battle(d1.clone(), d2.clone()) {
+        Status::Bad => std::cmp::Ordering::Greater,
+        _ => std::cmp::Ordering::Less,
+    });
+
+    input
+        .into_iter()
+        .enumerate()
+        .map(|(i, d)| (i + 1, d))
+        .filter(|(_, d)| d == &d2 || d == &d6)
+        .map(|(i, _)| i)
+        .product()
 }
