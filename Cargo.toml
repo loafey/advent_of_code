@@ -5,6 +5,9 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+draw = []
+
 [dependencies]
 aoc_table = { git = "https://github.com/samhamnam/aoc_table" }
 chrono = "0.4.22"
