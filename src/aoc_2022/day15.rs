@@ -85,7 +85,6 @@ pub fn part1() -> usize {
         .filter(|(_, (s, _), size)| (Y <= s.y + size) && (Y >= s.y - size))
         .map(|(i, (s, _), size)| (i, s, size))
         .for_each(|(i, Sensor { x: s_x, y: s_y }, size)| {
-            println!("{i}/{b_len}: ({s_x}, {s_y}), {size}");
             let is_top = Y < s_y;
             let (d, m) = create_line(
                 if is_top {
@@ -139,59 +138,25 @@ pub fn part2() -> BigInt {
         .collect::<Vec<_>>();
 
     let max = 4000000;
-    let mut points = BTreeSet::new();
-    let mut last = String::new();
-    for (i, (s_x, s_y, _)) in bs
-        .iter()
-        .map(|(s, b)| ((s, b), manhattan_distance((s.x, s.y), (b.x, b.y))))
-        .map(|((Sensor { x, y }, _), size)| (*x, *y, size))
-        .enumerate()
-    {
-        let p = format!("{:.3?}", (i as f64 / (bs.len() - 1) as f64) * 100.0);
-        if last != p {
-            println!("{p}%");
-            last = p;
-        }
-        for (b_x, b_y, _) in bs
-            .iter()
-            .map(|(s, b)| ((s, b), manhattan_distance((s.x, s.y), (b.x, b.y))))
-            .map(|((Sensor { x, y }, _), size)| (*x, *y, size))
-        {
-            if s_x == b_x && s_y == b_y {
-                continue;
+    for y in 0..max {
+        let mut x = 0;
+        while x < max {
+            if let Some((s, size)) = bs
+                .iter()
+                .map(|(Sensor { x, y }, b)| ((*x, *y), manhattan_distance((*x, *y), (b.x, b.y))))
+                .find(|((s_x, s_y), size)| manhattan_distance((x, y), (*s_x, *s_y)) <= *size)
+            {
+                let dif = (y - s.1).abs();
+                x = s.0 + size - dif;
+            } else {
+                println!("{x} {y}");
+                return BigInt::from(x) * BigInt::from(4000000) + BigInt::from(y);
             }
-            let (d, m) = create_line((s_x, s_y), (b_x, b_y));
-            'cringe: for x in s_x.min(b_x)..s_x.max(b_x) {
-                let y = d * x + m;
-                let mut clean = true;
-                for (c, size_c) in bs
-                    .iter()
-                    .map(|(s, b)| (s, manhattan_distance((s.x, s.y), (b.x, b.y))))
-                    .map(|(Sensor { x, y }, size)| ((*x, *y), size))
-                {
-                    clean = clean
-                        && x >= 0
-                        && x <= max
-                        && y >= 0
-                        && y <= max
-                        && manhattan_distance((x, y), c) > size_c;
-                    if !clean {
-                        continue 'cringe;
-                    }
-                }
-                if clean {
-                    points.insert((x, y));
-                }
-            }
+            x += 1;
         }
     }
-    println!("{points:?}");
-    points.into_iter().for_each(|x| {
-        let (x, y) = x;
-        let ans = BigInt::from(x) * BigInt::from(4000000) + BigInt::from(y);
-        println!("{ans:?}");
-    });
-    0.into()
+    //    let ans = BigInt::from(x) * BigInt::from(4000000) + BigInt::from(y);
+    i128::MIN.into()
     //let (x, y) = points.pop_first().unwrap();
     //BigInt::from(x) * BigInt::from(4000000) + BigInt::from(y)
 }
