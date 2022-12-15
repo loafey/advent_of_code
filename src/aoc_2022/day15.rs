@@ -136,75 +136,33 @@ pub fn part2() -> BigInt {
             )
         })
         .collect::<Vec<_>>();
-    let min_x = bs
-        .iter()
-        .map(|(s, b)| s.x.min(b.x) - manhattan_distance((s.x, s.y), (b.x, b.y)))
-        .min()
-        .unwrap();
-    let max_x = bs
-        .iter()
-        .map(|(s, b)| s.x.max(b.x) + manhattan_distance((s.x, s.y), (b.x, b.y)))
-        .max()
-        .unwrap();
+
     let max = 20;
     let mut last = String::new();
-    for y in 0..max {
-        let mut row = vec![Spot::Empty; (max_x - min_x) as usize];
-        let p = format!("{:.3}", ((y as f64 / max as f64) * 100.0));
+    for x in 0..max {
+        let p = format!("{:.3}", ((x as f64 / max as f64) * 100.0));
         if p != last {
             last = p;
-            println!("{last}% (rowsize: {})", row.len());
+            println!("{last}%");
         }
-
-        for (s, b) in bs.iter() {
-            if b.y == y {
-                row[(b.x - min_x) as usize] = Spot::Beacon
-            }
-            if s.y == y {
-                row[(s.x - min_x) as usize] = Spot::Sensor
-            }
-        }
-
-        bs.iter()
-            .map(|(s, b)| ((*s, *b), manhattan_distance((s.x, s.y), (b.x, b.y))))
-            .filter(|((s, _), size)| (y <= s.y + size) && (y >= s.y - size))
-            .map(|((s, _), size)| (s, size))
-            .for_each(|(Sensor { x: s_x, y: s_y }, size)| {
-                let is_top = y < s_y;
-                let (d, m) = create_line(
-                    if is_top {
-                        (s_x, s_y - size)
-                    } else {
-                        (s_x - size, s_y)
-                    },
-                    if is_top {
-                        (s_x + size, s_y)
-                    } else {
-                        (s_x, s_y + size)
-                    },
-                );
-                let x = (y - m) / d;
-                let dif = (s_x - x).abs();
-                let range = (s_x - min_x - dif)..=s_x + dif;
-                println!("{range:?}");
-                for x in range {
-                    if row[(x - min_x) as usize] == Spot::Empty {
-                        row[(x - min_x) as usize] = Spot::Occupied
-                    }
+        for y in 0..max {
+            let mut contains = true;
+            for (Sensor { x: s_x, y: s_y }, size) in bs
+                .iter()
+                .map(|(s, b)| ((*s, *b), manhattan_distance((s.x, s.y), (b.x, b.y))))
+                .filter(|((s, _), size)| (y <= s.y + size) && (y >= s.y - size))
+                .map(|((s, _), size)| (s, size))
+            {
+                contains = contains && manhattan_distance((x, y), (s_x, s_y)) > size;
+                if !contains {
+                    break;
                 }
-            });
-
-        //row[min_x.unsigned_abs()..min_x.unsigned_abs() + max as usize]
-        //    .iter()
-        //    .for_each(|s| print!("{s:?}"));
-        if let Some((x, _)) = row[min_x.unsigned_abs()..min_x.unsigned_abs() + max as usize]
-            .iter()
-            .enumerate()
-            .find(|(_, s)| **s == Spot::Empty)
-        {
-            return BigInt::from(x) * BigInt::from(4000000) + BigInt::from(y);
+            }
+            if contains {
+                return BigInt::from(x) * BigInt::from(4000000) + BigInt::from(y);
+            }
+            //println!();
         }
-        //println!();
     }
 
     BigInt::from(0)
