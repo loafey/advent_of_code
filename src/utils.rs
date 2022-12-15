@@ -6,6 +6,10 @@ use std::{
     str::FromStr,
 };
 
+pub fn manhattan_distance(p1: (isize, isize), p2: (isize, isize)) -> isize {
+    (p1.0 - p2.0).abs() + (p1.1 - p2.1).abs()
+}
+
 pub fn parse_next<'l, T: FromStr>(iter: &mut impl Iterator<Item = &'l str>) -> T {
     let s = iter.next();
     s.and_then(|s| s.parse::<T>().ok())
