@@ -35,6 +35,7 @@ fn create_line(a: (isize, isize), b: (isize, isize)) -> Box<dyn Fn(isize) -> isi
 }
 
 pub fn part1() -> usize {
+    const Y: isize = 2000000;
     let bs = include_str!("input/day15.input")
         .lines()
         .map(|r| {
@@ -55,18 +56,24 @@ pub fn part1() -> usize {
         .collect::<Vec<_>>();
     let min_x = bs.iter().map(|(s, b)| s.x.min(b.x) - 20).min().unwrap();
     let max_x = bs.iter().map(|(s, b)| s.x.max(b.x) + 20).max().unwrap();
-    let min_y = bs.iter().map(|(s, b)| s.y.min(b.y) - 20).min().unwrap();
-    let max_y = bs.iter().map(|(s, b)| s.y.max(b.y) + 20).max().unwrap();
-    let mut grid = vec![vec![Spot::Empty; (max_x - min_x) as usize]; (max_y - min_y) as usize];
-
-    bs.into_iter().for_each(|(s, b)| {
+    let mut row = vec![Spot::Empty; (max_x - min_x) as usize];
+    let b_len = bs.len() - 1;
+    bs.into_iter().enumerate().for_each(|(i, (s, b))| {
+        if s.y == Y {
+            row[(s.x - min_x) as usize] = Spot::Sensor;
+        }
+        if b.y == Y {
+            row[(b.x - min_x) as usize] = Spot::Beacon;
+        }
+        println!("{i} {b_len}");
         let mut i = 0;
+
         loop {
             i += 1;
-            let bottom = (s.x - min_x, s.y - min_y + i);
-            let right = (s.x - min_x + i, s.y - min_y);
-            let top = (s.x - min_x, s.y - min_y - i);
-            let left = (s.x - min_x - i, s.y - min_y);
+            let bottom = (s.x, s.y + i);
+            let right = (s.x + i, s.y);
+            let top = (s.x, s.y - i);
+            let left = (s.x - i, s.y);
             let mut buf: HashSet<_> = [bottom, right, top, left].into();
 
             for x in left.0..top.0 {
@@ -86,9 +93,12 @@ pub fn part1() -> usize {
                 buf.insert((x, y));
             }
             let mut found_beacon = false;
+
             buf.into_iter().for_each(|(x, y)| {
-                grid[y as usize][x as usize] = Spot::Occupied;
-                if y + min_y == b.y && x + min_x == b.x {
+                if y == Y && row[(x - min_x) as usize] == Spot::Empty {
+                    row[(x - min_x) as usize] = Spot::Occupied;
+                }
+                if y == b.y && x == b.x {
                     found_beacon = true;
                 }
             });
@@ -96,18 +106,11 @@ pub fn part1() -> usize {
                 break;
             }
         }
-        grid[(s.y - min_y) as usize][(s.x - min_x) as usize] = Spot::Sensor;
-        grid[(b.y - min_y) as usize][(b.x - min_x) as usize] = Spot::Beacon;
     });
 
-    grid.iter().for_each(|r| {
-        r.iter().for_each(|s| print!("{s:?}"));
-        println!()
-    });
-    grid[(20 - min_y) as usize]
-        .iter()
-        .filter(|s| **s == Spot::Occupied)
-        .count()
+    // row.iter().for_each(|s| print!("{s:?}"));
+    // println!();
+    row.into_iter().filter(|s| *s == Spot::Occupied).count()
 }
 
 pub fn part2() -> i32 {
