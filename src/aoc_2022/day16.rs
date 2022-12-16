@@ -68,6 +68,6 @@ fn rinzal_dp(map: Map, current: Str, mins: isize) -> isize {
     }
 }
 
-pub fn part2() -> i32 {
-    0
+pub fn part2() -> &'static str {
+    "I can't do this"
 }
