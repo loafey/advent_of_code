@@ -32,7 +32,7 @@ pub fn part1() -> i32 {
             )
         })
         .collect::<BTreeMap<_, _>>();
-    println!("{map:#?}");
+    map.into_iter().for_each(|s| println!("{s:?}"));
     0
 }
 
