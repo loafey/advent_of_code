@@ -100,7 +100,7 @@ fn pathfind(from: Str, target: Str, map: &Map) -> (Vec<Str>, isize) {
     //}
     //go(from, target, map, &mut Vec::new(), &mut false)
     let (mut path, cost) =
-        pathfinding::dijkstra(&from, |p| map[p].connections.clone(), |p| p == &target).unwrap();
+        dijkstra(&from, |p| map[p].connections.clone(), |p| p == &target).unwrap();
     path.remove(0);
     (path, cost)
 }
