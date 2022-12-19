@@ -38,65 +38,17 @@ fn input() -> Map {
         .collect()
 }
 
-#[memoize]
-fn rinzal_dp(map: Map, current: Str, mins: isize) -> isize {
-    match mins {
-        0 => 0,
-        _ => {
-            let open = (mins * map[current].flow_rate)
-                + rinzal_dp(
-                    {
-                        let mut map = map.clone();
-                        map.get_mut(current).unwrap().flow_rate = 0;
-                        map
-                    },
-                    current,
-                    mins - 1,
-                );
-            let mov = map[current]
-                .connections
-                .iter()
-                .map(|x| rinzal_dp(map.clone(), x, mins - 1))
-                .max()
-                .unwrap();
-            mov.max(open)
-        }
-    }
-}
-
 pub fn part1() -> isize {
-    rinzal_dp(input(), "AA", 29)
+    rinzal_dp(
+        State {
+            flow: 0,
+            map: input(),
+        },
+        "AA",
+        29,
+    )
+    .flow
 }
-
-/*
-fn rinzal_dp2(map: Map, a: Str, b: Str, mins: isize) -> isize {
-    match mins {
-        0 => 0,
-        _ => {
-            let a_open = (mins * map[a].flow_rate)
-                + rinzal_dp2(
-                    {
-                        let mut map = map.clone();
-                        map.get_mut(a).unwrap().flow_rate = 0;
-                        map
-                    },
-                    a,
-                    b,
-                    mins - 1,
-                );
-
-            let a_move = map[a]
-                .connections
-                .iter()
-                .map(|x| rinzal_dp2(map.clone(), x, b, mins - 1))
-                .max()
-                .unwrap();
-
-            a_move.max(a_open)
-        }
-    }
-}
-*/
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct State {
@@ -132,11 +84,11 @@ impl Ord for State {
 }
 
 #[memoize]
-fn rinzal_dp2(state: State, a: Str, mins: isize) -> State {
+fn rinzal_dp(state: State, a: Str, mins: isize) -> State {
     match mins {
         0 => state,
         _ => {
-            let a_open = rinzal_dp2(
+            let a_open = rinzal_dp(
                 {
                     let mut map = state.clone();
                     map.map.get_mut(a).unwrap().flow_rate = 0;
@@ -149,7 +101,7 @@ fn rinzal_dp2(state: State, a: Str, mins: isize) -> State {
             let a_move = state.map[a]
                 .connections
                 .iter()
-                .map(|x| rinzal_dp2(state.clone(), x, mins - 1))
+                .map(|x| rinzal_dp(state.clone(), x, mins - 1))
                 .max()
                 .unwrap();
 
@@ -157,9 +109,9 @@ fn rinzal_dp2(state: State, a: Str, mins: isize) -> State {
         }
     }
 }
-pub fn part2() -> State {
-    rinzal_dp2(
-        rinzal_dp2(
+pub fn part2() -> isize {
+    rinzal_dp(
+        rinzal_dp(
             State {
                 map: input(),
                 flow: 0,
@@ -170,4 +122,5 @@ pub fn part2() -> State {
         "AA",
         25,
     )
+    .flow
 }
