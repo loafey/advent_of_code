@@ -158,7 +158,6 @@ pub fn part1() -> usize {
             }
 
             if rock_count >= 2023 {
-                print_grid(&grid, coords, &[]);
                 return grid.len()
                     - grid
                         .iter()
@@ -175,7 +174,93 @@ pub fn part1() -> usize {
     0
 }
 
-pub fn part2() -> i32 {
+pub fn part2() -> usize {
+    let input = include_str!("input/day17.input")
+        .chars()
+        .filter(|c| !c.is_whitespace())
+        .map(|c| match c {
+            '<' => Move::Left,
+            '>' => Move::Right,
+            _ => unreachable!(),
+        })
+        .collect::<Vec<_>>();
+
+    let mut grid: VecDeque<[Spot; 7]> = vec![[E, E, E, E, E, E, E]; 4].into();
+    let mut current = Rocks::First;
+    let mut coords = [2, 0];
+    let mut rock_count = 1;
+    for m in input.iter().cycle() {
+        let arr = current.into_arr();
+        match m {
+            Move::Left => {
+                if coords[0] > 0 && !check_colliding([-1, 0], coords, &arr, &grid) {
+                    coords[0] -= 1
+                }
+            }
+
+            Move::Right => {
+                if coords[0] + arr[0].len() < grid[0].len()
+                    && !check_colliding([1, 0], coords, &arr, &grid)
+                {
+                    coords[0] += 1
+                }
+            }
+        }
+        //print_grid(&grid, coords, &arr);
+
+        let colliding =
+            coords[1] + arr.len() >= grid.len() || check_colliding([0, 1], coords, &arr, &grid);
+        if !colliding {
+            coords[1] += 1;
+        }
+        if coords[1] + arr.len() > grid.len() || colliding {
+            if coords[1] + arr.len() > grid.len() {
+                coords[1] -= 1;
+            }
+            for (y, r) in arr.iter().enumerate() {
+                for (x, c) in r.iter().enumerate() {
+                    if *c != Spot::Empty {
+                        grid[coords[1] + y][coords[0] + x] = *c;
+                    }
+                }
+            }
+            coords = [2, 0];
+            current = current.next();
+            rock_count += 1;
+
+            if let Some((height, _)) = grid
+                .iter()
+                .enumerate()
+                .find(|(_, r)| r.iter().filter(|s| **s != Spot::Empty).count() > 0)
+            {
+                let arr = current.into_arr();
+                // println!("{} {}", height, arr.len());
+                if arr.len() + 3 >= height {
+                    for _ in 0..(arr.len() + 3 - height) {
+                        grid.push_front([E, E, E, E, E, E, E])
+                    }
+                }
+                if height > arr.len() + 3 {
+                    coords[1] += height - arr.len() - 3;
+                }
+            }
+
+            if rock_count >= 10000 {
+                //1000000000000i64 {
+                print_grid(&grid, coords, &[]);
+                return grid.len()
+                    - grid
+                        .iter()
+                        .enumerate()
+                        .find(|(_, r)| r.iter().filter(|s| **s != Spot::Empty).count() > 0)
+                        .unwrap()
+                        .0;
+            }
+        }
+
+        //std::thread::sleep_ms(100)
+    }
+    //print_grid(&grid, coords, &[Box::new([])]);
     0
 }
 
