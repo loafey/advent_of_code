@@ -1,17 +1,17 @@
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, ops::Add};
 
-use pathfinding::prelude::dijkstra;
+use memoize::memoize;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 struct Valve {
     flow_rate: isize,
-    connections: Vec<(Str, isize)>,
+    connections: Vec<Str>,
 }
 type Map = BTreeMap<Str, Valve>;
 type Str = &'static str;
 
-pub fn part1() -> isize {
-    let map = include_str!("input/day16.input")
+fn input() -> Map {
+    include_str!("input/day16.input")
         .lines()
         .map(|s| {
             let mut splat = s
@@ -26,7 +26,7 @@ pub fn part1() -> isize {
             for _ in 0..4 {
                 splat.next();
             }
-            let connections = splat.map(|i| (i, 1)).collect::<Vec<_>>();
+            let connections = splat.collect::<Vec<_>>();
             (
                 name,
                 Valve {
@@ -35,68 +35,139 @@ pub fn part1() -> isize {
                 },
             )
         })
-        .collect::<Map>();
-    let mut current = "AA";
-    print!("AA ");
-    let mut count = 1;
-    let mut flow = 0;
-    let mut released = map
-        .iter()
-        .filter(|(_, v)| v.flow_rate == 0)
-        .map(|(k, _)| *k)
-        .collect::<Vec<_>>();
+        .collect()
+}
 
-    while count < 30 {
-        if let Some((target, _, path, _, _)) = map
-            .iter()
-            .filter(|(k, _)| !released.contains(k))
-            .map(|(k, v)| {
-                let (path, cost) = dijk(current, k, &map);
-                //println!("{k:?} {}", cost as f64 / v.flow_rate as f64);
-                let prio = v.flow_rate as f64 / cost as f64;
-                //println!("\t{k} {prio}");
-                (k, v, path, cost, prio)
-            })
-            .min_by(|(_, _, _, _, c1), (_, _, _, _, c2)| c2.total_cmp(c1))
-        {
-            for _p in path {
-                count += 1;
-                flow += released.iter().map(|s| map[s].flow_rate).sum::<isize>();
-                print!("{_p} ");
-                if count >= 30 {
-                    //break 'cringe;
-                }
-            }
-            //println!("{target} :{count}");
-            current = target;
-            released.push(current);
+#[memoize]
+fn rinzal_dp(map: Map, current: Str, mins: isize) -> isize {
+    match mins {
+        0 => 0,
+        _ => {
+            let open = (mins * map[current].flow_rate)
+                + rinzal_dp(
+                    {
+                        let mut map = map.clone();
+                        map.get_mut(current).unwrap().flow_rate = 0;
+                        map
+                    },
+                    current,
+                    mins - 1,
+                );
+            let mov = map[current]
+                .connections
+                .iter()
+                .map(|x| rinzal_dp(map.clone(), x, mins - 1))
+                .max()
+                .unwrap();
+            mov.max(open)
         }
-        count += 1;
-        // öppna DD 2, BB 5, JJ 9, HH 17, EE 21, CC 24
-        // AA DD CC BB AA II JJ II AA DD EE FF GG HH GG FF EE DD CC
-        // AA DD CC BB AA II JJ II AA DD EE FF GG HH GG FF EE DD CC
-
-        flow += released.iter().map(|s| map[s].flow_rate).sum::<isize>();
     }
-    // loop time < 30:
-    //  Calculate best next option
-    //      cost to go there / preasure it will release
-    //  Path find there
-    all_paths("AA", &map);
-    flow
 }
 
-fn dijk(from: Str, target: Str, map: &Map) -> (Vec<Str>, isize) {
-    let (mut path, cost) =
-        dijkstra(&from, |p| map[p].connections.clone(), |p| p == &target).unwrap();
-    path.remove(0);
-    (path, cost)
-}
-fn all_paths(from: Str, map: &Map) {
-    pathfinding::directed::dfs::dfs_reach(from, |s| map[s].connections.iter().map(|(u, _)| *u))
-        .for_each(|p| println!("{p}"));
+pub fn part1() -> isize {
+    rinzal_dp(input(), "AA", 29)
 }
 
-pub fn part2() -> i32 {
-    0
+/*
+fn rinzal_dp2(map: Map, a: Str, b: Str, mins: isize) -> isize {
+    match mins {
+        0 => 0,
+        _ => {
+            let a_open = (mins * map[a].flow_rate)
+                + rinzal_dp2(
+                    {
+                        let mut map = map.clone();
+                        map.get_mut(a).unwrap().flow_rate = 0;
+                        map
+                    },
+                    a,
+                    b,
+                    mins - 1,
+                );
+
+            let a_move = map[a]
+                .connections
+                .iter()
+                .map(|x| rinzal_dp2(map.clone(), x, b, mins - 1))
+                .max()
+                .unwrap();
+
+            a_move.max(a_open)
+        }
+    }
+}
+*/
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct State {
+    flow: isize,
+    map: Map,
+}
+
+impl std::fmt::Display for State {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("State")
+            .field("flow", &self.flow)
+            .field("map", &self.map)
+            .finish()
+    }
+}
+impl Add<isize> for State {
+    type Output = State;
+
+    fn add(mut self, rhs: isize) -> Self::Output {
+        self.flow += rhs;
+        self
+    }
+}
+impl PartialOrd for State {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.flow.partial_cmp(&other.flow)
+    }
+}
+impl Ord for State {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.flow.partial_cmp(&other.flow).unwrap()
+    }
+}
+
+#[memoize]
+fn rinzal_dp2(state: State, a: Str, mins: isize) -> State {
+    match mins {
+        0 => state,
+        _ => {
+            let a_open = rinzal_dp2(
+                {
+                    let mut map = state.clone();
+                    map.map.get_mut(a).unwrap().flow_rate = 0;
+                    map
+                },
+                a,
+                mins - 1,
+            ) + (mins * state.map[a].flow_rate);
+
+            let a_move = state.map[a]
+                .connections
+                .iter()
+                .map(|x| rinzal_dp2(state.clone(), x, mins - 1))
+                .max()
+                .unwrap();
+
+            a_move.max(a_open)
+        }
+    }
+}
+pub fn part2() -> State {
+    rinzal_dp2(
+        rinzal_dp2(
+            State {
+                map: input(),
+                flow: 0,
+            },
+            "AA",
+            25,
+        ),
+        "AA",
+        25,
+    )
 }
