@@ -1,12 +1,9 @@
-use std::{
-    collections::HashMap,
-    ops::{Add, Div, Mul, Sub},
-};
+use std::collections::HashMap;
 
 #[derive(Debug)]
 enum Monkey {
     Value(isize),
-    Dependant(&'static str, fn(isize, isize) -> isize, &'static str),
+    Dependant(&'static str, Func, &'static str),
 }
 impl Monkey {
     fn is_value(&self) -> bool {
@@ -26,6 +23,43 @@ impl Monkey {
     }
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Func {
+    Add,
+    Sub,
+    Mul,
+    Div,
+}
+
+impl std::fmt::Debug for Func {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Add => write!(f, "+"),
+            Self::Sub => write!(f, "-"),
+            Self::Mul => write!(f, "*"),
+            Self::Div => write!(f, "/"),
+        }
+    }
+}
+impl Func {
+    fn rev(self) -> Self {
+        match self {
+            Func::Add => Func::Sub,
+            Func::Sub => Func::Add,
+            Func::Mul => Func::Div,
+            Func::Div => Func::Mul,
+        }
+    }
+    fn eval(&self, a: isize, b: isize) -> isize {
+        match self {
+            Func::Add => a + b,
+            Func::Sub => a - b,
+            Func::Mul => a * b,
+            Func::Div => a / b,
+        }
+    }
+}
+
 fn input() -> HashMap<&'static str, Monkey> {
     include_str!("input/day21.input")
         .lines()
@@ -41,10 +75,10 @@ fn input() -> HashMap<&'static str, Monkey> {
                 let op = splat.next().unwrap();
                 let e2 = splat.next().unwrap();
                 let op = match op {
-                    "+" => isize::add,
-                    "-" => isize::sub,
-                    "*" => isize::mul,
-                    "/" => isize::div,
+                    "+" => Func::Add,
+                    "-" => Func::Sub,
+                    "*" => Func::Mul,
+                    "/" => Func::Div,
                     _ => unreachable!(),
                 };
 
@@ -66,7 +100,7 @@ pub fn part1() -> isize {
             Monkey::Dependant(e1, f, e2) => {
                 if monkeys[e1].is_value() && monkeys[e2].is_value() {
                     *monkeys.get_mut(top).unwrap() =
-                        Monkey::Value(f(monkeys[e1].value(), monkeys[e2].value()))
+                        Monkey::Value(f.eval(monkeys[e1].value(), monkeys[e2].value()))
                 } else {
                     if !monkeys[e1].is_value() {
                         stack.push(e1);
@@ -81,37 +115,61 @@ pub fn part1() -> isize {
     monkeys["root"].value()
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 enum Expr {
     Value(isize),
-    Dependant(Box<Expr>, fn(isize, isize) -> isize, Box<Expr>),
+    Dependant(Box<Expr>, Func, Box<Expr>),
     Unknown,
+}
+
+impl std::fmt::Debug for Expr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Value(arg0) => write!(f, "{arg0}"),
+            Self::Dependant(arg0, arg1, arg2) => write!(f, "({arg0:?} {arg1:?} {arg2:?})"),
+            Self::Unknown => write!(f, "X"),
+        }
+    }
 }
 impl Expr {
     fn create_reverse(self, rhs: Box<Expr>) -> (Box<Expr>, Box<Expr>) {
-        println!("{self:#?}");
         match self {
             Expr::Dependant(e1, f, e2) => {
-                let add: fn(_, isize) -> _ = isize::add;
-                let min: fn(_, isize) -> _ = isize::min;
-                let mul: fn(_, isize) -> _ = isize::mul;
-                let div: fn(_, isize) -> _ = isize::div;
-                let f = f as usize;
-                let add = add as usize;
-                let min = min as usize;
-                let mul = mul as usize;
-                let div = div as usize;
-                //println!("{} {:?}", f, (add, min, mul, div));
-                let rev = match f {
-                    x if x == add => isize::min,
-                    x if x == min => isize::add,
-                    x if x == mul => isize::div,
-                    x if x == div => isize::mul,
-                    _ => unreachable!(),
-                };
-                (e1, Box::new(Expr::Dependant(rhs, rev, e2)))
+                if f == Func::Div && e2.contains_unknown() {
+                    (e2, Box::new(Expr::Dependant(e1, f.rev(), rhs)))
+                } else if f == Func::Sub {
+                    if e1.contains_unknown() {
+                        (e1, Box::new(Expr::Dependant(rhs, f.rev(), e2)))
+                    } else {
+                        (
+                            Box::new(Expr::Dependant(e2, Func::Mul, Box::new(Expr::Value(-1)))),
+                            Box::new(Expr::Dependant(rhs, Func::Sub, e1)),
+                        )
+                    }
+                } else if e1.contains_unknown() {
+                    (e1, Box::new(Expr::Dependant(rhs, f.rev(), e2)))
+                } else {
+                    (e2, Box::new(Expr::Dependant(rhs, f.rev(), e1)))
+                }
             }
             _ => unreachable!(),
+        }
+    }
+    fn is_unknown(&self) -> bool {
+        matches!(self, Expr::Unknown)
+    }
+    fn contains_unknown(&self) -> bool {
+        match self {
+            Expr::Value(_) => false,
+            Expr::Dependant(e1, _, e2) => e1.contains_unknown() || e2.contains_unknown(),
+            Expr::Unknown => true,
+        }
+    }
+    fn eval(self) -> isize {
+        match self {
+            Expr::Value(i) => i,
+            Expr::Dependant(e1, f, e2) => f.eval(e1.eval(), e2.eval()),
+            Expr::Unknown => todo!(),
         }
     }
 }
@@ -130,7 +188,7 @@ pub fn part2() -> isize {
                 Monkey::Dependant(e1, f, e2) => {
                     if monkeys[e1].is_value() && monkeys[e2].is_value() {
                         *monkeys.get_mut(top).unwrap() =
-                            Monkey::Value(f(monkeys[e1].value(), monkeys[e2].value()))
+                            Monkey::Value(f.eval(monkeys[e1].value(), monkeys[e2].value()))
                     } else {
                         if !monkeys[e1].is_value() {
                             stack.push(e1);
@@ -144,13 +202,14 @@ pub fn part2() -> isize {
         }
         monkeys[rhs].value()
     };
-    let lhs = monkeys["root"].dependant().0;
-    println!(
-        "{:#?}",
-        map_to_tree(lhs, &monkeys).create_reverse(Box::new(Expr::Value(rhs)))
-    );
-
-    0
+    let mut rhs = Box::new(Expr::Value(rhs));
+    let mut lhs = map_to_tree(monkeys["root"].dependant().0, &monkeys);
+    //println!("{lhs:?} = {rhs:?}");
+    while !lhs.is_unknown() {
+        (lhs, rhs) = lhs.create_reverse(rhs);
+        println!("{lhs:?} = {rhs:?}\n")
+    }
+    rhs.eval()
 }
 
 fn map_to_tree(node: &str, map: &HashMap<&str, Monkey>) -> Box<Expr> {
@@ -167,3 +226,9 @@ fn map_to_tree(node: &str, map: &HashMap<&str, Monkey>) -> Box<Expr> {
         }
     }
 }
+
+/*
+> 3469696969697
+? 3469704905529
+< 8401064794714
+*/
