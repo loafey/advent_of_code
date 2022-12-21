@@ -5,23 +5,6 @@ enum Monkey {
     Value(isize),
     Dependant(&'static str, Func, &'static str),
 }
-impl Monkey {
-    fn is_value(&self) -> bool {
-        matches!(self, Monkey::Value(_))
-    }
-    fn value(&self) -> isize {
-        match self {
-            Monkey::Value(i) => *i,
-            _ => unreachable!(),
-        }
-    }
-    fn dependant(&self) -> (&'static str, &'static str) {
-        match self {
-            Monkey::Dependant(e1, _, e2) => (e1, e2),
-            _ => unreachable!(),
-        }
-    }
-}
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Func {
@@ -89,30 +72,7 @@ fn input() -> HashMap<&'static str, Monkey> {
 }
 
 pub fn part1() -> isize {
-    let mut monkeys = input();
-    let mut stack = vec!["root"];
-    while !stack.is_empty() {
-        let top = stack[stack.len() - 1];
-        match monkeys.get(top).unwrap() {
-            Monkey::Value(_) => {
-                stack.pop();
-            }
-            Monkey::Dependant(e1, f, e2) => {
-                if monkeys[e1].is_value() && monkeys[e2].is_value() {
-                    *monkeys.get_mut(top).unwrap() =
-                        Monkey::Value(f.eval(monkeys[e1].value(), monkeys[e2].value()))
-                } else {
-                    if !monkeys[e1].is_value() {
-                        stack.push(e1);
-                    }
-                    if !monkeys[e2].is_value() {
-                        stack.push(e2);
-                    }
-                };
-            }
-        }
-    }
-    monkeys["root"].value()
+    Expr::from_map(false, "root", &input()).eval()
 }
 
 #[derive(Clone)]
@@ -172,63 +132,30 @@ impl Expr {
             Expr::Unknown => todo!(),
         }
     }
+
+    fn from_map(filter_humn: bool, node: &str, map: &HashMap<&str, Monkey>) -> Box<Expr> {
+        if filter_humn && node == "humn" {
+            Box::new(Expr::Unknown)
+        } else {
+            match map[node] {
+                Monkey::Value(i) => Box::new(Expr::Value(i)),
+                Monkey::Dependant(e1, f, e2) => Box::new(Expr::Dependant(
+                    Expr::from_map(filter_humn, e1, map),
+                    f,
+                    Expr::from_map(filter_humn, e2, map),
+                )),
+            }
+        }
+    }
 }
 
 pub fn part2() -> isize {
-    let mut monkeys = input();
-    let rhs = {
-        let rhs = monkeys["root"].dependant().1;
-        let mut stack = vec![rhs];
-        while !stack.is_empty() {
-            let top = stack[stack.len() - 1];
-            match monkeys.get(top).unwrap() {
-                Monkey::Value(_) => {
-                    stack.pop();
-                }
-                Monkey::Dependant(e1, f, e2) => {
-                    if monkeys[e1].is_value() && monkeys[e2].is_value() {
-                        *monkeys.get_mut(top).unwrap() =
-                            Monkey::Value(f.eval(monkeys[e1].value(), monkeys[e2].value()))
-                    } else {
-                        if !monkeys[e1].is_value() {
-                            stack.push(e1);
-                        }
-                        if !monkeys[e2].is_value() {
-                            stack.push(e2);
-                        }
-                    };
-                }
-            }
-        }
-        monkeys[rhs].value()
-    };
-    let mut rhs = Box::new(Expr::Value(rhs));
-    let mut lhs = map_to_tree(monkeys["root"].dependant().0, &monkeys);
-    //println!("{lhs:?} = {rhs:?}");
+    let monkeys = input();
+    let Monkey::Dependant(lhs,_, rhs) = monkeys["root"] else {unreachable!()};
+    let mut rhs = Expr::from_map(false, rhs, &monkeys);
+    let mut lhs = Expr::from_map(true, lhs, &monkeys);
     while !lhs.is_unknown() {
         (lhs, rhs) = lhs.create_reverse(rhs);
-        println!("{lhs:?} = {rhs:?}\n")
     }
     rhs.eval()
 }
-
-fn map_to_tree(node: &str, map: &HashMap<&str, Monkey>) -> Box<Expr> {
-    if node == "humn" {
-        Box::new(Expr::Unknown)
-    } else {
-        match map[node] {
-            Monkey::Value(i) => Box::new(Expr::Value(i)),
-            Monkey::Dependant(e1, f, e2) => Box::new(Expr::Dependant(
-                map_to_tree(e1, map),
-                f,
-                map_to_tree(e2, map),
-            )),
-        }
-    }
-}
-
-/*
-> 3469696969697
-? 3469704905529
-< 8401064794714
-*/
