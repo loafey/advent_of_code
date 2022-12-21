@@ -6,7 +6,7 @@ enum Monkey {
     Dependant(&'static str, Func, &'static str),
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 enum Func {
     Add,
     Sub,
@@ -14,16 +14,6 @@ enum Func {
     Div,
 }
 
-impl std::fmt::Debug for Func {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Add => write!(f, "+"),
-            Self::Sub => write!(f, "-"),
-            Self::Mul => write!(f, "*"),
-            Self::Div => write!(f, "/"),
-        }
-    }
-}
 impl Func {
     fn rev(self) -> Self {
         match self {
@@ -82,15 +72,6 @@ enum Expr {
     Unknown,
 }
 
-impl std::fmt::Debug for Expr {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Value(arg0) => write!(f, "{arg0}"),
-            Self::Dependant(arg0, arg1, arg2) => write!(f, "({arg0:?} {arg1:?} {arg2:?})"),
-            Self::Unknown => write!(f, "X"),
-        }
-    }
-}
 impl Expr {
     fn create_reverse(self, rhs: Box<Expr>) -> (Box<Expr>, Box<Expr>) {
         match self {
@@ -129,7 +110,7 @@ impl Expr {
         match self {
             Expr::Value(i) => i,
             Expr::Dependant(e1, f, e2) => f.eval(e1.eval(), e2.eval()),
-            Expr::Unknown => todo!(),
+            Expr::Unknown => unreachable!(),
         }
     }
 
