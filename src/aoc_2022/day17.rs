@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 enum Move {
     Left,
     Right,
@@ -158,20 +158,20 @@ pub fn part1() -> usize {
             }
 
             if rock_count >= 2023 {
-                return grid.len()
-                    - grid
-                        .iter()
-                        .enumerate()
-                        .find(|(_, r)| r.iter().filter(|s| **s != Spot::Empty).count() > 0)
-                        .unwrap()
-                        .0;
+                break;
             }
         }
 
         //std::thread::sleep_ms(100)
     }
     //print_grid(&grid, coords, &[Box::new([])]);
-    0
+    grid.len()
+        - grid
+            .iter()
+            .enumerate()
+            .find(|(_, r)| r.iter().filter(|s| **s != Spot::Empty).count() > 0)
+            .unwrap()
+            .0
 }
 
 pub fn part2() -> usize {
@@ -189,7 +189,13 @@ pub fn part2() -> usize {
     let mut current = Rocks::First;
     let mut coords = [2, 0];
     let mut rock_count = 1;
-    for m in input.iter().cycle() {
+    let max = 2022; //1000000000000usize;
+    let mut i = 0;
+    let mut height_mod = 0;
+    let mut found_loop = false;
+    loop {
+        let m = input[i];
+        i = i % input.len();
         let arr = current.into_arr();
         match m {
             Move::Left => {
@@ -245,23 +251,77 @@ pub fn part2() -> usize {
                 }
             }
 
-            if rock_count >= 10000 {
+            if rock_count >= max {
                 //1000000000000i64 {
-                print_grid(&grid, coords, &[]);
-                return grid.len()
-                    - grid
-                        .iter()
-                        .enumerate()
-                        .find(|(_, r)| r.iter().filter(|s| **s != Spot::Empty).count() > 0)
-                        .unwrap()
-                        .0;
+                break;
+            }
+
+            if !found_loop {
+                if let Some((index, size)) = find_loop(20, 500, &grid) {
+                    //println!("{index} {size}");
+                    //println!("{}", grid.len());
+                    //println!("{}", max - index + size);
+                    println!("{rock_count}");
+                    rock_count = max - index + size;
+                    println!("{rock_count}");
+                    height_mod = ((max - index) / size) * size;
+                    found_loop = true;
+                    //println!("{}", max);
+                    println!("1514285714288");
+                }
             }
         }
 
         //std::thread::sleep_ms(100)
     }
     //print_grid(&grid, coords, &[Box::new([])]);
-    0
+    grid.len()
+        - grid
+            .iter()
+            .enumerate()
+            .find(|(_, r)| r.iter().filter(|s| **s != Spot::Empty).count() > 0)
+            .unwrap()
+            .0
+        + height_mod
+}
+
+fn find_loop<T: Eq + std::fmt::Debug>(
+    start_buf_size: usize,
+    start_check_size: usize,
+    arr: &VecDeque<T>,
+) -> Option<(usize, usize)> {
+    let mut check_buf = VecDeque::new();
+    let mut loop_found = false;
+    let mut buf2 = VecDeque::new();
+    let mut buf_size = start_buf_size;
+    let check_size = start_check_size;
+    for (i, val) in arr.iter().cycle().enumerate() {
+        if check_size > arr.len() || check_size == start_check_size * 3 {
+            break;
+        }
+        if i % check_size == 0 && !loop_found {
+            buf_size += 1;
+        }
+        if buf2.len() <= buf_size {
+            buf2.push_back(val);
+        }
+        if !loop_found && buf2.len() > buf_size {
+            check_buf.push_back(buf2.pop_front().unwrap());
+        } else if loop_found {
+            buf2.pop_front();
+        }
+        if !loop_found && check_buf.len() > buf_size {
+            check_buf.pop_front();
+        }
+        if check_buf == buf2 && !check_buf.is_empty() && !buf2.is_empty() {
+            if loop_found {
+                //println!("{check_buf:?} {buf2:?} collision {dif}");
+                return Some((i % arr.len(), buf_size));
+            }
+            loop_found = true;
+        }
+    }
+    None
 }
 
 fn print_grid(grid: &VecDeque<[Spot; 7]>, coords: [usize; 2], arr: &[Box<[Spot]>]) {
