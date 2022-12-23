@@ -126,13 +126,13 @@ impl State {
         })
     }
 
-    fn print_map(&self) {
+    fn _print_map(&self) {
         self.map.iter().for_each(|r| {
             r.iter().for_each(|o| print!("{o:?}"));
             println!()
         });
         println!();
-        std::thread::sleep_ms(16);
+        std::thread::sleep_ms(24);
     }
 
     fn update(&mut self) -> bool {
@@ -240,7 +240,6 @@ pub fn part1() -> usize {
         state.update();
     }
     state.compress();
-    state.print_map();
 
     state
         .map
@@ -260,11 +259,8 @@ pub fn part2() -> usize {
     //}
     let mut count = 1;
     while state.update() {
-        state.print_map();
         count += 1;
     }
-    state.compress();
-    state.print_map();
 
     count
 }
