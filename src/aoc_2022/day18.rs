@@ -1,3 +1,4 @@
+fn unfinished() {}
 pub fn part1() -> i32 {
     0
 }
