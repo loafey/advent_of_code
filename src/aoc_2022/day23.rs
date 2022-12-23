@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Object {
     Empty,
@@ -7,14 +5,6 @@ enum Object {
 }
 const EMPTY: Object = Object::Empty;
 const ELF: Object = Object::Elf;
-impl std::fmt::Debug for Object {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Empty => write!(f, "░░"),
-            Self::Elf => write!(f, "🧝"),
-        }
-    }
-}
 
 fn input() -> Vec<Vec<Object>> {
     include_str!("input/day23.input")
@@ -38,47 +28,10 @@ struct State {
 impl State {
     fn get_neighbors(&self, x: usize, y: usize) -> [[Object; 3]; 3] {
         let map = &self.map;
-        const BLOCKER: Object = Object::Empty;
         [
-            [
-                if x != 0 && y != 0 {
-                    map[y - 1][x - 1]
-                } else {
-                    BLOCKER
-                },
-                if y != 0 { map[y - 1][x] } else { BLOCKER },
-                if x != map[0].len() - 1 && y != 0 {
-                    map[y - 1][x + 1]
-                } else {
-                    BLOCKER
-                },
-            ],
-            [
-                if x != 0 { map[y][x - 1] } else { BLOCKER },
-                EMPTY,
-                if x != map[0].len() - 1 {
-                    map[y][x + 1]
-                } else {
-                    BLOCKER
-                },
-            ],
-            [
-                if x != 0 && y != map.len() - 1 {
-                    map[y + 1][x - 1]
-                } else {
-                    BLOCKER
-                },
-                if y != map.len() - 1 {
-                    map[y + 1][x]
-                } else {
-                    BLOCKER
-                },
-                if x != map[0].len() - 1 && y != map.len() - 1 {
-                    map[y + 1][x + 1]
-                } else {
-                    BLOCKER
-                },
-            ],
+            [map[y - 1][x - 1], map[y - 1][x], map[y - 1][x + 1]],
+            [map[y][x - 1], EMPTY, map[y][x + 1]],
+            [map[y + 1][x - 1], map[y + 1][x], map[y + 1][x + 1]],
         ]
     }
 
@@ -124,15 +77,6 @@ impl State {
             },
             _ => unreachable!(),
         })
-    }
-
-    fn _print_map(&self) {
-        self.map.iter().for_each(|r| {
-            r.iter().for_each(|o| print!("{o:?}"));
-            println!()
-        });
-        println!();
-        std::thread::sleep_ms(24);
     }
 
     fn update(&mut self) -> bool {
@@ -233,9 +177,6 @@ pub fn part1() -> usize {
         cur: 0,
         map: input(),
     };
-    //while update(&mut map, &mut state) {
-    //    print_map(&map);
-    //}
     for _ in 0..10 {
         state.update();
     }
@@ -254,9 +195,6 @@ pub fn part2() -> usize {
         cur: 0,
         map: input(),
     };
-    //while update(&mut map, &mut state) {
-    //    print_map(&map);
-    //}
     let mut count = 1;
     while state.update() {
         count += 1;
