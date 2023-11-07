@@ -20,14 +20,17 @@ pub fn gen_days(item: TokenStream) -> TokenStream {
         &path[1..path.len() - 1]
     );
 
-    let files = fs::read_dir(path)
+    let mut files = fs::read_dir(path)
         .unwrap()
         .into_iter()
         .filter_map(|f| f.ok())
         .map(|d| d.path())
         .filter(|p| p.file_name().map(|s| s != "mod.rs").unwrap_or_default())
         .filter_map(|s| s.file_name().map(|s| s.to_string_lossy().to_string()))
-        .filter_map(|s| s.split_once('.').map(|(s, _)| s.to_string()));
+        .filter(|s| s.ends_with(".input"))
+        .filter_map(|s| s.split_once('.').map(|(s, _)| s.to_string()))
+        .collect::<Vec<_>>();
+    files.sort();
 
     let mut mods = String::new();
     let mut call = String::new();
