@@ -4,5 +4,5 @@ mod aoc_2019;
 mod utils;
 
 fn main() {
-    aoc_2019::table().run_day(2);
+    aoc_2019::table().run_day(3);
 }

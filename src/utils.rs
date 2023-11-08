@@ -3,6 +3,7 @@ use std::{
     collections::{BTreeMap, HashMap},
     fmt::Debug,
     hash::Hash,
+    process::Output,
     str::FromStr,
 };
 
@@ -96,3 +97,15 @@ pub fn ascii_4_art_to_string(a: &[Vec<char>; 6], gap: usize) -> String {
 
     res
 }
+
+// trait Splat<A, B> {
+//     type Output;
+//     fn splat(self, f: fn(A) -> B) -> Output;
+// }
+
+// impl<A, B> Splat<A, B> for (A, A) {
+//     type Output = (B, B);
+//     fn splat(self, f: fn(A) -> B) -> Output {
+//         (f(self.0), f(self.1))
+//     }
+// }
