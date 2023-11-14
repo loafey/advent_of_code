@@ -3,6 +3,7 @@ use std::{
     collections::{BTreeMap, HashMap},
     fmt::Debug,
     hash::Hash,
+    path::Path,
     process::Output,
     str::FromStr,
 };
@@ -98,6 +99,9 @@ pub fn ascii_4_art_to_string(a: &[Vec<char>; 6], gap: usize) -> String {
     res
 }
 
+pub fn load_string<P: AsRef<Path>>(p: P) -> String {
+    std::fs::read_to_string(p).unwrap()
+}
 // trait Splat<A, B> {
 //     type Output;
 //     fn splat(self, f: fn(A) -> B) -> Output;
