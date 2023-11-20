@@ -1,5 +1,7 @@
 use std::ops::{Add, Sub};
 
+use crate::utils::load_string;
+
 #[derive(Debug, Clone, Copy)]
 enum Move {
     L(i32),
@@ -101,7 +103,8 @@ impl Pos {
 type Range = (Pos, Pos);
 
 pub fn part1() -> i32 {
-    let (moveset1, moveset2) = include_str!("day3.input").trim().split_once('\n').unwrap();
+    let s = load_string("inputs/2019/day3.input");
+    let (moveset1, moveset2) = s.trim().split_once('\n').unwrap();
     let (moveset1, moveset2) = (Move::parse(moveset1), Move::parse(moveset2));
     let p = Pos(0, 0);
     let p1 = p.move_me(&moveset1);
@@ -113,5 +116,5 @@ pub fn part1() -> i32 {
 }
 
 pub fn part2() -> i32 {
-    10
+    0
 }

@@ -1,7 +1,7 @@
 use crate::utils::load_string;
 
 pub fn part1() -> i64 {
-    let s = load_string("src/aoc_2020/day1.input")
+    let s = load_string("inputs/2020/day1.input")
         .lines()
         .map(|s| s.parse::<i64>().unwrap())
         .collect::<Vec<_>>();
@@ -15,7 +15,7 @@ pub fn part1() -> i64 {
     0
 }
 pub fn part2() -> i64 {
-    let s = load_string("src/aoc_2020/day1.input")
+    let s = load_string("inputs/2020/day1.input")
         .lines()
         .map(|s| s.parse::<i64>().unwrap())
         .collect::<Vec<_>>();

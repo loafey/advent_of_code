@@ -1,4 +1,5 @@
 .direnv/
 /target
 *.input
+inputs/
 *.dump

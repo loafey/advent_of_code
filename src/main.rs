@@ -10,5 +10,5 @@ mod parser;
 mod utils;
 
 fn main() {
-    aoc_2020::table().run_day(3);
+    aoc_2020::table().run();
 }

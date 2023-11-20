@@ -22,7 +22,7 @@ fn sloppy(slope: &Vec<Vec<SlopeSpot>>, movement: (usize, usize)) -> usize {
 }
 
 fn parse() -> Vec<Vec<SlopeSpot>> {
-    load_string("src/aoc_2020/day3.input")
+    load_string("inputs/2020/day3.input")
         .lines()
         .map(|s| {
             s.chars()

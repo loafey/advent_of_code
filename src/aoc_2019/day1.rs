@@ -1,5 +1,7 @@
+use crate::utils::load_string;
+
 pub fn part1() -> i32 {
-    include_str!("day1.input")
+    load_string("inputs/2019/day1.input")
         .lines()
         .map(|s| s.parse::<f32>().unwrap())
         .map(calc)
@@ -21,7 +23,7 @@ fn calc2(m: f32) -> i32 {
 }
 
 pub fn part2() -> i32 {
-    include_str!("day1.input")
+    load_string("inputs/2019/day1.input")
         .lines()
         .map(|s| s.parse::<f32>().unwrap())
         .map(calc2)

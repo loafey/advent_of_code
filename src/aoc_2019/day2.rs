@@ -1,5 +1,7 @@
+use crate::utils::load_string;
+
 pub fn part1() -> i32 {
-    let mut input = include_str!("day2.input")
+    let mut input = load_string("inputs/2019/day2.input")
         .trim()
         .split(',')
         .map(|s| s.parse::<_>().unwrap())
@@ -26,7 +28,7 @@ pub fn part1() -> i32 {
 }
 
 pub fn part2() -> i32 {
-    let input = include_str!("day2.input")
+    let input = load_string("inputs/2019/day2.input")
         .trim()
         .split(',')
         .map(|s| s.parse::<_>().unwrap())

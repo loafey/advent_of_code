@@ -1,7 +1,7 @@
 use crate::utils::load_string;
 
 pub fn part1() -> usize {
-    load_string("src/aoc_2020/day2.input")
+    load_string("inputs/2020/day2.input")
         .lines()
         .map(|s| {
             s.split(|c| matches!(c, ' ' | '-' | ':'))
@@ -17,7 +17,7 @@ pub fn part1() -> usize {
         .sum()
 }
 pub fn part2() -> usize {
-    load_string("src/aoc_2020/day2.input")
+    load_string("inputs/2020/day2.input")
         .lines()
         .map(|s| {
             s.split(|c| matches!(c, ' ' | '-' | ':'))
