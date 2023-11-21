@@ -113,3 +113,17 @@ pub fn load_string<P: AsRef<Path>>(p: P) -> String {
 //         (f(self.0), f(self.1))
 //     }
 // }
+
+pub trait IteratorEvalExt<T> {
+    /// Strictly evaluate the `Iterator` returning an owned variant.
+    fn eval(self) -> std::vec::IntoIter<T>;
+}
+impl<A, T: Iterator<Item = A>> IteratorEvalExt<A> for T {
+    fn eval(self) -> std::vec::IntoIter<A> {
+        let mut v = Vec::new();
+        for i in self {
+            v.push(i);
+        }
+        v.into_iter()
+    }
+}
