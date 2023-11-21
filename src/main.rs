@@ -3,6 +3,8 @@
 #![feature(let_chains)]
 #![allow(clippy::single_range_in_vec_init)]
 
+use std::time::Duration;
+
 mod aoc_2018;
 mod aoc_2019;
 mod aoc_2020;
@@ -12,9 +14,40 @@ mod parser;
 mod utils;
 
 fn main() {
-    aoc_2018::table().run();
-    aoc_2019::table().run();
-    aoc_2020::table().run();
-    aoc_2022::table().run();
-    aoc_2023::table().run();
+    let benchmark = std::env::args().filter(|s| s == "--benchmark").count() == 1;
+    if benchmark {
+        println!("# AoC Benchmarks");
+        println!("{}\n", format_benchmark(aoc_2023::table().run_benchmarks()));
+        println!("{}\n", format_benchmark(aoc_2022::table().run_benchmarks()));
+        println!("{}\n", format_benchmark(aoc_2020::table().run_benchmarks()));
+        println!("{}\n", format_benchmark(aoc_2019::table().run_benchmarks()));
+        println!("{}\n", format_benchmark(aoc_2018::table().run_benchmarks()));
+    } else {
+        aoc_2023::table().run_current_day();
+    }
+}
+
+#[allow(clippy::type_complexity)]
+fn format_benchmark(
+    (s, v): (String, Vec<(usize, (String, Duration), (String, Duration))>),
+) -> String {
+    let mut s = format!("## {s} \n| Day | Part 1 runtime | Part 2 runtime |\n| --- | --- | --- |");
+    for (day, (a1, d1), (a2, d2)) in v {
+        let r = format!(
+            "\n|{}|{}|{}|",
+            day,
+            if !matches!(&a1[..], " " | "0" | "") {
+                format!("{d1:?}")
+            } else {
+                "❌".to_owned()
+            },
+            if !matches!(&a2[..], " " | "0" | "") {
+                format!("{d2:?}")
+            } else {
+                "❌".to_owned()
+            },
+        );
+        s += &r;
+    }
+    s
 }
