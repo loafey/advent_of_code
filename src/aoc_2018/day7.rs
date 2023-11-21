@@ -1,8 +1,9 @@
+use crate::utils::load_string;
 use std::collections::{BTreeMap, BTreeSet};
 
 fn get_input() -> BTreeMap<char, BTreeSet<char>> {
     let mut dependencies = BTreeMap::new();
-    include_str!("input/day7.input")
+    load_string("inputs/2018/day7.input")
         .split('\n')
         .map(|l| {
             let mut split = l.split_whitespace().skip(1);

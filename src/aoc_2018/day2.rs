@@ -1,7 +1,8 @@
+use crate::utils::load_string;
 use std::collections::HashMap;
 
 pub fn part1() -> i32 {
-    let inp = include_str!("input/day2.input");
+    let inp = load_string("inputs/2018/day2.input");
     let mut doubles = 0;
     let mut triples = 0;
     inp.split('\n').for_each(|s| {
@@ -33,7 +34,7 @@ pub fn part1() -> i32 {
     doubles * triples
 }
 pub fn part2() -> String {
-    let inp = include_str!("input/day2.input");
+    let inp = load_string("inputs/2018/day2.input");
     let split = inp.split('\n').collect::<Vec<_>>();
 
     let mut result_string = String::new();

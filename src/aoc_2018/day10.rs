@@ -1,3 +1,4 @@
+use crate::utils::load_string;
 use crate::utils::parse_next;
 
 #[derive(Debug, Clone, Copy)]
@@ -14,7 +15,7 @@ impl Line {
 
 #[allow(unused_variables)]
 pub fn part1() -> &'static str {
-    let mut lights = include_str!("input/day10.input")
+    let mut lights = load_string("inputs/2018/day10.input")
         .split('\n')
         .map(|r| {
             let mut split = r

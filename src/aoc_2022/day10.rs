@@ -1,4 +1,6 @@
 use crate::utils::ascii_4_art_to_string;
+use crate::utils::load_string;
+use crate::utils::IteratorEvalExt;
 
 enum Instruction {
     NoOp,
@@ -14,13 +16,16 @@ impl From<Instruction> for (i32, i32) {
 }
 
 fn parse_ops() -> impl Iterator<Item = Instruction> {
-    include_str!("input/day10.input").lines().map(|s| {
-        let mut splat = s.split_whitespace().skip(1);
-        splat
-            .next()
-            .map(|a| Instruction::AddX(a.parse().unwrap()))
-            .unwrap_or(Instruction::NoOp)
-    })
+    load_string("inputs/2022/day10.input")
+        .lines()
+        .map(|s| {
+            let mut splat = s.split_whitespace().skip(1);
+            splat
+                .next()
+                .map(|a| Instruction::AddX(a.parse().unwrap()))
+                .unwrap_or(Instruction::NoOp)
+        })
+        .eval()
 }
 
 pub fn part1() -> i32 {

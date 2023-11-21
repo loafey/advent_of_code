@@ -1,9 +1,10 @@
+use crate::utils::load_string;
 use std::collections::HashMap;
 
 #[derive(Debug)]
 enum Monkey {
     Value(isize),
-    Dependant(&'static str, Func, &'static str),
+    Dependant(String, Func, String),
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -33,8 +34,8 @@ impl Func {
     }
 }
 
-fn input() -> HashMap<&'static str, Monkey> {
-    include_str!("input/day21.input")
+fn input() -> HashMap<String, Monkey> {
+    load_string("inputs/2022/day21.input")
         .lines()
         .map(|s| {
             let mut splat = s.split(|c| c == ':' || c == ' ').filter(|s| !s.is_empty());
@@ -42,7 +43,7 @@ fn input() -> HashMap<&'static str, Monkey> {
             let name = splat.next().unwrap();
             let next = splat.next().unwrap();
             if let Ok(n) = next.parse::<isize>() {
-                (name, Monkey::Value(n))
+                (name.to_owned(), Monkey::Value(n))
             } else {
                 let e1 = next;
                 let op = splat.next().unwrap();
@@ -55,14 +56,17 @@ fn input() -> HashMap<&'static str, Monkey> {
                     _ => unreachable!(),
                 };
 
-                (name, Monkey::Dependant(e1, op, e2))
+                (
+                    name.to_owned(),
+                    Monkey::Dependant(e1.to_owned(), op, e2.to_owned()),
+                )
             }
         })
         .collect()
 }
 
 pub fn part1() -> isize {
-    Expr::from_map(false, "root", &input()).eval()
+    Expr::from_map(false, "root".to_owned(), &input()).eval()
 }
 
 #[derive(Clone)]
@@ -114,16 +118,16 @@ impl Expr {
         }
     }
 
-    fn from_map(filter_humn: bool, node: &str, map: &HashMap<&str, Monkey>) -> Box<Expr> {
+    fn from_map(filter_humn: bool, node: String, map: &HashMap<String, Monkey>) -> Box<Expr> {
         if filter_humn && node == "humn" {
             Box::new(Expr::Unknown)
         } else {
-            match map[node] {
-                Monkey::Value(i) => Box::new(Expr::Value(i)),
+            match &map[&node] {
+                Monkey::Value(i) => Box::new(Expr::Value(*i)),
                 Monkey::Dependant(e1, f, e2) => Box::new(Expr::Dependant(
-                    Expr::from_map(filter_humn, e1, map),
-                    f,
-                    Expr::from_map(filter_humn, e2, map),
+                    Expr::from_map(filter_humn, e1.to_owned(), map),
+                    *f,
+                    Expr::from_map(filter_humn, e2.to_owned(), map),
                 )),
             }
         }
@@ -132,9 +136,11 @@ impl Expr {
 
 pub fn part2() -> isize {
     let monkeys = input();
-    let Monkey::Dependant(lhs,_, rhs) = monkeys["root"] else {unreachable!()};
-    let mut rhs = Expr::from_map(false, rhs, &monkeys);
-    let mut lhs = Expr::from_map(true, lhs, &monkeys);
+    let Monkey::Dependant(lhs, _, rhs) = &monkeys["root"] else {
+        unreachable!()
+    };
+    let mut rhs = Expr::from_map(false, rhs.to_string(), &monkeys);
+    let mut lhs = Expr::from_map(true, lhs.to_string(), &monkeys);
     while !lhs.is_unknown() {
         (lhs, rhs) = lhs.create_reverse(rhs);
     }

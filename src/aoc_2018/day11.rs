@@ -1,3 +1,4 @@
+use crate::utils::load_string;
 use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 
 fn power_level(input: i32, x: i32, y: i32) -> i32 {
@@ -18,7 +19,9 @@ fn calc_power_box(input: i32, size: i32, x: i32, y: i32) -> i32 {
         .sum()
 }
 pub fn part1() -> String {
-    let input = include_str!("input/day11.input").parse::<i32>().unwrap();
+    let input = load_string("inputs/2018/day11.input")
+        .parse::<i32>()
+        .unwrap();
 
     let (mut max_x, mut max_y, mut max_pow) = (0, 0, 0);
     for (x, y) in (1..=AREA_SIZE).flat_map(|x| (1..=AREA_SIZE).map(move |y| (x, y))) {
@@ -34,7 +37,9 @@ pub fn part1() -> String {
 }
 
 pub fn part2() -> String {
-    let input = include_str!("input/day11.input").parse::<i32>().unwrap();
+    let input = load_string("inputs/2018/day11.input")
+        .parse::<i32>()
+        .unwrap();
 
     //let (mut max_x, mut max_y, mut max_pow, mut max_size) = (0, 0, 0, 0);
     let (_, max_x, max_y, max_size) = (10..=30)

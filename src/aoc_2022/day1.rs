@@ -1,7 +1,8 @@
+use crate::utils::load_string;
 use std::collections::BTreeSet;
 
 pub fn part1() -> i32 {
-    include_str!("input/day1.input")
+    load_string("inputs/2022/day1.input")
         .split("\n\n")
         .map(|r| {
             r.split('\n')
@@ -13,7 +14,7 @@ pub fn part1() -> i32 {
 }
 
 pub fn part2() -> i32 {
-    let mut set = include_str!("input/day1.input")
+    let mut set = load_string("inputs/2022/day1.input")
         .split("\n\n")
         .map(|r| {
             r.split('\n')

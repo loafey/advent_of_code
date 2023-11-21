@@ -1,8 +1,9 @@
+use crate::utils::load_string;
 use std::collections::VecDeque;
 
 fn solver(window_size: usize) -> usize {
     let mut stack = VecDeque::new();
-    for (i, c) in include_str!("input/day6.input")
+    for (i, c) in load_string("inputs/2022/day6.input")
         .chars()
         .filter(|c| !c.is_whitespace())
         .enumerate()

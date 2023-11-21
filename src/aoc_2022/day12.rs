@@ -1,3 +1,4 @@
+use crate::utils::load_string;
 use std::collections::{BTreeMap, HashSet};
 
 fn char_to_height(c: char) -> isize {
@@ -63,7 +64,7 @@ fn dijkstra(start: (usize, usize), end: (usize, usize), grid: &[Vec<isize>]) -> 
 pub fn part1() -> isize {
     let mut end = (0, 0);
     let mut start = (0, 0);
-    let grid = include_str!("input/day12.input")
+    let grid = load_string("inputs/2022/day12.input")
         .lines()
         .enumerate()
         .map(|(y, r)| {
@@ -90,7 +91,7 @@ pub fn part1() -> isize {
 pub fn part2() -> isize {
     let mut end = (0, 0);
     let mut start = vec![];
-    let grid = include_str!("input/day12.input")
+    let grid = load_string("inputs/2022/day12.input")
         .lines()
         .enumerate()
         .map(|(y, r)| {

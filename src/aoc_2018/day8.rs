@@ -1,3 +1,5 @@
+use crate::utils::load_string;
+
 #[derive(Debug)]
 struct Node {
     metadata: Vec<usize>,
@@ -20,7 +22,7 @@ pub fn part1() -> usize {
             + tree.children.into_iter().map(count_metadata).sum::<usize>()
     }
 
-    let mut nums = include_str!("input/day8.input")
+    let mut nums = load_string("inputs/2018/day8.input")
         .split_whitespace()
         .map(|s| s.parse::<usize>().unwrap())
         .collect::<Vec<_>>();
@@ -44,7 +46,7 @@ pub fn part2() -> usize {
         }
     }
 
-    let mut nums = include_str!("input/day8.input")
+    let mut nums = load_string("inputs/2018/day8.input")
         .split_whitespace()
         .map(|s| s.parse::<usize>().unwrap())
         .collect::<Vec<_>>();

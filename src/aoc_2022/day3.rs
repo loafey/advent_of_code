@@ -1,7 +1,8 @@
+use crate::utils::load_string;
 use std::hint::unreachable_unchecked;
 
 pub fn part1() -> i32 {
-    include_str!("input/day3.input")
+    load_string("inputs/2022/day3.input")
         .lines()
         .map(|s| {
             let len = s.len();
@@ -20,13 +21,14 @@ fn char_to_value(c: char) -> i32 {
 }
 
 pub fn part2() -> i32 {
-    include_str!("input/day3.input")
+    load_string("inputs/2022/day3.input")
         .lines()
         .collect::<Vec<_>>()
         .chunks_exact(3)
-        .into_iter()
         .map(|s| {
-            let [s1, s2, s3] = s else {unsafe { unreachable_unchecked() }};
+            let [s1, s2, s3] = s else {
+                unsafe { unreachable_unchecked() }
+            };
             let b2 = s2.chars().collect::<Vec<_>>();
             let b3 = s3.chars().collect::<Vec<_>>();
             s1.chars()

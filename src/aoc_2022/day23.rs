@@ -1,3 +1,5 @@
+use crate::utils::load_string;
+
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Object {
     Empty,
@@ -7,7 +9,7 @@ const EMPTY: Object = Object::Empty;
 const ELF: Object = Object::Elf;
 
 fn input() -> Vec<Vec<Object>> {
-    include_str!("input/day23.input")
+    load_string("inputs/2022/day23.input")
         .lines()
         .map(|r| {
             r.chars()

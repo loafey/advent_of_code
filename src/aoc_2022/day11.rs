@@ -24,7 +24,7 @@ fn parse_splat_nth(nth: usize, splat: Is) -> &'static str {
 }
 
 fn parse_input() -> impl Iterator<Item = Monkey> {
-    include_str!("input/day11.input")
+    include_str!("../../inputs/2022/day11.input")
         .split("\n\n")
         .map(|monkey_block| {
             let mut splat = monkey_block.lines().skip(1);

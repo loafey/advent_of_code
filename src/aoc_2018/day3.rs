@@ -1,42 +1,45 @@
+use crate::utils::load_string;
 use std::collections::{HashMap, HashSet};
 
 use crate::utils::parse_next;
 
 pub fn part1() -> usize {
     let mut map = HashMap::new();
-    include_str!("input/day3.input").split('\n').for_each(|s| {
-        let mut split = s.split_whitespace().skip(2);
-        let coord = split
-            .next()
-            .map(|s| {
-                let mut split = s.split(|c| c == ':' || c == ',');
-                (
-                    parse_next::<usize>(&mut split),
-                    parse_next::<usize>(&mut split),
-                )
-            })
-            .unwrap();
-        let size = split
-            .next()
-            .map(|s| {
-                let mut split = s.split('x');
-                (
-                    parse_next::<usize>(&mut split),
-                    parse_next::<usize>(&mut split),
-                )
-            })
-            .unwrap();
+    load_string("inputs/2018/day3.input")
+        .split('\n')
+        .for_each(|s| {
+            let mut split = s.split_whitespace().skip(2);
+            let coord = split
+                .next()
+                .map(|s| {
+                    let mut split = s.split(|c| c == ':' || c == ',');
+                    (
+                        parse_next::<usize>(&mut split),
+                        parse_next::<usize>(&mut split),
+                    )
+                })
+                .unwrap();
+            let size = split
+                .next()
+                .map(|s| {
+                    let mut split = s.split('x');
+                    (
+                        parse_next::<usize>(&mut split),
+                        parse_next::<usize>(&mut split),
+                    )
+                })
+                .unwrap();
 
-        for x in coord.0..coord.0 + size.0 {
-            for y in coord.1..coord.1 + size.1 {
-                if let Some(c) = map.get_mut(&(x, y)) {
-                    *c += 1;
-                } else {
-                    map.insert((x, y), 1);
+            for x in coord.0..coord.0 + size.0 {
+                for y in coord.1..coord.1 + size.1 {
+                    if let Some(c) = map.get_mut(&(x, y)) {
+                        *c += 1;
+                    } else {
+                        map.insert((x, y), 1);
+                    }
                 }
             }
-        }
-    });
+        });
     map.into_iter().filter(|(_, v)| v > &1).count()
 }
 
@@ -56,7 +59,7 @@ pub fn part2() -> usize {
         }
     }
 
-    let map = include_str!("input/day3.input")
+    let map = load_string("inputs/2018/day3.input")
         .split('\n')
         .map(|s| {
             let mut split = s.split_whitespace();

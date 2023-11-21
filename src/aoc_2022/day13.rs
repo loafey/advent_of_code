@@ -1,3 +1,4 @@
+use crate::utils::load_string;
 use std::collections::VecDeque;
 
 use serde::Deserialize;
@@ -28,7 +29,7 @@ struct Pair {
 }
 
 pub fn part1() -> usize {
-    let input = include_str!("input/day13.input")
+    let input = load_string("inputs/2022/day13.input")
         .split("\n\n")
         .map(|pair| {
             let mut lines = pair.lines();
@@ -87,7 +88,7 @@ fn battle(data1: Data, data2: Data) -> Status {
 }
 
 pub fn part2() -> usize {
-    let mut input = include_str!("input/day13.input")
+    let mut input = load_string("inputs/2022/day13.input")
         .split("\n\n")
         .map(|pair| {
             let mut lines = pair.lines();

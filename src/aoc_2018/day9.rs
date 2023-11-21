@@ -1,9 +1,11 @@
+use crate::utils::load_string;
 use std::collections::VecDeque;
 
 use crate::utils::parse_next;
 
 fn parse_input() -> (usize, usize) {
-    let mut split = include_str!("input/day9.input").split_whitespace();
+    let binding = load_string("inputs/2018/day9.input");
+    let mut split = binding.split_whitespace();
     let players = parse_next(&mut split);
     let mut split = split.skip(5);
     let points = parse_next(&mut split);

@@ -1,17 +1,16 @@
-use std::{collections::BTreeMap, ops::Add};
-
+use crate::utils::load_string;
 use memoize::memoize;
+use std::{collections::BTreeMap, ops::Add};
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 struct Valve {
     flow_rate: isize,
-    connections: Vec<Str>,
+    connections: Vec<String>,
 }
-type Map = BTreeMap<Str, Valve>;
-type Str = &'static str;
+type Map = BTreeMap<String, Valve>;
 
 fn input() -> Map {
-    include_str!("input/day16.input")
+    load_string("inputs/2022/day16.input")
         .lines()
         .map(|s| {
             let mut splat = s
@@ -26,9 +25,9 @@ fn input() -> Map {
             for _ in 0..4 {
                 splat.next();
             }
-            let connections = splat.collect::<Vec<_>>();
+            let connections = splat.map(|s| s.to_owned()).collect::<Vec<_>>();
             (
-                name,
+                name.to_string(),
                 Valve {
                     flow_rate,
                     connections,
@@ -44,7 +43,7 @@ pub fn part1() -> isize {
             flow: 0,
             map: input(),
         },
-        "AA",
+        "AA".to_owned(),
         29,
     )
     .flow
@@ -72,6 +71,7 @@ impl Add<isize> for State {
         self
     }
 }
+#[allow(clippy::non_canonical_partial_ord_impl)]
 impl PartialOrd for State {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         self.flow.partial_cmp(&other.flow)
@@ -84,24 +84,24 @@ impl Ord for State {
 }
 
 #[memoize]
-fn rinzal_dp(state: State, a: Str, mins: isize) -> State {
+fn rinzal_dp(state: State, a: String, mins: isize) -> State {
     match mins {
         0 => state,
         _ => {
             let a_open = rinzal_dp(
                 {
                     let mut map = state.clone();
-                    map.map.get_mut(a).unwrap().flow_rate = 0;
+                    map.map.get_mut(&a).unwrap().flow_rate = 0;
                     map
                 },
-                a,
+                a.clone(),
                 mins - 1,
-            ) + (mins * state.map[a].flow_rate);
+            ) + (mins * state.map[&a].flow_rate);
 
-            let a_move = state.map[a]
+            let a_move = state.map[&a]
                 .connections
                 .iter()
-                .map(|x| rinzal_dp(state.clone(), x, mins - 1))
+                .map(|x| rinzal_dp(state.clone(), x.clone(), mins - 1))
                 .max()
                 .unwrap();
 
@@ -116,10 +116,10 @@ pub fn part2() -> isize {
                 map: input(),
                 flow: 0,
             },
-            "AA",
+            "AA".to_owned(),
             25,
         ),
-        "AA",
+        "AA".to_owned(),
         25,
     )
     .flow

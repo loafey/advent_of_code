@@ -1,5 +1,7 @@
+use crate::utils::load_string;
+
 fn parse_inputs() -> Vec<Vec<[usize; 2]>> {
-    include_str!("input/day14.input")
+    load_string("inputs/2022/day14.input")
         .lines()
         .map(|r| {
             r.split(" -> ")
@@ -23,7 +25,7 @@ fn create_grid(
     let mut grid = vec![vec![' '; max_x - min_x]; max_y];
     for r in coords {
         r.windows(2).for_each(|p| {
-            let [c1,c2] = p else {unreachable!()};
+            let [c1, c2] = p else { unreachable!() };
             if c1[0] == c2[0] {
                 let bottom = c1[1].min(c2[1]);
                 let top = c1[1].max(c2[1]);

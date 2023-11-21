@@ -1,3 +1,4 @@
+use crate::utils::load_string;
 use rayon::prelude::*;
 
 fn react_polymer(mut polymer: Vec<char>) -> usize {
@@ -18,11 +19,15 @@ fn react_polymer(mut polymer: Vec<char>) -> usize {
 }
 
 pub fn part1() -> usize {
-    react_polymer(include_str!("input/day5.input").chars().collect::<Vec<_>>())
+    react_polymer(
+        load_string("inputs/2018/day5.input")
+            .chars()
+            .collect::<Vec<_>>(),
+    )
 }
 
 pub fn part2() -> usize {
-    let base = include_str!("input/day5.input");
+    let base = load_string("inputs/2018/day5.input");
     ('a'..='z')
         .into_par_iter()
         .map(|c| {

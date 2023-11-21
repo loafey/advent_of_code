@@ -1,7 +1,9 @@
 const EXTRA_LEN: usize = 70;
+use crate::utils::load_string;
 
 fn parse_input() -> (Vec<char>, Vec<(Vec<char>, char)>) {
-    let mut dat = include_str!("input/day12.input").split('\n');
+    let binding = load_string("inputs/2018/day12.input");
+    let mut dat = binding.split('\n');
     let mut initial_state = dat
         .next()
         .unwrap()

@@ -1,7 +1,8 @@
+use crate::utils::load_string;
 use zipperoni::Zipper2D;
 
 fn load_input() -> Vec<Vec<u32>> {
-    include_str!("input/day8.input")
+    load_string("inputs/2022/day8.input")
         .lines()
         .map(|r| r.chars().filter_map(|c| c.to_digit(10)).collect::<Vec<_>>())
         .collect::<Vec<_>>()

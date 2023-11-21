@@ -1,4 +1,6 @@
+use crate::utils::load_string;
 use crate::utils::{manhattan_distance, parse_next};
+
 #[derive(Debug, Clone, Copy)]
 struct Beacon {
     x: isize,
@@ -32,7 +34,7 @@ fn create_line(a: (isize, isize), b: (isize, isize)) -> (isize, isize) {
     (d as isize, m)
 }
 fn parse_input() -> Vec<(Sensor, Beacon)> {
-    include_str!("input/day15.input")
+    load_string("inputs/2022/day15.input")
         .lines()
         .map(|r| {
             let mut splat = r

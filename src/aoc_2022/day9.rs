@@ -1,3 +1,4 @@
+use crate::utils::load_string;
 use std::collections::HashSet;
 
 fn is_moving_around_tail(head: [i32; 2], tail: [i32; 2], axis: usize, dif: i32) -> bool {
@@ -17,7 +18,7 @@ fn solve<const N: usize>() -> usize {
     let mut tails = [start; N];
     let mut top = head_position;
     let mut visited = HashSet::new();
-    include_str!("input/day9.input")
+    load_string("inputs/2022/day9.input")
         .lines()
         .map(|r| {
             let mut split = r.split_whitespace();
@@ -35,8 +36,6 @@ fn solve<const N: usize>() -> usize {
                 _ => unreachable!(),
             };
             (0..move_amount).for_each(|_| {
-                let axis = axis;
-                let dif = dif;
                 for i in 0..tails.len() {
                     if i == 0 {
                         if !is_moving_around_tail(head_position, tails[0], axis, dif) {

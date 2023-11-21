@@ -1,3 +1,4 @@
+use crate::utils::load_string;
 use std::collections::VecDeque;
 
 #[derive(Debug, Clone, Copy)]
@@ -67,7 +68,7 @@ fn check_colliding(
     box_arr: &[Box<[Spot]>],
     grid: &VecDeque<[Spot; 7]>,
 ) -> bool {
-    let colliding = {
+    {
         let mut cols = false;
         'brum: for (y, r) in box_arr.iter().enumerate() {
             for (x, c) in r.iter().enumerate() {
@@ -82,12 +83,11 @@ fn check_colliding(
             }
         }
         cols
-    };
-    colliding
+    }
 }
 
 pub fn part1() -> usize {
-    let input = include_str!("input/day17.input")
+    let input = load_string("inputs/2022/day17.input")
         .chars()
         .filter(|c| !c.is_whitespace())
         .map(|c| match c {
@@ -175,7 +175,7 @@ pub fn part1() -> usize {
 }
 
 pub fn part2() -> usize {
-    let input = include_str!("input/day17.input")
+    let input = load_string("inputs/2022/day17.input")
         .chars()
         .filter(|c| !c.is_whitespace())
         .map(|c| match c {
@@ -195,7 +195,7 @@ pub fn part2() -> usize {
     let mut found_loop = false;
     loop {
         let m = input[i];
-        i = i % input.len();
+        i %= input.len();
         let arr = current.into_arr();
         match m {
             Move::Left => {
@@ -322,28 +322,4 @@ fn find_loop<T: Eq + std::fmt::Debug>(
         }
     }
     None
-}
-
-fn print_grid(grid: &VecDeque<[Spot; 7]>, coords: [usize; 2], arr: &[Box<[Spot]>]) {
-    //println!("\n╔══════════════╗");
-    grid.iter().enumerate().for_each(|(y, r)| {
-        //print!("║");
-        print!("|");
-        r.iter().enumerate().for_each(|(x, r)| {
-            if y >= coords[1]
-                && y < coords[1] + arr.len()
-                && x >= coords[0]
-                && x < coords[0] + arr[0].len()
-                && arr[y - coords[1]][x - coords[0]] != Spot::Empty
-            {
-                print!("{:?}", arr[y - coords[1]][x - coords[0]])
-            } else {
-                print!("{r:?}");
-            }
-        });
-        //println!("║")
-        println!("|")
-    });
-    //println!("╚══════════════╝");
-    println!("+-------+");
 }

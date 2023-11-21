@@ -1,3 +1,4 @@
+use crate::utils::load_string;
 use std::ops::{BitXor, Neg, Shr};
 
 #[derive(Clone, Copy)]
@@ -54,7 +55,7 @@ fn str_to_choice(s: &str) -> (C, C) {
 }
 
 pub fn part1() -> i32 {
-    include_str!("input/day2.input")
+    load_string("inputs/2022/day2.input")
         .lines()
         .map(str_to_choice)
         .map(|(o, y)| o >> y)
@@ -62,7 +63,7 @@ pub fn part1() -> i32 {
 }
 
 pub fn part2() -> i32 {
-    include_str!("input/day2.input")
+    load_string("inputs/2022/day2.input")
         .lines()
         .map(str_to_choice)
         .map(|(o, y)| o >> (o ^ y))

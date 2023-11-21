@@ -1,7 +1,8 @@
 use crate::utils::hmap_insert_vec;
+use crate::utils::load_string;
 use std::collections::HashMap;
 
-type Id = &'static str;
+type Id = String;
 
 enum Command {
     Ls(Vec<LsOutput>),
@@ -10,10 +11,15 @@ enum Command {
 impl From<Id> for Command {
     fn from(value: Id) -> Self {
         match &value.split_whitespace().collect::<Vec<_>>()[..] {
-            ["cd", arg] => Command::Cd(arg),
-            ["ls", rest @ ..] => {
-                Command::Ls(rest.chunks(2).map(LsOutput::from).collect::<Vec<_>>())
-            }
+            ["cd", arg] => Command::Cd(arg.to_string()),
+            ["ls", rest @ ..] => Command::Ls(
+                rest.iter()
+                    .map(|s| s.to_string())
+                    .collect::<Vec<_>>()
+                    .chunks(2)
+                    .map(LsOutput::from)
+                    .collect::<Vec<_>>(),
+            ),
             _ => unreachable!(),
         }
     }
@@ -45,8 +51,8 @@ impl LsOutput {
 }
 impl From<&[Id]> for LsOutput {
     fn from(val: &[Id]) -> Self {
-        let f = val[0];
-        let name = val[1];
+        let f = val[0].clone();
+        let name = val[1].clone();
         match f.parse::<usize>() {
             Ok(s) => LsOutput::File(s),
             Err(_) => LsOutput::Directory(name),
@@ -55,13 +61,14 @@ impl From<&[Id]> for LsOutput {
 }
 
 fn solver() -> HashMap<String, usize> {
-    let input = include_str!("input/day7.input");
+    let input = load_string("inputs/2022/day7.input");
     let mut stack = Vec::new();
     let mut memory = HashMap::new();
     for p in input
         .split("$ ")
         .map(|s| s.trim())
         .filter(|s| !s.is_empty())
+        .map(|s| s.to_owned())
         .map(Command::from)
     {
         let stacks = stack.join("");
@@ -69,12 +76,12 @@ fn solver() -> HashMap<String, usize> {
             Command::Ls(v) => {
                 hmap_insert_vec(&mut memory, stacks, v);
             }
-            Command::Cd(dir) => match dir {
+            Command::Cd(dir) => match &dir[..] {
                 ".." => {
                     stack.pop();
                 }
                 dir => {
-                    stack.push(dir);
+                    stack.push(dir.to_owned());
                     hmap_insert_vec(&mut memory, format!("{stacks}{dir}"), Vec::new())
                 }
             },

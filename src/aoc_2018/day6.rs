@@ -1,10 +1,11 @@
+use crate::utils::load_string;
 use crate::utils::parse_next;
 use std::collections::BTreeSet;
 
 fn parse_data() -> (usize, usize, Vec<(usize, usize)>) {
     let mut max_x = 0;
     let mut max_y = 0;
-    let points = include_str!("input/day6.input")
+    let points = load_string("inputs/2018/day6.input")
         .split('\n')
         .map(|s| {
             let mut split = s.split(", ");

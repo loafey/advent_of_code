@@ -1,3 +1,5 @@
+use crate::utils::load_string;
+
 enum MoveInstruction {
     Walk(isize),
     Rotate(Rotate),
@@ -41,7 +43,8 @@ impl std::fmt::Debug for Object {
 }
 
 fn input_p1() -> (Vec<Vec<Object>>, Vec<MoveInstruction>) {
-    let mut splat = include_str!("input/day22.input").split("\n\n");
+    let binding = load_string("inputs/2022/day22.input");
+    let mut splat = binding.split("\n\n");
     let mut maze = splat
         .next()
         .unwrap()
@@ -125,20 +128,6 @@ impl Elephant {
         }
     }
 }
-fn print_maze(elephant: &Elephant, maze: &[Vec<Object>]) {
-    maze.iter().enumerate().for_each(|(y, r)| {
-        r.iter().enumerate().for_each(move |(x, c)| {
-            if x == elephant.x && y == elephant.y {
-                print!("🐘")
-            } else {
-                print!("{c:?}")
-            }
-        });
-        println!()
-    });
-    println!();
-    std::thread::sleep_ms(120);
-}
 pub fn part1() -> usize {
     let (maze, input) = input_p1();
     let mut elephant = maze
@@ -219,52 +208,7 @@ pub fn part1() -> usize {
     (elephant.x + 1) * 4 + ((elephant.y + 1) * 1000) + elephant.direction as usize
 }
 
-fn input_p2() -> (i32, Vec<MoveInstruction>) {
-    let mut splat = include_str!("input/day22.input").split("\n\n");
-    let maze = splat
-        .next()
-        .unwrap()
-        .lines()
-        .map(|r| {
-            r.chars()
-                .map(|c| match c {
-                    '#' => Object::Wall,
-                    ' ' => Object::TPJuice,
-                    '.' => Object::Empty,
-                    _ => unreachable!(),
-                })
-                .collect::<Vec<_>>()
-        })
-        .collect::<Vec<_>>();
-
-    let input = {
-        let mut buf = vec![String::new()];
-        for c in splat.next().unwrap().chars() {
-            if c.is_numeric() {
-                let len = buf.len() - 1;
-                buf[len].push(c);
-            } else {
-                buf.push(c.to_string());
-                buf.push(String::new());
-            }
-        }
-        buf.into_iter()
-            .map(|s| {
-                if let Ok(s) = s.parse::<isize>() {
-                    MoveInstruction::Walk(s)
-                } else {
-                    MoveInstruction::Rotate(match &s[..] {
-                        "L" => Rotate::Clockwise,
-                        "R" => Rotate::CounterClockwise,
-                        _ => unreachable!(),
-                    })
-                }
-            })
-            .collect::<Vec<_>>()
-    };
-    (0, input)
-}
 pub fn part2() -> i32 {
-    println!("{:?}", input_p2());
+    // println!("{:?}", input_p2());
     0
 }
