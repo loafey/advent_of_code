@@ -17,8 +17,8 @@ fn main() {
     let benchmark = std::env::args().filter(|s| s == "--benchmark").count() == 1;
     if benchmark {
         println!("# AoC Benchmarks");
-        println!("{}\n", format_benchmark(aoc_2023::table().run_benchmarks()));
-        println!("{}\n", format_benchmark(aoc_2022::table().run_benchmarks()));
+        // println!("{}\n", format_benchmark(aoc_2023::table().run_benchmarks()));
+        // println!("{}\n", format_benchmark(aoc_2022::table().run_benchmarks()));
         println!("{}\n", format_benchmark(aoc_2020::table().run_benchmarks()));
         println!("{}\n", format_benchmark(aoc_2019::table().run_benchmarks()));
         println!("{}\n", format_benchmark(aoc_2018::table().run_benchmarks()));
@@ -37,12 +37,12 @@ fn format_benchmark(
             "\n|{}|{}|{}|",
             day,
             if !matches!(&a1[..], " " | "0" | "") {
-                format!("{d1:?}")
+                format_time(d1)
             } else {
                 "❌".to_owned()
             },
             if !matches!(&a2[..], " " | "0" | "") {
-                format!("{d2:?}")
+                format_time(d2)
             } else {
                 "❌".to_owned()
             },
@@ -50,4 +50,13 @@ fn format_benchmark(
         s += &r;
     }
     s
+}
+
+fn format_time(duration: Duration) -> String {
+    // if duration.as_secs_f64() >= 0.1 {
+    //     format!("{}s", duration.as_secs_f64())
+    // } else {
+    //     format!("{}μs", duration.as_micros())
+    // }
+    format!("{:.8}*s*", duration.as_secs_f64())
 }
