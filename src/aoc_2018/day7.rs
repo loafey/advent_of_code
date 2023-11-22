@@ -4,7 +4,7 @@ use std::collections::{BTreeMap, BTreeSet};
 fn get_input() -> BTreeMap<char, BTreeSet<char>> {
     let mut dependencies = BTreeMap::new();
     load_string("inputs/2018/day7.input")
-        .split('\n')
+        .lines()
         .map(|l| {
             let mut split = l.split_whitespace().skip(1);
             let dep = split.next().unwrap().chars().next().unwrap();

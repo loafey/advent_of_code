@@ -16,7 +16,7 @@ impl Line {
 #[allow(unused_variables)]
 pub fn part1() -> &'static str {
     let mut lights = load_string("inputs/2018/day10.input")
-        .split('\n')
+        .lines()
         .map(|r| {
             let mut split = r
                 .split(|c| ['<', '>', ','].contains(&c))

@@ -4,7 +4,7 @@ use std::collections::HashSet;
 pub fn part1() -> i32 {
     let input = load_string("inputs/2018/day1.input");
     input
-        .split('\n')
+        .lines()
         .map(|s| {
             let op = &s[0..1];
             s[1..].parse::<i32>().unwrap() * if op == "-" { -1 } else { 1 }
@@ -18,7 +18,7 @@ pub fn part2() -> i32 {
     list.insert(freq);
 
     let parsed = input
-        .split('\n')
+        .lines()
         .map(|s| {
             let op = &s[0..1];
             s[1..].parse::<i32>().unwrap() * if op == "-" { -1 } else { 1 }

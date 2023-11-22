@@ -16,36 +16,34 @@ fn parse_sleep_ranges() -> HashMap<i32, Vec<Range<i32>>> {
     let mut current_guard = 0;
     let mut current_start = 0;
     let mut dates: BTreeMap<_, Vec<_>> = BTreeMap::new();
-    load_string("inputs/2018/day4.input")
-        .split('\n')
-        .for_each(|s| {
-            let mut split = s.split_whitespace();
-            let mut date = split.next().unwrap()[1..].parse::<NaiveDate>().unwrap();
-            let time = {
-                let s = split.next().unwrap();
-                let time = &s[0..s.len() - 1]; //xx:xx
-                let mut time_split = time.split(':');
-                let hour = parse_next::<i32>(&mut time_split);
-                let minutes = parse_next::<i32>(&mut time_split);
-                if hour == 23 {
-                    date += Duration::days(1);
-                    minutes - 60
-                } else {
-                    minutes
-                }
-            };
-            let e = match split.next().unwrap() {
-                "Guard" => Event::GuardBegin(split.next().unwrap()[1..].parse::<i32>().unwrap()),
-                "falls" => Event::FallAsleep,
-                "wakes" => Event::WakeUp,
-                _ => unreachable!(),
-            };
-            if let Some(d) = dates.get_mut(&date) {
-                d.push((time, e));
+    load_string("inputs/2018/day4.input").lines().for_each(|s| {
+        let mut split = s.split_whitespace();
+        let mut date = split.next().unwrap()[1..].parse::<NaiveDate>().unwrap();
+        let time = {
+            let s = split.next().unwrap();
+            let time = &s[0..s.len() - 1]; //xx:xx
+            let mut time_split = time.split(':');
+            let hour = parse_next::<i32>(&mut time_split);
+            let minutes = parse_next::<i32>(&mut time_split);
+            if hour == 23 {
+                date += Duration::days(1);
+                minutes - 60
             } else {
-                dates.insert(date, vec![(time, e)]);
+                minutes
             }
-        });
+        };
+        let e = match split.next().unwrap() {
+            "Guard" => Event::GuardBegin(split.next().unwrap()[1..].parse::<i32>().unwrap()),
+            "falls" => Event::FallAsleep,
+            "wakes" => Event::WakeUp,
+            _ => unreachable!(),
+        };
+        if let Some(d) = dates.get_mut(&date) {
+            d.push((time, e));
+        } else {
+            dates.insert(date, vec![(time, e)]);
+        }
+    });
 
     dates
         .iter_mut()

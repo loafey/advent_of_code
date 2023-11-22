@@ -20,6 +20,7 @@ fn calc_power_box(input: i32, size: i32, x: i32, y: i32) -> i32 {
 }
 pub fn part1() -> String {
     let input = load_string("inputs/2018/day11.input")
+        .trim()
         .parse::<i32>()
         .unwrap();
 
@@ -38,6 +39,7 @@ pub fn part1() -> String {
 
 pub fn part2() -> String {
     let input = load_string("inputs/2018/day11.input")
+        .trim()
         .parse::<i32>()
         .unwrap();
 

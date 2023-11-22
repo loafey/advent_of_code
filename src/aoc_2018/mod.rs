@@ -1,1 +1,1 @@
-gen_days::gen_days!["src/aoc_2019"];
+gen_days::gen_days!["src/aoc_2018"];
