@@ -33,6 +33,7 @@ fn parse_input() -> (Vec<char>, Vec<(Vec<char>, char)>) {
     (initial_state, rules)
 }
 
+#[allow(dead_code)]
 fn print_state(v: &[char]) {
     v /*[EXTRA_LEN - 3..v.len()]*/
         .iter()
