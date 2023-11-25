@@ -23,7 +23,7 @@ fn main() {
         println!("{}\n", format_benchmark(aoc_2019::table().run_benchmarks()));
         println!("{}\n", format_benchmark(aoc_2018::table().run_benchmarks()));
     } else {
-        aoc_2022::table().run_day(22);
+        aoc_2022::table().run_day(16);
     }
 }
 
