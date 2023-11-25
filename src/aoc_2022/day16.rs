@@ -1,16 +1,17 @@
-use crate::utils::load_string;
-use memoize::memoize;
 use std::{collections::BTreeMap, ops::Add};
+
+use memoize::memoize;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 struct Valve {
     flow_rate: isize,
-    connections: Vec<String>,
+    connections: Vec<Str>,
 }
-type Map = BTreeMap<String, Valve>;
+type Map = BTreeMap<Str, Valve>;
+type Str = &'static str;
 
 fn input() -> Map {
-    load_string("inputs/2022/day16.input")
+    include_str!("../../inputs/2022/day16.input")
         .lines()
         .map(|s| {
             let mut splat = s
@@ -25,9 +26,9 @@ fn input() -> Map {
             for _ in 0..4 {
                 splat.next();
             }
-            let connections = splat.map(|s| s.to_owned()).collect::<Vec<_>>();
+            let connections = splat.collect::<Vec<_>>();
             (
-                name.to_string(),
+                name,
                 Valve {
                     flow_rate,
                     connections,
@@ -43,7 +44,7 @@ pub fn part1() -> isize {
             flow: 0,
             map: input(),
         },
-        "AA".to_owned(),
+        "AA",
         29,
     )
     .flow
@@ -84,24 +85,24 @@ impl Ord for State {
 }
 
 #[memoize]
-fn rinzal_dp(state: State, a: String, mins: isize) -> State {
+fn rinzal_dp(state: State, a: Str, mins: isize) -> State {
     match mins {
         0 => state,
         _ => {
             let a_open = rinzal_dp(
                 {
                     let mut map = state.clone();
-                    map.map.get_mut(&a).unwrap().flow_rate = 0;
+                    map.map.get_mut(a).unwrap().flow_rate = 0;
                     map
                 },
-                a.clone(),
+                a,
                 mins - 1,
-            ) + (mins * state.map[&a].flow_rate);
+            ) + (mins * state.map[a].flow_rate);
 
-            let a_move = state.map[&a]
+            let a_move = state.map[a]
                 .connections
                 .iter()
-                .map(|x| rinzal_dp(state.clone(), x.clone(), mins - 1))
+                .map(|x| rinzal_dp(state.clone(), x, mins - 1))
                 .max()
                 .unwrap();
 
@@ -116,10 +117,10 @@ pub fn part2() -> isize {
                 map: input(),
                 flow: 0,
             },
-            "AA".to_owned(),
+            "AA",
             25,
         ),
-        "AA".to_owned(),
+        "AA",
         25,
     )
     .flow

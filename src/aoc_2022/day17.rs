@@ -261,13 +261,13 @@ pub fn part2() -> usize {
                     //println!("{index} {size}");
                     //println!("{}", grid.len());
                     //println!("{}", max - index + size);
-                    println!("{rock_count}");
+                    //println!("{rock_count}");
                     rock_count = max - index + size;
-                    println!("{rock_count}");
+                    //println!("{rock_count}");
                     height_mod = ((max - index) / size) * size;
                     found_loop = true;
                     //println!("{}", max);
-                    println!("1514285714288");
+                    //println!("1514285714288");
                 }
             }
         }

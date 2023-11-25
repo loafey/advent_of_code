@@ -74,6 +74,7 @@ fn input_p1() -> (Vec<Vec<Object>>, Vec<MoveInstruction>) {
             }
         }
         buf.into_iter()
+            .filter(|s| !s.trim().is_empty())
             .map(|s| {
                 if let Ok(s) = s.parse::<isize>() {
                     MoveInstruction::Walk(s)

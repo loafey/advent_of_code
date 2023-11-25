@@ -17,13 +17,13 @@ fn main() {
     let benchmark = std::env::args().filter(|s| s == "--benchmark").count() == 1;
     if benchmark {
         println!("# AoC Benchmarks");
-        // println!("{}\n", format_benchmark(aoc_2023::table().run_benchmarks()));
-        // println!("{}\n", format_benchmark(aoc_2022::table().run_benchmarks()));
+        println!("{}\n", format_benchmark(aoc_2023::table().run_benchmarks()));
+        println!("{}\n", format_benchmark(aoc_2022::table().run_benchmarks()));
         println!("{}\n", format_benchmark(aoc_2020::table().run_benchmarks()));
         println!("{}\n", format_benchmark(aoc_2019::table().run_benchmarks()));
         println!("{}\n", format_benchmark(aoc_2018::table().run_benchmarks()));
     } else {
-        aoc_2023::table().run();
+        aoc_2022::table().run_day(22);
     }
 }
 
