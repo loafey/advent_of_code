@@ -1,5 +1,5 @@
-use crate::utils::load_string;
-use std::{collections::HashMap, hint::unreachable_unchecked};
+use crate::utils::{load_string, IntoHMap as _};
+use std::{hash::Hash, hint::unreachable_unchecked};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 enum Color {
@@ -42,7 +42,7 @@ fn input(s: &str) -> Input {
 }
 
 pub fn part1() -> usize {
-    let inventory = HashMap::from([(Red, 12), (Green, 13), (Blue, 14)]);
+    let inventory = [(Red, 12), (Green, 13), (Blue, 14)].hmap();
     input(&load_string("inputs/2023/day2.input"))
         .into_iter()
         .filter_map(|(index, sets)| {
@@ -74,7 +74,7 @@ pub fn part2() -> usize {
     input(&load_string("inputs/2023/day2.input"))
         .into_iter()
         .map(|(_, sets)| {
-            let mut nums: HashMap<_, _> = [(Red, 0), (Green, 0), (Blue, 0)].into();
+            let mut nums = [(Red, 0), (Green, 0), (Blue, 0)].hmap();
             for set in sets {
                 for (item, amount) in set {
                     if amount > nums[&item] {

@@ -127,3 +127,20 @@ impl<A, T: Iterator<Item = A>> IteratorEvalExt<A> for T {
         v.into_iter()
     }
 }
+
+pub trait IntoHMap<K, V> {
+    fn hmap(self) -> HashMap<K, V>;
+}
+impl<const N: usize, K: Hash + Eq, V> IntoHMap<K, V> for [(K, V); N] {
+    fn hmap(self) -> HashMap<K, V> {
+        self.into()
+    }
+}
+pub trait IntoBMap<K, V> {
+    fn bmap(self) -> BTreeMap<K, V>;
+}
+impl<const N: usize, K: Ord + Eq, V> IntoBMap<K, V> for [(K, V); N] {
+    fn bmap(self) -> BTreeMap<K, V> {
+        self.into()
+    }
+}
