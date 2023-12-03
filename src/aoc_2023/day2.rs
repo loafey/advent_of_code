@@ -28,6 +28,7 @@ fn input(s: &str) -> Input {
             let sets = s
                 .split(';')
                 .map(|s| {
+                    println!("{s}");
                     s.split(',')
                         .map(|s| {
                             let (amount, color) = s.trim().split_once(' ').unwrap();
