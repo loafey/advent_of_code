@@ -3,6 +3,7 @@ use std::{
     collections::{BTreeMap, HashMap},
     fmt::Debug,
     hash::Hash,
+    num::Wrapping,
     path::Path,
     process::Output,
     str::FromStr,
@@ -143,4 +144,24 @@ impl<const N: usize, K: Ord + Eq, V> IntoBMap<K, V> for [(K, V); N] {
     fn bmap(self) -> BTreeMap<K, V> {
         self.into()
     }
+}
+
+pub fn matrix_get<T: Copy>(
+    y: usize,
+    x: usize,
+    ymod: isize,
+    xmod: isize,
+    inputs: &[Vec<T>],
+) -> Option<T> {
+    let Wrapping(x) = if xmod < 0 {
+        Wrapping(x) - Wrapping(xmod.unsigned_abs())
+    } else {
+        Wrapping(x) + Wrapping(xmod.unsigned_abs())
+    };
+    let Wrapping(y) = if ymod < 0 {
+        Wrapping(y) - Wrapping(ymod.unsigned_abs())
+    } else {
+        Wrapping(y) + Wrapping(ymod.unsigned_abs())
+    };
+    inputs.get(y)?.get(x).cloned()
 }

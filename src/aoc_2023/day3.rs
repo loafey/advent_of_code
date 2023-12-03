@@ -1,6 +1,6 @@
-use crate::utils::load_string;
+use crate::utils::{load_string, matrix_get};
 
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 enum Map {
     Num(usize),
     Gear,
@@ -9,14 +9,13 @@ enum Map {
 }
 impl From<&str> for Map {
     fn from(s: &str) -> Self {
-        if s == "." {
-            Empty
-        } else if s == "*" {
-            Gear
-        } else if let Ok(o) = s.parse() {
-            Num(o)
-        } else {
-            Symbol
+        match s {
+            "." => Empty,
+            "*" => Gear,
+            s => match s.parse() {
+                Ok(o) => Num(o),
+                _ => Symbol,
+            },
         }
     }
 }
@@ -25,7 +24,7 @@ use Map::*;
 fn inputs(s: String) -> Vec<Vec<Map>> {
     s.lines()
         .map(|s| {
-            let mut stack: Vec<Map> = Vec::new();
+            let mut stack = Vec::new();
             let mut word = String::new();
             for c in s.chars() {
                 if c == '.' {
@@ -61,83 +60,49 @@ fn inputs(s: String) -> Vec<Vec<Map>> {
             }
             stack
         })
-        .collect::<Vec<_>>()
+        .collect()
 }
 
-fn get_neighbors(x: usize, y: usize, inputs: &Vec<Vec<Map>>) -> Vec<usize> {
-    // top
-    let mut neighbors = Vec::new();
-    if y > 0 {
-        neighbors.push(&inputs[y - 1][x]);
-    }
-
-    // bottom
-    if y < inputs.len() {
-        neighbors.push(&inputs[y + 1][x]);
-    }
-
-    // left
-    if x > 0 {
-        neighbors.push(&inputs[y][x - 1]);
-    }
-
-    // right
-    if x < inputs[y].len() {
-        neighbors.push(&inputs[y][x + 1]);
-    }
-
-    // Top left
-    if x > 0 && y > 0 {
-        neighbors.push(&inputs[y - 1][x - 1]);
-    }
-
-    // Top right
-    if x < inputs[y].len() && y > 0 {
-        neighbors.push(&inputs[y - 1][x + 1]);
-    }
-
-    // Bottom left
-    if x > 0 && y < inputs.len() {
-        neighbors.push(&inputs[y + 1][x - 1]);
-    }
-
-    // Bottom right
-    if x < inputs[y].len() && y < inputs.len() {
-        neighbors.push(&inputs[y + 1][x + 1]);
-    }
-    let mut neighbors = neighbors
-        .into_iter()
-        .filter_map(|s| match s {
-            Num(u) => Some(*u),
-            _ => None,
-        })
-        .collect::<Vec<_>>();
+fn get_neighbors(x: usize, y: usize, inputs: &[Vec<Map>]) -> Vec<usize> {
+    let mut neighbors = ([
+        (-1, 0),
+        (1, 0),
+        (0, -1),
+        (0, 1),
+        (-1, -1),
+        (1, -1),
+        (-1, 1),
+        (1, 1),
+    ])
+    .into_iter()
+    .filter_map(|(ymod, xmod)| matrix_get(y, x, ymod, xmod, inputs))
+    .filter_map(|m| match m {
+        Num(n) => Some(n),
+        _ => None,
+    })
+    .collect::<Vec<_>>();
     neighbors.sort();
     neighbors.dedup();
     neighbors
 }
-fn iter(inputs: Vec<Vec<Map>>, f: fn(Map, Vec<usize>) -> usize) -> usize {
-    let mut sum = 0;
-    for y in 0..inputs.len() {
-        for x in 0..inputs[y].len() {
-            if !matches!(inputs[y][x], Num(_)) && inputs[y][x] != Empty {
-                let neighbors = get_neighbors(x, y, &inputs);
-                sum += f(inputs[y][x], neighbors)
-            }
-        }
-    }
 
-    sum
+fn work(inputs: &[Vec<Map>], f: fn(Map, Vec<usize>) -> usize) -> usize {
+    (0..inputs.len())
+        .flat_map(|y| {
+            (0..inputs[y].len())
+                .filter(move |x| !matches!(&inputs[y][*x], Num(_) | Empty))
+                .map(move |x| f(inputs[y][x], get_neighbors(x, y, inputs)))
+        })
+        .sum()
 }
 
 pub fn part1() -> usize {
-    let inputs = inputs(load_string("inputs/2023/day3.input"));
-    iter(inputs, |_, v| v.into_iter().sum())
+    work(&inputs(load_string("inputs/2023/day3.input")), |_, v| {
+        v.into_iter().sum()
+    })
 }
 pub fn part2() -> usize {
-    let inputs = inputs(load_string("inputs/2023/day3.input"));
-
-    iter(inputs, |m, v| {
+    work(&inputs(load_string("inputs/2023/day3.input")), |m, v| {
         (m == Gear && v.len() == 2)
             .then(|| v[0] * v[1])
             .unwrap_or_default()
