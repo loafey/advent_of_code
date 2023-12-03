@@ -116,38 +116,30 @@ fn get_neighbors(x: usize, y: usize, inputs: &Vec<Vec<Map>>) -> Vec<usize> {
     neighbors.dedup();
     neighbors
 }
-
-pub fn part1() -> usize {
-    let inputs = inputs(load_string("inputs/2023/day3.input"));
-
+fn iter(inputs: Vec<Vec<Map>>, f: fn(Map, Vec<usize>) -> usize) -> usize {
     let mut sum = 0;
     for y in 0..inputs.len() {
         for x in 0..inputs[y].len() {
             if !matches!(inputs[y][x], Num(_)) && inputs[y][x] != Empty {
                 let neighbors = get_neighbors(x, y, &inputs);
-                for n in neighbors {
-                    sum += n;
-                }
+                sum += f(inputs[y][x], neighbors)
             }
         }
     }
 
     sum
 }
+
+pub fn part1() -> usize {
+    let inputs = inputs(load_string("inputs/2023/day3.input"));
+    iter(inputs, |_, v| v.into_iter().sum())
+}
 pub fn part2() -> usize {
     let inputs = inputs(load_string("inputs/2023/day3.input"));
 
-    let mut sum = 0;
-    for y in 0..inputs.len() {
-        for x in 0..inputs[y].len() {
-            if !matches!(inputs[y][x], Num(_)) && inputs[y][x] != Empty {
-                let neighbors = get_neighbors(x, y, &inputs);
-                if inputs[y][x] == Gear && neighbors.len() == 2 {
-                    sum += neighbors[0] * neighbors[1];
-                }
-            }
-        }
-    }
-
-    sum
+    iter(inputs, |m, v| {
+        (m == Gear && v.len() == 2)
+            .then(|| v[0] * v[1])
+            .unwrap_or_default()
+    })
 }
