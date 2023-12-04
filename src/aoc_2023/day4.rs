@@ -52,11 +52,11 @@ pub fn part2() -> usize {
     let mut res = cards.len();
     let mut cards = VecDeque::from(cards);
     while !cards.is_empty() {
-        for v in &wins[&cards[0].index] {
-            cards.push_back(*v);
-            res += 1;
-        }
-        cards.pop_front();
+        let vec = &wins[&cards.pop_front().unwrap().index];
+        res += vec.len();
+        vec.iter()
+            .filter(|v| v.winners > 0)
+            .for_each(|v| cards.push_back(*v));
     }
     res
 }
