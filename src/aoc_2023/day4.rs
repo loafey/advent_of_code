@@ -1,41 +1,14 @@
-use std::collections::{BTreeMap, HashMap};
-
 use crate::utils::load_string;
+use std::collections::{BTreeMap, VecDeque};
 
-pub fn part1() -> usize {
-    load_string("inputs/2023/day4.input")
-        .lines()
-        .map(|s| {
-            let (_, cards) = s.split_once(':').unwrap();
-            let (l, r) = cards.split_once('|').unwrap();
-            let winning = r.split_whitespace().collect::<Vec<_>>();
-            let mut sum = 0;
-            l.split_whitespace()
-                .filter(|f| winning.contains(f))
-                .for_each(|_| {
-                    if sum == 0 {
-                        sum = 1;
-                    } else {
-                        sum *= 2;
-                    }
-                });
-            sum
-        })
-        .sum()
-}
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 struct Card {
     index: usize,
     winners: usize,
 }
 
-impl std::fmt::Debug for Card {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}:\t{:?}", self.index, self.winners)
-    }
-}
-pub fn part2() -> usize {
-    let mut cards = load_string("inputs/2023/day4.input")
+fn parser() -> Vec<Card> {
+    load_string("inputs/2023/day4.input")
         .lines()
         .map(|s| {
             let (g, cards) = s.split_once(':').unwrap();
@@ -52,8 +25,18 @@ pub fn part2() -> usize {
             let winners = cards.iter().filter(|f| winners.contains(f)).count();
             Card { index, winners }
         })
-        .collect::<Vec<_>>();
-    let mut i = 0;
+        .collect()
+}
+
+pub fn part1() -> usize {
+    parser()
+        .into_iter()
+        .map(|c| 2usize.pow(c.winners as u32 - 1))
+        .sum()
+}
+
+pub fn part2() -> usize {
+    let cards = parser();
     let wins = cards
         .iter()
         .copied()
@@ -66,12 +49,14 @@ pub fn part2() -> usize {
             })
         })
         .collect::<BTreeMap<_, _>>();
-    while i < cards.len() {
-        let ci = cards[i].index;
-        for v in &wins[&ci] {
-            cards.push(*v);
+    let mut res = cards.len();
+    let mut cards = VecDeque::from(cards);
+    while !cards.is_empty() {
+        for v in &wins[&cards[0].index] {
+            cards.push_back(*v);
+            res += 1;
         }
-        i += 1;
+        cards.pop_front();
     }
-    cards.len()
+    res
 }
