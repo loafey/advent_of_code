@@ -165,3 +165,35 @@ pub fn matrix_get<T: Copy>(
     };
     inputs.get(y)?.get(x).cloned()
 }
+
+pub trait BiFunctorExt<A, B, C> {
+    fn splot(self, ab: fn(A, B) -> C) -> C;
+}
+impl<A, B, C> BiFunctorExt<A, B, C> for (A, B) {
+    fn splot(self, ab: fn(A, B) -> C) -> C {
+        let (e1, e2) = self;
+        ab(e1, e2)
+    }
+}
+
+pub trait BiFunctor<A, B, C, D> {
+    fn splat(self, a: fn(A) -> B, b: fn(C) -> D) -> (B, D);
+    fn splut(self, ab: fn(A, C) -> (B, D)) -> (B, D);
+}
+impl<A, B, C, D> BiFunctor<A, B, C, D> for (A, C) {
+    fn splat(self, a: fn(A) -> B, b: fn(C) -> D) -> (B, D) {
+        let (e1, e2) = self;
+        (a(e1), b(e2))
+    }
+
+    fn splut(self, ab: fn(A, C) -> (B, D)) -> (B, D) {
+        let (e1, e2) = self;
+        ab(e1, e2)
+    }
+}
+//impl<A, D> BiFunctor<A, D, A, D> for (A, A) {
+//    fn splat(self, a: fn(A) -> D, b: fn(A) -> D) -> (D, D) {
+//        let (e1, e2) = self;
+//        (a(e1), b(e2))
+//    }
+//}
