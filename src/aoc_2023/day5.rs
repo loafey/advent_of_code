@@ -77,9 +77,11 @@ pub fn part1() -> usize {
 pub fn part2() -> usize {
     use rayon::prelude::*;
     let inputs = inputs();
-    let mut seed_bag = inputs.seeds.chunks(2);
-    seed_bag
-        .par_bridge()
+    // Why write fast code when when many threads do good?
+    inputs
+        .seeds
+        .chunks(2)
+        .par_bridge() // multithreading babeyyyy
         .map(|seed_chunk| {
             let seeds = (seed_chunk[0]..seed_chunk[0] + seed_chunk[1]);
             let mut res = usize::MAX;
