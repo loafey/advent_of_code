@@ -69,6 +69,7 @@ pub fn part2() -> usize {
         .collect::<Vec<_>>();
     let start = seeds.iter().map(|v| v.start).min().unwrap_or_default();
 
+    // To improve the speed even more, we use a binary search here
     const STEP_SIZE: usize = 10000;
     let new_start = (start..)
         .step_by(STEP_SIZE)
