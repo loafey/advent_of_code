@@ -38,6 +38,7 @@ pub fn part1() -> usize {
 
 pub fn part2() -> usize {
     let cards = parser();
+    let org_amount = cards.len();
     let wins = cards
         .iter()
         .copied()
@@ -50,14 +51,14 @@ pub fn part2() -> usize {
             })
         })
         .collect::<BTreeMap<_, _>>();
-    let mut res = cards.len();
-    let mut cards = VecDeque::from(cards);
-    while !cards.is_empty() {
-        let vec = &wins[&cards.pop_front().unwrap().0];
-        res += vec.len();
-        vec.iter()
-            .filter(|v| v.1 > 0)
-            .for_each(|v| cards.push_back(*v));
+    let mut card_amounts = wins.keys().map(|s| (*s, 1)).collect::<BTreeMap<_, _>>();
+    for (i, card) in cards.into_iter().enumerate() {
+        let wins = &wins[&(i + 1)];
+        wins.iter().for_each(|c| {
+            let amount = card_amounts[&(i + 1)];
+            let r = card_amounts.get_mut(&c.0).unwrap();
+            *r += amount;
+        });
     }
-    res
+    card_amounts.values().sum()
 }
