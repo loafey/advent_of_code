@@ -52,6 +52,7 @@ pub fn part2() -> usize {
         })
         .collect::<BTreeMap<_, _>>();
     let mut card_amounts = wins.keys().map(|s| (*s, 1)).collect::<BTreeMap<_, _>>();
+    // Improvment idea from William Bodin https://github.com/Rakarake/
     for (i, card) in cards.into_iter().enumerate() {
         let wins = &wins[&(i + 1)];
         wins.iter().for_each(|c| {
