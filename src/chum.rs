@@ -1,16 +1,19 @@
 use chumsky::prelude::*;
 
 #[derive(Clone, Debug)]
-enum Instr<'a> {
+enum Instr {
     Chars,
-    F(&'a str),
+    Space,
+    Block(String),
 }
 
-fn parser<'a>() -> impl Parser<&'a str, Vec<Instr<'a>>> {
+fn parser() -> impl Parser<char, Vec<Instr>, Error = Simple<char>> {
+    let s = text::ident().map(ToString::to_string).padded();
     recursive(|bf| {
         choice((
-            just("c").to(Instr::Chars),
-            bf.delimited_by(just("f("), just(")")).map(Instr::F),
+            just(' ').to(Instr::Space),
+            just('C').to(Instr::Chars),
+            bf.delimited_by(just("f("), just(')')),
         ))
         .repeated()
     })
@@ -21,5 +24,5 @@ fn parser<'a>() -> impl Parser<&'a str, Vec<Instr<'a>>> {
 // cond "expr" : lambda
 
 pub fn test() {
-    println!("{:#?}", parser().parse("<>[>[--]]").unwrap())
+    println!("{:#?}", parser().parse("C f(C)").unwrap())
 }

@@ -11,27 +11,27 @@ mod aoc_2019;
 mod aoc_2020;
 mod aoc_2022;
 mod aoc_2023;
-mod chum;
+// mod chum;
 mod parser;
 mod utils;
 
 fn main() {
-    chum::test();
+    // chum::test();
 
-    // let benchmark = std::env::args().filter(|s| s == "--benchmark").count() == 1;
-    // let table = std::env::args().filter(|s| s == "--table").count() == 1;
-    // if benchmark {
-    //     println!("# AoC Benchmarks");
-    //     println!("{}\n", format_benchmark(aoc_2023::table().run_benchmarks()));
-    //     println!("{}\n", format_benchmark(aoc_2022::table().run_benchmarks()));
-    //     println!("{}\n", format_benchmark(aoc_2020::table().run_benchmarks()));
-    //     println!("{}\n", format_benchmark(aoc_2019::table().run_benchmarks()));
-    //     println!("{}\n", format_benchmark(aoc_2018::table().run_benchmarks()));
-    // } else if table {
-    //     aoc_2023::table().run();
-    // } else {
-    //     aoc_2023::table().run_current_day()
-    // }
+    let benchmark = std::env::args().filter(|s| s == "--benchmark").count() == 1;
+    let table = std::env::args().filter(|s| s == "--table").count() == 1;
+    if benchmark {
+        println!("# AoC Benchmarks");
+        println!("{}\n", format_benchmark(aoc_2023::table().run_benchmarks()));
+        println!("{}\n", format_benchmark(aoc_2022::table().run_benchmarks()));
+        println!("{}\n", format_benchmark(aoc_2020::table().run_benchmarks()));
+        println!("{}\n", format_benchmark(aoc_2019::table().run_benchmarks()));
+        println!("{}\n", format_benchmark(aoc_2018::table().run_benchmarks()));
+    } else if table {
+        aoc_2023::table().run();
+    } else {
+        aoc_2023::table().run_current_day()
+    }
 }
 
 #[allow(clippy::type_complexity)]
