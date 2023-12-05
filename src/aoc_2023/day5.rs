@@ -58,12 +58,9 @@ pub fn part2() -> usize {
     seeds
         .chunks(2)
         .par_bridge() // multithreading babeyyyy
-        .map(|seed_chunk| {
+        .filter_map(|seed_chunk| {
             let seeds = (seed_chunk[0]..seed_chunk[0] + seed_chunk[1]);
-            seeds
-                .map(|v| find_dest(v, &chain))
-                .min()
-                .unwrap_or_default()
+            seeds.map(|v| find_dest(v, &chain)).min()
         })
         .min()
         .unwrap_or_default()
