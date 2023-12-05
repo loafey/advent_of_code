@@ -35,26 +35,9 @@ fn inputs() -> Inputs {
     let mut splat = s.split("\n\n");
 
     let seeds = parse_row(splat.next().unwrap().split_once(':').unwrap().1);
-    let seed_to_soil = parse_section(splat.next().unwrap());
-    let soil_to_fertilizer = parse_section(splat.next().unwrap());
-    let fertilizer_to_water = parse_section(splat.next().unwrap());
-    let water_to_light = parse_section(splat.next().unwrap());
-    let light_to_temperature = parse_section(splat.next().unwrap());
-    let temperature_to_humidity = parse_section(splat.next().unwrap());
-    let humidity_to_location = parse_section(splat.next().unwrap());
+    let chain = splat.map(parse_section).collect();
 
-    Inputs {
-        seeds,
-        chain: vec![
-            seed_to_soil,
-            soil_to_fertilizer,
-            fertilizer_to_water,
-            water_to_light,
-            light_to_temperature,
-            temperature_to_humidity,
-            humidity_to_location,
-        ],
-    }
+    Inputs { seeds, chain }
 }
 
 pub fn part1() -> usize {
