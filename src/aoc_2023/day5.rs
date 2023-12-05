@@ -56,8 +56,7 @@ pub fn part2() -> usize {
     let Inputs { seeds, chain } = inputs();
     // Why write fast code when when many threads do good?
     seeds
-        .chunks(2)
-        .par_bridge() // multithreading babeyyyy
+        .par_chunks(2) // multithreading babeyyyy
         .filter_map(|seed_chunk| {
             let seeds = (seed_chunk[0]..seed_chunk[0] + seed_chunk[1]);
             seeds.map(|v| find_dest(v, &chain)).min()
