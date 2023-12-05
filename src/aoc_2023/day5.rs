@@ -1,8 +1,5 @@
-use chumsky::primitive::Container;
-
 use crate::utils::load_string;
 use std::{collections::HashMap, ops::Range};
-
 type Map = HashMap<Range<usize>, usize>;
 
 fn parse_section(s: &str) -> Map {
@@ -21,13 +18,6 @@ fn parse_row(row: &str) -> Vec<usize> {
 struct Inputs {
     seeds: Vec<usize>,
     chain: Vec<Map>,
-    // seed_to_soil: Map,
-    // soil_to_fertilizer: Map,
-    // fertilizer_to_water: Map,
-    // water_to_light: Map,
-    // light_to_temperature: Map,
-    // temperature_to_humidity: Map,
-    // humidity_to_location: Map,
 }
 
 fn inputs() -> Inputs {
@@ -40,47 +30,40 @@ fn inputs() -> Inputs {
     Inputs { seeds, chain }
 }
 
-pub fn part1() -> usize {
-    let inputs = inputs();
-    let mut res = usize::MAX;
-    for v in inputs.seeds {
-        let mut destination = v;
-        for step in &inputs.chain {
-            for (r, d) in step {
-                if r.contains(&destination) {
-                    destination = d + (destination - r.start);
-                    break;
-                }
+fn find_dest(init: usize, chain: &Vec<Map>) -> usize {
+    let mut destination = init;
+    for step in chain {
+        for (r, d) in step {
+            if r.contains(&destination) {
+                destination = d + (destination - r.start);
+                break;
             }
         }
-        res = res.min(destination);
     }
-    res
+    destination
+}
+
+pub fn part1() -> usize {
+    let Inputs { seeds, chain } = inputs();
+    seeds
+        .into_iter()
+        .map(|v| find_dest(v, &chain))
+        .min()
+        .unwrap_or_default()
 }
 pub fn part2() -> usize {
     use rayon::prelude::*;
-    let inputs = inputs();
+    let Inputs { seeds, chain } = inputs();
     // Why write fast code when when many threads do good?
-    inputs
-        .seeds
+    seeds
         .chunks(2)
         .par_bridge() // multithreading babeyyyy
         .map(|seed_chunk| {
             let seeds = (seed_chunk[0]..seed_chunk[0] + seed_chunk[1]);
-            let mut res = usize::MAX;
-            for v in seeds {
-                let mut destination = v;
-                for step in &inputs.chain {
-                    for (r, d) in step {
-                        if r.contains(&destination) {
-                            destination = d + (destination - r.start);
-                            break;
-                        }
-                    }
-                }
-                res = res.min(destination);
-            }
-            res
+            seeds
+                .map(|v| find_dest(v, &chain))
+                .min()
+                .unwrap_or_default()
         })
         .min()
         .unwrap_or_default()
