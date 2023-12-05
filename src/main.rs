@@ -1,6 +1,7 @@
 #![feature(pattern)]
 #![feature(iter_array_chunks)]
 #![feature(let_chains)]
+#![feature(array_chunks)]
 #![allow(clippy::single_range_in_vec_init)]
 #![allow(unused)]
 
