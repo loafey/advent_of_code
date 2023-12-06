@@ -1,4 +1,4 @@
-use crate::utils::{load_string, BiFunctor as _, BiFunctorExt as _};
+use crate::utils::{bi_functors::*, load_string};
 use std::collections::{BTreeMap, VecDeque};
 
 #[derive(Clone, Copy, Debug)]

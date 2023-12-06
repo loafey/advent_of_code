@@ -9,6 +9,8 @@ use std::{
     str::FromStr,
 };
 
+use chrono::format::Item;
+
 pub fn manhattan_distance(p1: (isize, isize), p2: (isize, isize)) -> isize {
     (p1.0 - p2.0).abs() + (p1.1 - p2.1).abs()
 }
@@ -166,44 +168,68 @@ pub fn matrix_get<T: Copy>(
     inputs.get(y)?.get(x).cloned()
 }
 
-pub trait BiFunctorExtExt<A, B> {
-    fn splet(self, ab: fn(A) -> B) -> (B, B);
-}
-impl<A, B> BiFunctorExtExt<A, B> for (A, A) {
-    fn splet(self, ab: fn(A) -> B) -> (B, B) {
-        let (e1, e2) = self;
-        (ab(e1), ab(e2))
+pub mod bi_functors {
+    pub trait BiFunctorExtExt<A, B> {
+        fn splet(self, ab: fn(A) -> B) -> (B, B);
     }
-}
-
-pub trait BiFunctorExt<A, B, C> {
-    fn splot(self, ab: fn(A, B) -> C) -> C;
-}
-impl<A, B, C> BiFunctorExt<A, B, C> for (A, B) {
-    fn splot(self, ab: fn(A, B) -> C) -> C {
-        let (e1, e2) = self;
-        ab(e1, e2)
-    }
-}
-
-pub trait BiFunctor<A, B, C, D> {
-    fn splat(self, a: fn(A) -> B, b: fn(C) -> D) -> (B, D);
-    fn splut(self, ab: fn(A, C) -> (B, D)) -> (B, D);
-}
-impl<A, B, C, D> BiFunctor<A, B, C, D> for (A, C) {
-    fn splat(self, a: fn(A) -> B, b: fn(C) -> D) -> (B, D) {
-        let (e1, e2) = self;
-        (a(e1), b(e2))
+    impl<A, B> BiFunctorExtExt<A, B> for (A, A) {
+        fn splet(self, ab: fn(A) -> B) -> (B, B) {
+            let (e1, e2) = self;
+            (ab(e1), ab(e2))
+        }
     }
 
-    fn splut(self, ab: fn(A, C) -> (B, D)) -> (B, D) {
-        let (e1, e2) = self;
-        ab(e1, e2)
+    pub trait BiFunctorExt<A, B, C> {
+        fn splot(self, ab: fn(A, B) -> C) -> C;
+    }
+    impl<A, B, C> BiFunctorExt<A, B, C> for (A, B) {
+        fn splot(self, ab: fn(A, B) -> C) -> C {
+            let (e1, e2) = self;
+            ab(e1, e2)
+        }
+    }
+
+    pub trait BiFunctor<A, B, C, D> {
+        fn splat(self, a: fn(A) -> B, b: fn(C) -> D) -> (B, D);
+        fn splut(self, ab: fn(A, C) -> (B, D)) -> (B, D);
+    }
+    impl<A, B, C, D> BiFunctor<A, B, C, D> for (A, C) {
+        fn splat(self, a: fn(A) -> B, b: fn(C) -> D) -> (B, D) {
+            let (e1, e2) = self;
+            (a(e1), b(e2))
+        }
+
+        fn splut(self, ab: fn(A, C) -> (B, D)) -> (B, D) {
+            let (e1, e2) = self;
+            ab(e1, e2)
+        }
+    }
+    //impl<A, D> BiFunctor<A, D, A, D> for (A, A) {
+    //    fn splat(self, a: fn(A) -> D, b: fn(A) -> D) -> (D, D) {
+    //        let (e1, e2) = self;
+    //        (a(e1), b(e2))
+    //    }
+    //}
+}
+
+pub trait FoldDefault<A, B: Default> {
+    fn fold_d(self, f: fn(B, A) -> B) -> B;
+}
+impl<A, B: Default, I: Iterator<Item = A>> FoldDefault<A, B> for I {
+    fn fold_d(self, f: fn(B, A) -> B) -> B {
+        self.fold(B::default(), f)
     }
 }
-//impl<A, D> BiFunctor<A, D, A, D> for (A, A) {
-//    fn splat(self, a: fn(A) -> D, b: fn(A) -> D) -> (D, D) {
-//        let (e1, e2) = self;
-//        (a(e1), b(e2))
-//    }
-//}
+pub trait ParseAndCollect {
+    fn parse_and_collect<A: FromIterator<B>, B: FromStr>(self) -> A
+    where
+        <B as FromStr>::Err: Debug;
+}
+impl<'a, I: Iterator<Item = &'a str>> ParseAndCollect for I {
+    fn parse_and_collect<A: FromIterator<B>, B: FromStr>(self) -> A
+    where
+        <B as FromStr>::Err: Debug,
+    {
+        self.map(|b| b.parse().unwrap()).collect::<A>()
+    }
+}
