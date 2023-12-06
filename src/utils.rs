@@ -166,6 +166,16 @@ pub fn matrix_get<T: Copy>(
     inputs.get(y)?.get(x).cloned()
 }
 
+pub trait BiFunctorExtExt<A, B> {
+    fn splet(self, ab: fn(A) -> B) -> (B, B);
+}
+impl<A, B> BiFunctorExtExt<A, B> for (A, A) {
+    fn splet(self, ab: fn(A) -> B) -> (B, B) {
+        let (e1, e2) = self;
+        (ab(e1), ab(e2))
+    }
+}
+
 pub trait BiFunctorExt<A, B, C> {
     fn splot(self, ab: fn(A, B) -> C) -> C;
 }
