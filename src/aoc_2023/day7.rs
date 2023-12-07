@@ -1,6 +1,5 @@
-use std::{cmp::Ordering, collections::BTreeMap, usize};
-
 use crate::utils::{bi_functors::*, load_string};
+use std::{cmp::Ordering, collections::BTreeMap, usize};
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
 #[rustfmt::skip]
@@ -9,9 +8,9 @@ enum Labels {
     N6, N7, N8, N9, T,  
     J,  Q,  K,  A,
 }
+use Labels::*;
 impl From<char> for Labels {
     fn from(value: char) -> Self {
-        use Labels::*;
         #[rustfmt::skip]
         match value {
             'A' => A,  'K' => K,  'Q' => Q,  'J' => J,
@@ -25,9 +24,9 @@ impl From<char> for Labels {
 fn biggest_rank(a: &[Labels], b: &[Labels], joker: bool) -> Ordering {
     for (a, b) in a.iter().zip(b) {
         if joker {
-            if *a == Labels::J && *b != Labels::J {
+            if *a == J && *b != J {
                 return Ordering::Less;
-            } else if *a != Labels::J && *b == Labels::J {
+            } else if *a != J && *b == J {
                 return Ordering::Greater;
             }
         }
@@ -69,7 +68,7 @@ fn hand_type(a: &[Labels]) -> usize {
 fn most_common(cards: &[Labels]) -> Labels {
     let mut map = BTreeMap::new();
     for c in cards {
-        if matches!(c, Labels::J) {
+        if matches!(c, J) {
             continue;
         } else if let Some(v) = map.get_mut(c) {
             *v += 1;
@@ -80,7 +79,7 @@ fn most_common(cards: &[Labels]) -> Labels {
     map.into_iter()
         .max_by_key(|(c, i)| *i)
         .map(|(l, _)| *l)
-        .unwrap_or(Labels::J)
+        .unwrap_or(J)
 }
 
 fn input() -> Vec<([Labels; 5], usize)> {
@@ -113,7 +112,7 @@ fn fix_array(arr: [Labels; 5]) -> [Labels; 5] {
     let mut a_fix = arr;
     let a_common = most_common(&arr);
     a_fix.iter_mut().for_each(|c| {
-        *c = if matches!(c, Labels::J) { a_common } else { *c };
+        *c = if matches!(c, J) { a_common } else { *c };
     });
     a_fix
 }
@@ -127,13 +126,11 @@ fn cmp(a: &[Labels], b: &[Labels], a1: &[Labels], b1: &[Labels], joker: bool) ->
 
 pub fn part1() -> usize {
     let mut input = input();
-
     input.sort_by(|(a, _), (b, _)| cmp(a, b, a, b, false));
     score(input)
 }
 pub fn part2() -> usize {
     let mut input = input();
-
     input.sort_by(|(a, _), (b, _)| cmp(&fix_array(*a), &fix_array(*b), a, b, true));
     score(input)
 }
