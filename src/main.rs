@@ -2,6 +2,7 @@
 #![feature(iter_array_chunks)]
 #![feature(let_chains)]
 #![feature(array_chunks)]
+#![feature(stmt_expr_attributes)]
 #![allow(clippy::single_range_in_vec_init)]
 #![allow(unused)]
 
