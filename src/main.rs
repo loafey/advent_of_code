@@ -32,7 +32,7 @@ fn main() {
     } else if table {
         aoc_2023::table().run();
     } else {
-        aoc_2023::table().run_current_day()
+        aoc_2023::table().run_day(8)
     }
 }
 

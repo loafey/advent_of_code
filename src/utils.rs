@@ -233,3 +233,43 @@ impl<'a, I: Iterator<Item = &'a str>> ParseAndCollect for I {
         self.map(|b| b.parse().unwrap()).collect::<A>()
     }
 }
+
+pub trait NumExt {
+    fn lcm(self, other: &Self) -> Self;
+    fn gcd(self, other: &Self) -> Self;
+}
+impl NumExt for usize {
+    // yoinked from here https://docs.rs/num-integer/0.1.45/src/num_integer/lib.rs.html#828
+    fn lcm(self, other: &Self) -> Self {
+        if self == 0 && *other == 0 {
+            return 0;
+        }
+        let gcd = self.gcd(other);
+        self * (*other / gcd) //.abs()
+    }
+
+    // yoinked from https://docs.rs/num-integer/0.1.45/src/num_integer/lib.rs.html#459
+    fn gcd(self, other: &Self) -> Self {
+        let mut m = self;
+        let mut n = *other;
+        if m == 0 || n == 0 {
+            return (m | n);
+        }
+        let shift = (m | n).trailing_zeros();
+        if m == Self::min_value() || n == Self::min_value() {
+            return (1 << shift);
+        }
+        m >>= m.trailing_zeros();
+        n >>= n.trailing_zeros();
+        while m != n {
+            if m > n {
+                m -= n;
+                m >>= m.trailing_zeros();
+            } else {
+                n -= m;
+                n >>= n.trailing_zeros();
+            }
+        }
+        m << shift
+    }
+}
