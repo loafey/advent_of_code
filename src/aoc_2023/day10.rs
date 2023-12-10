@@ -117,9 +117,9 @@ pub fn part2() -> usize {
     let (start, map) = graph();
     let matrix = load_string("inputs/2023/day10.input")
         .lines()
-        .map(|s| s.chars().collect::<Vec<_>>())
+        .map(|s| s.chars().count())
         .collect::<Vec<_>>();
-    let (y, x) = (matrix.len(), matrix[0].len());
+    let (y, x) = (matrix.len(), matrix[0]);
 
     let mut ascii = vec![vec![false; x * 3]; y * 3];
     ascii.iter_mut().array_chunks::<3>().for_each(|[_, a, _]| {
@@ -191,36 +191,26 @@ pub fn part2() -> usize {
         }
     }
 
-    // for r in ascii {
-    //     for c in r {
-    //         if c {
-    //             print!("█")
-    //         } else {
-    //             print!(" ")
-    //         }
-    //     }
-    //     println!()
-    // }
-
-    let mut i = 0;
-    for y in (0..ascii.len()).step_by(3) {
-        for x in (0..ascii[y].len()).step_by(3) {
-            let arr = [
-                [ascii[y][x], ascii[y][x + 1], ascii[y][x + 2]],
-                [ascii[y + 1][x], ascii[y + 1][x + 1], ascii[y + 1][x + 2]],
-                [ascii[y + 2][x], ascii[y + 2][x + 1], ascii[y + 2][x + 2]],
-            ];
-            if matches!(
-                arr,
-                [
-                    [false, false, false],
-                    [false, true, false],
-                    [false, false, false]
-                ]
-            ) {
-                i += 1;
-            }
-        }
-    }
-    i
+    (0..ascii.len())
+        .step_by(3)
+        .map(|y| {
+            (0..ascii[y].len())
+                .step_by(3)
+                .filter(|x| {
+                    matches!(
+                        [
+                            [ascii[y][*x], ascii[y][x + 1], ascii[y][x + 2]],
+                            [ascii[y + 1][*x], ascii[y + 1][x + 1], ascii[y + 1][x + 2]],
+                            [ascii[y + 2][*x], ascii[y + 2][x + 1], ascii[y + 2][x + 2]],
+                        ],
+                        [
+                            [false, false, false],
+                            [false, true, false],
+                            [false, false, false]
+                        ]
+                    )
+                })
+                .count()
+        })
+        .sum()
 }
