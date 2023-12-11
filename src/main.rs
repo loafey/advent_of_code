@@ -13,7 +13,6 @@ mod aoc_2019;
 mod aoc_2020;
 mod aoc_2022;
 mod aoc_2023;
-// mod chum;
 mod parser;
 mod utils;
 

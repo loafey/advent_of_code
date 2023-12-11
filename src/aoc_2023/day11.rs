@@ -1,57 +1,40 @@
-use std::collections::BTreeSet;
-
 use crate::utils::{load_string, NumTupleExt};
+use std::collections::{BTreeSet, HashSet};
 
-fn solver(size: usize) -> usize {
-    let mut input = load_string("inputs/2023/day11.input")
+fn row_empty(r: usize, mat: &[Vec<char>]) -> bool {
+    mat[r].iter().all(|c| *c == '.')
+}
+fn col_empty(c: usize, mat: &[Vec<char>]) -> bool {
+    (0..mat.len()).all(|r| mat[r][c] == '.')
+}
+
+fn solver<const SIZE: usize>() -> usize {
+    let input = load_string("inputs/2023/day11.input")
         .lines()
         .map(|r| r.chars().collect::<Vec<_>>())
         .collect::<Vec<_>>();
 
-    let mut y_gaps = BTreeSet::new();
-    let mut r = 0;
-    while r < input.len() {
-        if input[r].iter().all(|c| *c == '.') {
-            y_gaps.insert(r);
+    let mut y_mod = 0;
+    let mut gs = Vec::new();
+    for (y, r) in input.iter().enumerate() {
+        if row_empty(y, &input) {
+            y_mod += SIZE - 1;
+            continue;
         }
-        r += 1;
-    }
-    let mut x_gaps = BTreeSet::new();
-    let mut c = 0;
-    while c < input[0].len() {
-        if (0..input.len()).all(|r| input[r][c] == '.') {
-            x_gaps.insert(c);
+        let mut x_mod = 0;
+        for (x, c) in r.iter().enumerate() {
+            if *c == '#' {
+                gs.push((y + y_mod, x + x_mod));
+            } else if col_empty(x, &input) {
+                x_mod += SIZE - 1;
+            }
         }
-        c += 1;
     }
-
-    let galaxies = input
-        .into_iter()
-        .enumerate()
-        .flat_map(|(y, r)| {
-            r.into_iter()
-                .enumerate()
-                .filter(|(x, c)| *c == '#')
-                .map(move |(x, _)| (y, x))
-        })
-        .collect::<Vec<_>>();
-    galaxies
-        .iter()
+    gs.iter()
         .map(|p| {
-            galaxies
-                .iter()
+            gs.iter()
                 .filter(|s| *p != **s)
-                .map(|s| {
-                    p.manhattan_distance(s)
-                        + (((p.0.min(s.0))..(p.0.max(s.0)))
-                            .filter_map(|y| y_gaps.get(&y))
-                            .count()
-                            * (size - 1))
-                        + (((p.1.min(s.1))..(p.1.max(s.1)))
-                            .filter_map(|x| x_gaps.get(&(x)))
-                            .count()
-                            * (size - 1))
-                })
+                .map(|s| p.manhattan_distance(s))
                 .sum::<usize>()
         })
         .sum::<usize>()
@@ -59,8 +42,8 @@ fn solver(size: usize) -> usize {
 }
 
 pub fn part1() -> usize {
-    solver(2)
+    solver::<2>()
 }
 pub fn part2() -> usize {
-    solver(1000000)
+    solver::<1000000>()
 }
