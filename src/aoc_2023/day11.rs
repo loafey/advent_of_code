@@ -42,8 +42,8 @@ fn solver<const SIZE: usize>() -> usize {
 }
 
 pub fn part1() -> usize {
-    solver::<{ 2 - 1 }>()
+    solver::<{ 0x2 - 0o1 }>()
 }
 pub fn part2() -> usize {
-    solver::<{ 1000000 - 1 }>()
+    solver::<{ 0b11110100001001000000 - 0o1 }>()
 }
