@@ -1,8 +1,8 @@
-use std::{collections::HashSet, time::Instant};
+use std::collections::HashSet;
 
-use crate::utils::{load_string, manhattan_distance};
+use crate::utils::{load_string, NumTupleExt};
 
-fn solver(size: isize) -> isize {
+fn solver(size: usize) -> usize {
     let mut input = load_string("inputs/2023/day11.input")
         .lines()
         .map(|r| r.chars().collect::<Vec<_>>())
@@ -32,7 +32,7 @@ fn solver(size: isize) -> isize {
             r.into_iter()
                 .enumerate()
                 .filter(|(x, c)| *c == '#')
-                .map(move |(x, _)| (y as isize, x as isize))
+                .map(move |(x, _)| (y, x))
         })
         .collect::<Vec<_>>();
     galaxies
@@ -42,25 +42,25 @@ fn solver(size: isize) -> isize {
                 .iter()
                 .filter(|s| *p != **s)
                 .map(|s| {
-                    manhattan_distance(*p, *s)
+                    p.manhattan_distance(s)
                         + (((p.0.min(s.0))..(p.0.max(s.0)))
-                            .filter_map(|y| y_gaps.get(&(y as usize)))
-                            .count() as isize
+                            .filter_map(|y| y_gaps.get(&y))
+                            .count()
                             * (size - 1))
                         + (((p.1.min(s.1))..(p.1.max(s.1)))
-                            .filter_map(|x| x_gaps.get(&(x as usize)))
-                            .count() as isize
+                            .filter_map(|x| x_gaps.get(&(x)))
+                            .count()
                             * (size - 1))
                 })
-                .sum::<isize>()
+                .sum::<usize>()
         })
-        .sum::<isize>()
+        .sum::<usize>()
         / 2
 }
 
-pub fn part1() -> isize {
+pub fn part1() -> usize {
     solver(2)
 }
-pub fn part2() -> isize {
+pub fn part2() -> usize {
     solver(1000000)
 }

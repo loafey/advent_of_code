@@ -1,5 +1,5 @@
 use crate::utils::load_string;
-use crate::utils::{manhattan_distance, parse_next};
+use crate::utils::{parse_next, NumTupleExt};
 
 #[derive(Debug, Clone, Copy)]
 struct Beacon {
@@ -59,12 +59,12 @@ pub fn part1() -> usize {
     let bs = parse_input();
     let min_x = bs
         .iter()
-        .map(|(s, b)| s.x.min(b.x) - manhattan_distance((s.x, s.y), (b.x, b.y)))
+        .map(|(s, b)| s.x.min(b.x) - (s.x, s.y).manhattan_distance(&(b.x, b.y)))
         .min()
         .unwrap();
     let max_x = bs
         .iter()
-        .map(|(s, b)| s.x.max(b.x) + manhattan_distance((s.x, s.y), (b.x, b.y)))
+        .map(|(s, b)| s.x.max(b.x) + (s.x, s.y).manhattan_distance(&(b.x, b.y)))
         .max()
         .unwrap();
     let mut row = vec![Spot::Empty; (max_x - min_x) as usize];
@@ -79,7 +79,7 @@ pub fn part1() -> usize {
     }
 
     bs.into_iter()
-        .map(|(s, b)| ((s, b), manhattan_distance((s.x, s.y), (b.x, b.y))))
+        .map(|(s, b)| ((s, b), (s.x, s.y).manhattan_distance(&(b.x, b.y))))
         .filter(|((s, _), size)| (Y <= s.y + size) && (Y >= s.y - size))
         .map(|((s, _), size)| (s, size))
         .for_each(|(Sensor { x: s_x, y: s_y }, size)| {
@@ -117,8 +117,8 @@ pub fn part2() -> isize {
         while x < max {
             if let Some((s, size)) = bs
                 .iter()
-                .map(|(Sensor { x, y }, b)| ((*x, *y), manhattan_distance((*x, *y), (b.x, b.y))))
-                .find(|((s_x, s_y), size)| manhattan_distance((x, y), (*s_x, *s_y)) <= *size)
+                .map(|(Sensor { x, y }, b)| ((*x, *y), (*x, *y).manhattan_distance(&(b.x, b.y))))
+                .find(|((s_x, s_y), size)| (x, y).manhattan_distance(&(*s_x, *s_y)) <= *size)
             {
                 let dif = (y - s.1).abs();
                 x = s.0 + size - dif;

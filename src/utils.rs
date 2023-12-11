@@ -11,8 +11,18 @@ use std::{
 
 use chrono::format::Item;
 
-pub fn manhattan_distance(p1: (isize, isize), p2: (isize, isize)) -> isize {
-    (p1.0 - p2.0).abs() + (p1.1 - p2.1).abs()
+pub trait NumTupleExt<T> {
+    fn manhattan_distance(&self, other: &Self) -> T;
+}
+impl NumTupleExt<usize> for (usize, usize) {
+    fn manhattan_distance(&self, other: &Self) -> usize {
+        (self.0.max(other.0) - self.0.min(other.0)) + (self.1.max(other.1) - self.1.min(other.1))
+    }
+}
+impl NumTupleExt<isize> for (isize, isize) {
+    fn manhattan_distance(&self, other: &Self) -> isize {
+        (self.0 - other.0).abs() + (self.1 - other.1).abs()
+    }
 }
 
 pub fn parse_next<'l, T: FromStr>(iter: &mut impl Iterator<Item = &'l str>) -> T {
