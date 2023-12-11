@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::BTreeSet;
 
 use crate::utils::{load_string, NumTupleExt};
 
@@ -8,7 +8,7 @@ fn solver(size: usize) -> usize {
         .map(|r| r.chars().collect::<Vec<_>>())
         .collect::<Vec<_>>();
 
-    let mut y_gaps = HashSet::new();
+    let mut y_gaps = BTreeSet::new();
     let mut r = 0;
     while r < input.len() {
         if input[r].iter().all(|c| *c == '.') {
@@ -16,7 +16,7 @@ fn solver(size: usize) -> usize {
         }
         r += 1;
     }
-    let mut x_gaps = HashSet::new();
+    let mut x_gaps = BTreeSet::new();
     let mut c = 0;
     while c < input[0].len() {
         if (0..input.len()).all(|r| input[r][c] == '.') {
