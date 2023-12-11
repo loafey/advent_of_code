@@ -18,7 +18,7 @@ fn solver<const SIZE: usize>() -> usize {
     let mut gs = Vec::new();
     for (y, r) in input.iter().enumerate() {
         if row_empty(y, &input) {
-            y_mod += SIZE - 1;
+            y_mod += SIZE;
             continue;
         }
         let mut x_mod = 0;
@@ -26,7 +26,7 @@ fn solver<const SIZE: usize>() -> usize {
             if *c == '#' {
                 gs.push((y + y_mod, x + x_mod));
             } else if col_empty(x, &input) {
-                x_mod += SIZE - 1;
+                x_mod += SIZE;
             }
         }
     }
@@ -42,8 +42,8 @@ fn solver<const SIZE: usize>() -> usize {
 }
 
 pub fn part1() -> usize {
-    solver::<2>()
+    solver::<{ 2 - 1 }>()
 }
 pub fn part2() -> usize {
-    solver::<1000000>()
+    solver::<{ 1000000 - 1 }>()
 }
