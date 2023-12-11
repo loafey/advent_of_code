@@ -21,6 +21,9 @@ fn main() {
 
     let benchmark = std::env::args().filter(|s| s == "--benchmark").count() == 1;
     let table = std::env::args().filter(|s| s == "--table").count() == 1;
+    let num = std::env::args()
+        .nth(1)
+        .and_then(|s| s.parse::<usize>().ok());
     if benchmark {
         println!("# AoC Benchmarks");
         println!("{}\n", format_benchmark(aoc_2023::table().run_benchmarks()));
@@ -30,7 +33,11 @@ fn main() {
         println!("{}\n", format_benchmark(aoc_2018::table().run_benchmarks()));
     } else if table {
         aoc_2023::table().run();
+    } else if let Some(num) = num {
+        println!("╍ Running day {num} ╍");
+        aoc_2023::table().run_day(num)
     } else {
+        println!("╍ Running current day ╍");
         aoc_2023::table().run_current_day()
     }
 }
