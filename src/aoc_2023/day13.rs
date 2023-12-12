@@ -26,21 +26,10 @@ fn check(row: &[char], nums: &[usize]) -> bool {
 }
 
 fn check_amount(row: &[char], nums: &[usize]) -> usize {
-    let c_count = row
-        .split(|c| matches!(c, '.'))
+    row.split(|c| matches!(c, '.' | '?'))
         .filter(|s| !s.is_empty())
-        .map(|s| s.len())
-        .sum();
-    let mut total = 0;
-    let mut n_total = 0;
-    for n in nums {
-        if n + n_total > c_count {
-            break;
-        }
-        n_total += n;
-        total += 1
-    }
-    total
+        .count()
+        .min(nums.len())
 }
 
 fn perm(mut row: Vec<char>, nums: &[usize]) -> usize {
