@@ -1,55 +1,28 @@
-use std::io::{stdout, Write};
-
-use rayon::iter::{
-    IntoParallelIterator, IntoParallelRefIterator, ParallelBridge, ParallelIterator as _,
-};
-
 use crate::utils::load_string;
 
-fn check(row: &[char], nums: &[usize]) -> bool {
-    let s = row
-        .split(|c| matches!(c, '.'))
-        .filter(|s| !s.is_empty())
-        .collect::<Vec<_>>();
-    if nums.len() != s.len() {
-        return false;
-    }
-    for (s, size) in s.into_iter().zip(nums) {
-        if s.len() != *size {
-            return false;
-        }
-    }
-    true
-}
-
-fn perm(mut row: Vec<char>, nums: &[usize]) -> usize {
-    fn perm(row: &mut [char], indicies: &[usize], nums: &[usize]) -> usize {
-        match indicies {
-            [x, xs @ ..] => {
-                let mut res = 0;
-                row[*x] = '.';
-                res += perm(row, xs, nums);
-                row[*x] = '#';
-                res += perm(row, xs, nums);
-                res
+fn check(chars: &mut [char], nums: &mut [usize]) -> usize {
+    // println!("{chars:?} {nums:?}",);
+    match (chars, nums) {
+        (s, []) if s.is_empty() || s.iter().all(|c| *c == '.') => 1,
+        (_, []) => 0,
+        ([], _) => 0,
+        (css, [0, ns @ ..]) => check(css, ns),
+        (css, nss) => match css[0] {
+            '#' => {
+                nss[0] -= 1;
+                check(&mut css[1..], nss)
             }
-            [] => {
-                if check(row, nums) {
-                    1
-                } else {
-                    0
-                }
+            '.' => check(&mut css[1..], nss),
+            '?' => {
+                css[0] = '#';
+                let a = check(css, nss);
+                css[0] = '.';
+                let b = check(css, nss);
+                a + b
             }
-        }
+            _ => unreachable!(),
+        },
     }
-    let mut indices = row
-        .iter()
-        .enumerate()
-        .filter(|(_, c)| **c == '?')
-        .map(|(u, _)| u)
-        .collect::<Vec<_>>();
-
-    perm(&mut row, &indices, nums)
 }
 
 pub fn part1() -> usize {
@@ -59,7 +32,7 @@ pub fn part1() -> usize {
         .map(|r| {
             let (row, nums) = r.split_once(' ').unwrap();
             let row = row.to_string();
-            let nums = nums
+            let mut nums = nums
                 .split(',')
                 .map(|s| s.parse::<usize>().unwrap())
                 .collect::<Vec<_>>();
@@ -68,7 +41,14 @@ pub fn part1() -> usize {
         })
         .collect::<Vec<_>>();
 
-    inp.into_iter().map(|(nums, row)| perm(row, &nums)).sum()
+    inp.into_iter()
+        .map(|(mut nums, mut row)| {
+            print!("{row:?} {nums:?}");
+            let r = check(&mut row, &mut nums);
+            println!(": {r}");
+            r
+        })
+        .sum()
 }
 
 pub fn part2() -> usize {
