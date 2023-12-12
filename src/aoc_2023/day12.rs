@@ -1,7 +1,4 @@
-use std::{
-    cmp::Ordering,
-    io::{stdout, Write},
-};
+use std::io::{stdout, Write};
 
 use rayon::iter::{
     IntoParallelIterator, IntoParallelRefIterator, ParallelBridge, ParallelIterator as _,
@@ -25,35 +22,16 @@ fn check(row: &[char], nums: &[usize]) -> bool {
     true
 }
 
-fn check_amount(row: &[char], nums: &[usize]) -> usize {
-    let c_count = row
-        .split(|c| matches!(c, '.'))
-        .filter(|s| !s.is_empty())
-        .map(|s| s.len())
-        .sum();
-    let mut total = 0;
-    let mut n_total = 0;
-    for n in nums {
-        if n + n_total > c_count {
-            break;
-        }
-        n_total += n;
-        total += 1
-    }
-    total
-}
-
 fn perm(mut row: Vec<char>, nums: &[usize]) -> usize {
     fn perm(row: &mut [char], indicies: &[usize], nums: &[usize]) -> usize {
-        print!("checkie: ");
-        row[..].iter().for_each(|p| print!("{p}"));
-        println!();
+        // print!("checkie: ");
+        // row[..].iter().for_each(|p| print!("{p}"));
+        // println!();
         match indicies {
             [x, xs @ ..] => {
-                let amount = check_amount(&row[..*x], nums);
-                let check = check(&row[..*x], &nums[..amount]);
+                let check = (0..=nums.len()).any(|i| check(&row[..*x], &nums[..i]));
                 if !check {
-                    println!("{:?} {:?} {}", &row[..*x], &nums[..amount], amount);
+                    println!("{row:?} {nums:?}");
                     return 0;
                 }
                 // print!(
@@ -76,8 +54,14 @@ fn perm(mut row: Vec<char>, nums: &[usize]) -> usize {
             }
             [] => {
                 if check(row, nums) {
+                    print!("okay: ");
+                    row[..].iter().for_each(|p| print!("{p}"));
+                    println!(" {:?}", check(row, nums));
                     1
                 } else {
+                    print!("not okay: ");
+                    row[..].iter().for_each(|p| print!("{p}"));
+                    println!(" {:?}", check(row, nums));
                     0
                 }
             }
