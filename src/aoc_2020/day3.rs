@@ -6,7 +6,7 @@ enum SlopeSpot {
     Tree,
 }
 
-fn sloppy(slope: &Vec<Vec<SlopeSpot>>, movement: (usize, usize)) -> usize {
+fn sloppy(slope: &[Vec<SlopeSpot>], movement: (usize, usize)) -> usize {
     let mut spot = (0, 0);
     let mut count = 0;
     while spot.0 < slope.len() {

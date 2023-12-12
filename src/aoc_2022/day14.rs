@@ -43,7 +43,7 @@ fn create_grid(
     }
     grid
 }
-fn simulate(grid: &mut Vec<Vec<char>>, min_x: usize) {
+fn simulate(grid: &mut [Vec<char>], min_x: usize) {
     let start = [500 - min_x, 0];
     let mut sand = start;
     let mut sand_cache = sand;
