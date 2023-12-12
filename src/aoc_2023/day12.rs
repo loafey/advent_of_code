@@ -24,27 +24,8 @@ fn check(row: &[char], nums: &[usize]) -> bool {
 
 fn perm(mut row: Vec<char>, nums: &[usize]) -> usize {
     fn perm(row: &mut [char], indicies: &[usize], nums: &[usize]) -> usize {
-        // print!("checkie: ");
-        // row[..].iter().for_each(|p| print!("{p}"));
-        // println!();
         match indicies {
             [x, xs @ ..] => {
-                let check = (0..=nums.len()).any(|i| check(&row[..*x], &nums[..i]));
-                if !check {
-                    println!("{row:?} {nums:?}");
-                    return 0;
-                }
-                // print!(
-                //     "{}\t",
-                //     (0..=nums.len()).any(|i| check(&row[..*x], &nums[..i]))
-                // );
-                // row[..*x].iter().for_each(|p| print!("{p}"));
-                // print!(" ");
-                // print!(
-                //     "{:?}\t",
-                //     (0..=nums.len()).map(|i| &nums[..i]).collect::<Vec<_>>()
-                // );
-                // println!();
                 let mut res = 0;
                 row[*x] = '.';
                 res += perm(row, xs, nums);
@@ -54,14 +35,8 @@ fn perm(mut row: Vec<char>, nums: &[usize]) -> usize {
             }
             [] => {
                 if check(row, nums) {
-                    print!("okay: ");
-                    row[..].iter().for_each(|p| print!("{p}"));
-                    println!(" {:?}", check(row, nums));
                     1
                 } else {
-                    print!("not okay: ");
-                    row[..].iter().for_each(|p| print!("{p}"));
-                    println!(" {:?}", check(row, nums));
                     0
                 }
             }
