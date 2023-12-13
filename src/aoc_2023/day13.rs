@@ -62,7 +62,7 @@ fn check(
                 for (x, y) in (0..i + 1).rev().zip(i + 1..block.len()) {
                     last_x = x;
                     last_y = y;
-                    let mut_dif = diff(&block[x], &block[y]);
+                    mut_dif += diff(&block[x], &block[y]);
                     if mut_dif > 1 {
                         continue 'crugno;
                     }
@@ -75,16 +75,13 @@ fn check(
             }
         }
     }
-    let single = res
-        .iter()
-        .find(|rl| single && matches!(rl, HorizontalSingle(..) | VerticalSingle(..)));
-    match single {
-        Some(x) => *x,
-        Option::None => res
-            .into_iter()
-            .find(|rl| matches!(rl, Horizontal(..) | Vertical(..)))
-            .unwrap_or(None),
-    }
+
+    res.into_iter()
+        .find(|rl| {
+            (!single && matches!(rl, Horizontal(..) | Vertical(..)))
+                || (single && matches!(rl, HorizontalSingle(..) | VerticalSingle(..)))
+        })
+        .unwrap_or(None)
 }
 
 fn check_block(block: &[Vec<char>], single: bool) -> ReflectionLine {
