@@ -11,6 +11,38 @@ use std::{
 
 use chrono::format::Item;
 
+pub trait SliceTools<T> {
+    fn diff(&self, rhs: &[T]) -> Option<usize>;
+}
+impl<T: PartialEq> SliceTools<T> for &[T] {
+    fn diff(&self, rhs: &[T]) -> Option<usize> {
+        if self.len() != rhs.len() {
+            return None;
+        }
+
+        Some(
+            self.iter()
+                .zip(rhs.iter())
+                .map(|(a, b)| if a != b { 1 } else { 0 })
+                .sum(),
+        )
+    }
+}
+impl<T: PartialEq> SliceTools<T> for Vec<T> {
+    fn diff(&self, rhs: &[T]) -> Option<usize> {
+        if self.len() != rhs.len() {
+            return None;
+        }
+
+        Some(
+            self.iter()
+                .zip(rhs.iter())
+                .map(|(a, b)| if a != b { 1 } else { 0 })
+                .sum(),
+        )
+    }
+}
+
 pub trait MatrixTools {
     fn transpose(self) -> Self;
     fn invert(self) -> Self;
