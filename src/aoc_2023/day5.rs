@@ -37,11 +37,9 @@ fn inputs(flip: bool) -> Inputs {
 fn find_dest(init: usize, chain: &[Map]) -> usize {
     let mut destination = init;
     for step in chain {
-        let mut outside = true;
         for (r, d) in step {
             if r.contains(&destination) {
                 destination = d + (destination - r.start);
-                outside = false;
                 break;
             }
         }

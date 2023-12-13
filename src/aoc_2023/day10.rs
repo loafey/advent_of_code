@@ -1,18 +1,7 @@
-use std::collections::{HashMap, HashSet};
-
 use crate::utils::{load_string, matrix_get};
+use std::collections::HashMap;
 
-enum Dir {
-    Up,
-    Down,
-    Left,
-    Right,
-}
-use pathfinding::directed::{
-    dfs::dfs,
-    dijkstra::{dijkstra, dijkstra_all},
-};
-use Dir::*;
+use pathfinding::directed::dijkstra::dijkstra_all;
 type Map = HashMap<(usize, usize, char), Vec<(usize, usize, char)>>;
 
 fn graph() -> ((usize, usize, char), Map) {
@@ -114,7 +103,7 @@ pub fn part1() -> usize {
 }
 
 pub fn part2() -> usize {
-    let (start, map) = graph();
+    let (_, map) = graph();
     let matrix = load_string("inputs/2023/day10.input")
         .lines()
         .map(|s| s.chars().count())

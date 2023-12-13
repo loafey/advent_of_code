@@ -4,7 +4,7 @@ use std::{cmp::Ordering, collections::BTreeMap, usize};
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
 #[rustfmt::skip]
 enum Labels { 
-    N0, N2, N3, N4, N5, 
+    N2, N3, N4, N5, 
     N6, N7, N8, N9, T,  
     J,  Q,  K,  A,
 }
@@ -77,7 +77,7 @@ fn most_common(cards: &[Labels]) -> Labels {
         }
     }
     map.into_iter()
-        .max_by_key(|(c, i)| *i)
+        .max_by_key(|(_, i)| *i)
         .map(|(l, _)| *l)
         .unwrap_or(J)
 }

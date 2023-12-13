@@ -30,15 +30,11 @@ fn parse() -> Vec<Vec<Vec<char>>> {
 }
 
 fn check(block: &[Vec<char>], f: fn(usize) -> ReflectionLine, single: bool) -> ReflectionLine {
-    let mut rl = None;
     'crugno: for (i, x) in block.windows(2).enumerate() {
         if let [r1, r2] = x {
             if r1.diff(r2).unwrap() <= 1 {
-                let (mut last_x, mut last_y) = (0, 0);
                 let mut mut_dif = 0;
                 for (x, y) in (0..i + 1).rev().zip(i + 1..block.len()) {
-                    last_x = x;
-                    last_y = y;
                     mut_dif += block[x].diff(&block[y]).unwrap();
                     if mut_dif > 1 {
                         continue 'crugno;

@@ -4,11 +4,8 @@
 #![feature(array_chunks)]
 #![feature(stmt_expr_attributes)]
 #![allow(clippy::single_range_in_vec_init)]
-#![allow(unused)]
 
 use std::time::Duration;
-
-use crate::utils::MatrixTools;
 
 mod aoc_2018;
 mod aoc_2019;

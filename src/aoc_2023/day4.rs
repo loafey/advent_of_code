@@ -1,5 +1,5 @@
 use crate::utils::{bi_functors::*, load_string};
-use std::collections::{BTreeMap, VecDeque};
+use std::collections::BTreeMap;
 
 #[derive(Clone, Copy, Debug)]
 struct Card(usize, usize);
@@ -38,7 +38,6 @@ pub fn part1() -> usize {
 
 pub fn part2() -> usize {
     let cards = parser();
-    let org_amount = cards.len();
     let wins = cards
         .iter()
         .copied()
@@ -53,7 +52,7 @@ pub fn part2() -> usize {
         .collect::<BTreeMap<_, _>>();
     let mut card_amounts = wins.keys().map(|s| (*s, 1)).collect::<BTreeMap<_, _>>();
     // Improvment idea from William Bodin https://github.com/Rakarake/
-    for (i, card) in cards.into_iter().enumerate() {
+    for (i, _) in cards.into_iter().enumerate() {
         let wins = &wins[&(i + 1)];
         wins.iter().for_each(|c| {
             let amount = card_amounts[&(i + 1)];

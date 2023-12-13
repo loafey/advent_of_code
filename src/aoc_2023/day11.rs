@@ -1,5 +1,4 @@
 use crate::utils::{load_string, NumTupleExt};
-use std::collections::{BTreeSet, HashSet};
 
 fn row_empty(r: usize, mat: &[Vec<char>]) -> bool {
     mat[r].iter().all(|c| *c == '.')

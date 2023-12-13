@@ -9,7 +9,7 @@ fn check(chars: Vec<char>, nums: Vec<usize>) -> usize {
         (css, [0, ns @ ..]) => check(css.to_vec(), ns.to_vec()),
         (css, nss) => match css[0] {
             '#' => {
-                let mut nums = nums.to_vec();
+                let nums = nums.to_vec();
                 if nums[0] < css.len()
                     && css[..nums[0]].iter().all(|c| matches!(c, '#' | '?'))
                     && css[nums[0]] != '#'
@@ -44,7 +44,7 @@ pub fn part1() -> usize {
         .map(|r| {
             let (row, nums) = r.split_once(' ').unwrap();
             let row = row.to_string();
-            let mut nums = nums
+            let nums = nums
                 .split(',')
                 .map(|s| s.parse::<usize>().unwrap())
                 .collect::<Vec<_>>();

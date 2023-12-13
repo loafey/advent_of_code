@@ -1,5 +1,5 @@
 use crate::utils::{load_string, NumExt};
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 
 fn input(s: &str) -> (&str, HashMap<&str, (&str, &str)>) {
     let (insts, moves) = s.split_once("\n\n").unwrap();
@@ -20,12 +20,11 @@ fn input(s: &str) -> (&str, HashMap<&str, (&str, &str)>) {
 
 fn calc(insts: &str, moves: &HashMap<&str, (&str, &str)>, start: &str, end: &str) -> usize {
     let mut pos = start;
-    let mut i = 0;
     insts
         .chars()
         .cycle()
         .enumerate()
-        .find(|(i, inst)| {
+        .find(|(_, inst)| {
             pos = match inst {
                 'L' => moves[pos].0,
                 'R' => moves[pos].1,
