@@ -8,6 +8,8 @@
 
 use std::time::Duration;
 
+use crate::utils::MatrixTools;
+
 mod aoc_2018;
 mod aoc_2019;
 mod aoc_2020;
@@ -17,8 +19,6 @@ mod parser;
 mod utils;
 
 fn main() {
-    // chum::test();
-
     let benchmark = std::env::args().filter(|s| s == "--benchmark").count() == 1;
     let table = std::env::args().filter(|s| s == "--table").count() == 1;
     let num = std::env::args()

@@ -11,6 +11,41 @@ use std::{
 
 use chrono::format::Item;
 
+pub trait MatrixTools {
+    fn transpose(self) -> Self;
+    fn invert(self) -> Self;
+    fn rotate(self) -> Self;
+}
+impl<T: Clone> MatrixTools for Vec<Vec<T>> {
+    fn transpose(self) -> Self {
+        if self.is_empty() {
+            return Vec::new();
+        }
+
+        let mut nv = vec![Vec::new(); self[0].len()];
+        for r in self.into_iter() {
+            for (x, r) in r.into_iter().enumerate() {
+                nv[x].push(r);
+            }
+        }
+
+        nv
+    }
+
+    fn invert(self) -> Self {
+        self.into_iter()
+            .map(|mut r| {
+                r.reverse();
+                r
+            })
+            .collect()
+    }
+
+    fn rotate(self) -> Self {
+        self.transpose().invert()
+    }
+}
+
 pub trait NumTupleExt<T> {
     fn manhattan_distance(&self, other: &Self) -> T;
 }
