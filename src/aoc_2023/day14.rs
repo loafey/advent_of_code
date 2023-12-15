@@ -1,6 +1,6 @@
-use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
+use std::collections::{HashMap, HashSet};
 
-use crate::utils::{load_string, matrix_get, NumExt};
+use crate::utils::{load_string, matrix_get};
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 enum Spot {
@@ -19,12 +19,6 @@ impl std::fmt::Debug for Spot {
     }
 }
 use Spot::*;
-fn print_rocks(table: &[Vec<Spot>]) {
-    table.iter().for_each(|r| {
-        r.iter().for_each(|s| print!("{s:?}"));
-        println!();
-    });
-}
 fn tilt(table: &mut [Vec<Spot>], y_dir: isize, x_dir: isize) -> bool {
     let mut moved = false;
     for y in 0..table.len() {

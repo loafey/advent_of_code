@@ -13,6 +13,7 @@ use chrono::format::Item;
 
 pub trait SliceTools<T> {
     fn diff(&self, rhs: &[T]) -> Option<usize>;
+    fn index_of(&self, rhs: &T) -> Option<usize>;
 }
 impl<T: PartialEq> SliceTools<T> for &[T] {
     fn diff(&self, rhs: &[T]) -> Option<usize> {
@@ -27,6 +28,10 @@ impl<T: PartialEq> SliceTools<T> for &[T] {
                 .sum(),
         )
     }
+
+    fn index_of(&self, rhs: &T) -> Option<usize> {
+        self.iter().position(|b| b == rhs)
+    }
 }
 impl<T: PartialEq> SliceTools<T> for Vec<T> {
     fn diff(&self, rhs: &[T]) -> Option<usize> {
@@ -40,6 +45,9 @@ impl<T: PartialEq> SliceTools<T> for Vec<T> {
                 .map(|(a, b)| if a != b { 1 } else { 0 })
                 .sum(),
         )
+    }
+    fn index_of(&self, rhs: &T) -> Option<usize> {
+        self.iter().position(|b| b == rhs)
     }
 }
 
