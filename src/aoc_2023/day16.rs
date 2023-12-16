@@ -84,13 +84,13 @@ fn solver(map: &[Vec<Spot>], start: ((usize, usize), Direction)) -> usize {
 
 pub fn part1() -> usize {
     solver(
-        &load_matrix::<_, Spot>("inputs/2023/day16.input"),
+        &load_matrix::<Spot>("inputs/2023/day16.input"),
         ((0, 0), Right),
     )
 }
 
 pub fn part2() -> usize {
-    let map = load_matrix::<_, Spot>("inputs/2023/day16.input");
+    let map = load_matrix::<Spot>("inputs/2023/day16.input");
     let mut beams_start = Vec::new();
     beams_start.extend((0..map.len()).map(|y| ((y, 0), Right)));
     beams_start.extend((0..map.len()).map(|y| ((y, map[0].len() - 1), Left)));

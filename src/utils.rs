@@ -42,7 +42,7 @@ impl<T: PartialEq> SliceTools<T> for Vec<T> {
     }
 }
 
-pub fn load_matrix<P: AsRef<Path>, T: From<char>>(p: P) -> Vec<Vec<T>> {
+pub fn load_matrix<T: From<char>>(p: impl AsRef<Path>) -> Vec<Vec<T>> {
     load_string("inputs/2023/day16.input")
         .lines()
         .map(|r| r.chars().map(|c| c.into()).collect())
