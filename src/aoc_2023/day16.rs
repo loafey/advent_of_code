@@ -1,25 +1,25 @@
 use crate::utils::{load_matrix, MatrixGet};
 use std::{
     collections::{HashSet, VecDeque},
-    num::Wrapping,
+    num::Wrapping as W,
 };
 
 #[derive(Clone, Copy)]
 enum Spot {
     Empty,
-    MirrorForward,
-    MirrorBackward,
-    SplitterFlat,
-    SplitterPipe,
+    MF,
+    MB,
+    SF,
+    SP,
 }
 impl From<char> for Spot {
     fn from(value: char) -> Self {
         match value {
             '.' => Empty,
-            '/' => MirrorForward,
-            '\\' => MirrorBackward,
-            '-' => SplitterFlat,
-            '|' => SplitterPipe,
+            '/' => MF,
+            '\\' => MB,
+            '-' => SF,
+            '|' => SP,
             _ => unreachable!(),
         }
     }
@@ -49,31 +49,25 @@ fn solver(map: &[Vec<Spot>], start: ((usize, usize), Direction)) -> usize {
         if let Some(p) = map.matrix_get(*y, *x, 0, 0) {
             visited.insert((*y, *x, *dir));
             match (p, *dir) {
-                (Empty, _) => {}
-                (MirrorForward, Left) => *dir = Down,
-                (MirrorForward, Right) => *dir = Up,
-                (MirrorForward, Up) => *dir = Right,
-                (MirrorForward, Down) => *dir = Left,
-                (MirrorBackward, Left) => *dir = Up,
-                (MirrorBackward, Right) => *dir = Down,
-                (MirrorBackward, Up) => *dir = Left,
-                (MirrorBackward, Down) => *dir = Right,
-                (SplitterFlat, Up | Down) => {
+                (MF, Left) | (MB, Right) => *dir = Down,
+                (MF, Right) | (MB, Left) => *dir = Up,
+                (MF, Up) | (MB, Down) => *dir = Right,
+                (MF, Down) | (MB, Up) => *dir = Left,
+                (SF, Up | Down) => {
                     *dir = Left;
                     new_stack.push(((*y, *x), Right))
                 }
-                (SplitterFlat, Left | Right) => {}
-                (SplitterPipe, Left | Right) => {
+                (SP, Left | Right) => {
                     *dir = Up;
                     new_stack.push(((*y, *x), Down))
                 }
-                (SplitterPipe, Up | Down) => {}
+                _ => {}
             }
             match dir {
-                Left => *x = (Wrapping(*x) - Wrapping(1_usize)).0,
-                Right => *x = (Wrapping(*x) + Wrapping(1)).0,
-                Up => *y = (Wrapping(*y) - Wrapping(1_usize)).0,
-                Down => *y = (Wrapping(*y) + Wrapping(1)).0,
+                Left => *x = (W(*x) - W(1)).0,
+                Right => *x = (W(*x) + W(1)).0,
+                Up => *y = (W(*y) - W(1)).0,
+                Down => *y = (W(*y) + W(1)).0,
             }
             beams.rotate_left(1);
         } else {
