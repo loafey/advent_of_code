@@ -36,18 +36,16 @@ pub fn part2() -> usize {
     let mut map = (0..256).map(|i| (i, Vec::new())).collect::<HashMap<_, _>>();
     let binding = load_string("inputs/2023/day15.input");
     for s in binding.trim().split(',') {
-        let h: usize;
-        // println!("After {s:?}:");
         if s.contains('-')
             && let Some(s) = s.split('-').next()
         {
-            h = hash(s);
+            let h = hash(s);
             let v = map.get_mut(&h).unwrap();
             if let Some(ind) = v.index_of(&BoxValue { str: s, value: 0 }) {
                 v.remove(ind);
             }
         } else if let Some((s, n)) = s.split_once('=') {
-            h = hash(s);
+            let h = hash(s);
             let n = n.parse::<usize>().unwrap();
             let v = map.get_mut(&h).unwrap();
             if let Some(i) = v.index_of(&BoxValue { str: s, value: 0 }) {
