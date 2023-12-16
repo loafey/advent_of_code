@@ -88,19 +88,16 @@ pub fn part2() -> usize {
         while tilt(&mut inp, 0, -1) {}
         while tilt(&mut inp, 1, 0) {}
         while tilt(&mut inp, 0, 1) {}
-        println!("{i}: {}", value(&inp));
 
         if !simulate {
             if let Some(i2) = clean_set.get(&inp)
                 && !try_1
             {
-                println!("CRINGE ALERT");
                 i = VAL - (VAL - i - 1) % (i - i2);
                 simulate = true;
                 continue;
             } else if set.contains(&inp) && try_1 && clean_set.contains_key(&inp) {
                 clean_set = HashMap::new();
-                println!("cleaned");
                 try_1 = false;
             } else if !set.contains(&inp) {
                 set.insert(inp.clone());
