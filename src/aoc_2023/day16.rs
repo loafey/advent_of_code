@@ -1,4 +1,4 @@
-use crate::utils::{load_string, matrix_get};
+use crate::utils::{load_matrix, MatrixGet};
 use std::{
     collections::{HashSet, VecDeque},
     num::Wrapping,
@@ -12,6 +12,18 @@ enum Spot {
     SplitterFlat,
     SplitterPipe,
 }
+impl From<char> for Spot {
+    fn from(value: char) -> Self {
+        match value {
+            '.' => Empty,
+            '/' => MirrorForward,
+            '\\' => MirrorBackward,
+            '-' => SplitterFlat,
+            '|' => SplitterPipe,
+            _ => unreachable!(),
+        }
+    }
+}
 #[derive(Clone, Copy, Hash, PartialEq, Eq, Debug)]
 enum Direction {
     Left,
@@ -21,24 +33,6 @@ enum Direction {
 }
 use Direction::*;
 use Spot::*;
-
-fn input() -> Vec<Vec<Spot>> {
-    load_string("inputs/2023/day16.input")
-        .lines()
-        .map(|r| {
-            r.chars()
-                .map(|c| match c {
-                    '.' => Empty,
-                    '/' => MirrorForward,
-                    '\\' => MirrorBackward,
-                    '-' => SplitterFlat,
-                    '|' => SplitterPipe,
-                    _ => unreachable!(),
-                })
-                .collect()
-        })
-        .collect()
-}
 
 fn solver(map: &[Vec<Spot>], start: ((usize, usize), Direction)) -> usize {
     let mut beams: VecDeque<_> = [start].into();
@@ -52,7 +46,7 @@ fn solver(map: &[Vec<Spot>], start: ((usize, usize), Direction)) -> usize {
         }
 
         let mut new_stack = Vec::new();
-        if let Some(p) = matrix_get(*y, *x, 0, 0, map) {
+        if let Some(p) = map.matrix_get(*y, *x, 0, 0) {
             visited.insert((*y, *x, *dir));
             match (p, *dir) {
                 (Empty, _) => {}
@@ -95,11 +89,14 @@ fn solver(map: &[Vec<Spot>], start: ((usize, usize), Direction)) -> usize {
 }
 
 pub fn part1() -> usize {
-    solver(&input(), ((0, 0), Right))
+    solver(
+        &load_matrix::<_, Spot>("inputs/2023/day16.input"),
+        ((0, 0), Right),
+    )
 }
 
 pub fn part2() -> usize {
-    let map = input();
+    let map = load_matrix::<_, Spot>("inputs/2023/day16.input");
     let mut beams_start = Vec::new();
     beams_start.extend((0..map.len()).map(|y| ((y, 0), Right)));
     beams_start.extend((0..map.len()).map(|y| ((y, map[0].len() - 1), Left)));

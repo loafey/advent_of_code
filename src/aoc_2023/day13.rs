@@ -1,4 +1,4 @@
-use crate::utils::{load_string, MatrixTools, SliceTools};
+use crate::utils::{load_string, MatrixTrans, SliceTools};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 enum ReflectionLine {

@@ -28,35 +28,57 @@ impl<T: PartialEq> SliceTools<T> for &[T] {
                 .sum(),
         )
     }
-
     fn index_of(&self, rhs: &T) -> Option<usize> {
         self.iter().position(|b| b == rhs)
     }
 }
 impl<T: PartialEq> SliceTools<T> for Vec<T> {
     fn diff(&self, rhs: &[T]) -> Option<usize> {
-        if self.len() != rhs.len() {
-            return None;
-        }
-
-        Some(
-            self.iter()
-                .zip(rhs.iter())
-                .map(|(a, b)| if a != b { 1 } else { 0 })
-                .sum(),
-        )
+        (&self[..]).diff(rhs)
     }
+
     fn index_of(&self, rhs: &T) -> Option<usize> {
-        self.iter().position(|b| b == rhs)
+        (&self[..]).index_of(rhs)
     }
 }
 
-pub trait MatrixTools {
+pub fn load_matrix<P: AsRef<Path>, T: From<char>>(p: P) -> Vec<Vec<T>> {
+    load_string("inputs/2023/day16.input")
+        .lines()
+        .map(|r| r.chars().map(|c| c.into()).collect())
+        .collect()
+}
+
+pub trait MatrixGet<T> {
+    fn matrix_get(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T>;
+}
+impl<T> MatrixGet<T> for Vec<Vec<T>> {
+    fn matrix_get(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T> {
+        self[..].matrix_get(y, x, ymod, xmod)
+    }
+}
+impl<T> MatrixGet<T> for [Vec<T>] {
+    fn matrix_get(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T> {
+        let Wrapping(x) = if xmod < 0 {
+            Wrapping(x) - Wrapping(xmod.unsigned_abs())
+        } else {
+            Wrapping(x) + Wrapping(xmod.unsigned_abs())
+        };
+        let Wrapping(y) = if ymod < 0 {
+            Wrapping(y) - Wrapping(ymod.unsigned_abs())
+        } else {
+            Wrapping(y) + Wrapping(ymod.unsigned_abs())
+        };
+        self.get(y)?.get(x)
+    }
+}
+
+pub trait MatrixTrans<T> {
     fn transpose(self) -> Self;
     fn invert(self) -> Self;
     fn rotate(self) -> Self;
 }
-impl<T: Clone> MatrixTools for Vec<Vec<T>> {
+impl<T: Clone> MatrixTrans<T> for Vec<Vec<T>> {
     fn transpose(self) -> Self {
         if self.is_empty() {
             return Vec::new();
@@ -231,26 +253,6 @@ impl<const N: usize, K: Ord + Eq, V> IntoBMap<K, V> for [(K, V); N] {
     fn bmap(self) -> BTreeMap<K, V> {
         self.into()
     }
-}
-
-pub fn matrix_get<T: Copy>(
-    y: usize,
-    x: usize,
-    ymod: isize,
-    xmod: isize,
-    inputs: &[Vec<T>],
-) -> Option<T> {
-    let Wrapping(x) = if xmod < 0 {
-        Wrapping(x) - Wrapping(xmod.unsigned_abs())
-    } else {
-        Wrapping(x) + Wrapping(xmod.unsigned_abs())
-    };
-    let Wrapping(y) = if ymod < 0 {
-        Wrapping(y) - Wrapping(ymod.unsigned_abs())
-    } else {
-        Wrapping(y) + Wrapping(ymod.unsigned_abs())
-    };
-    inputs.get(y)?.get(x).cloned()
 }
 
 pub mod bi_functors {
