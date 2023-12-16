@@ -1,8 +1,5 @@
 use crate::utils::{load_matrix, MatrixGet};
-use std::{
-    collections::{HashSet, VecDeque},
-    num::Wrapping as W,
-};
+use std::{collections::HashSet, num::Wrapping as W};
 
 #[derive(Clone, Copy)]
 enum Spot {
@@ -31,17 +28,20 @@ enum Direction {
     Up,
     Down,
 }
+use rayon::iter::{IntoParallelIterator, ParallelIterator as _};
 use Direction::*;
 use Spot::*;
 
 fn solver(map: &[Vec<Spot>], start: ((usize, usize), Direction)) -> usize {
-    let mut beams: VecDeque<_> = [start].into();
+    let mut beams = vec![start];
     // print_map(&map, &beams);
     let mut visited = HashSet::new();
+    let mut i = 0;
     while !beams.is_empty() {
-        let ((y, x), dir) = beams.get_mut(0).unwrap();
+        i %= beams.len();
+        let ((y, x), dir) = beams.get_mut(i).unwrap();
         if visited.contains(&(*y, *x, *dir)) {
-            beams.pop_front();
+            beams.remove(i);
             continue;
         }
 
@@ -69,11 +69,11 @@ fn solver(map: &[Vec<Spot>], start: ((usize, usize), Direction)) -> usize {
                 Up => *y = (W(*y) - W(1)).0,
                 Down => *y = (W(*y) + W(1)).0,
             }
-            beams.rotate_left(1);
+            i += 1;
         } else {
-            beams.pop_front();
+            beams.remove(i);
         }
-        new_stack.into_iter().for_each(|p| beams.push_back(p));
+        new_stack.into_iter().for_each(|p| beams.push(p));
     }
     let unique_pos = visited
         .into_iter()
@@ -97,7 +97,7 @@ pub fn part2() -> usize {
     beams_start.extend((0..map[0].len()).map(|x| ((0, x), Down)));
     beams_start.extend((0..map[0].len()).map(|x| ((map.len() - 1, x), Up)));
     beams_start
-        .into_iter()
+        .into_par_iter()
         .map(|s| solver(&map, s))
         .max()
         .unwrap_or_default()
