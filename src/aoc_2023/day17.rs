@@ -1,4 +1,7 @@
 use crate::utils::{load_matrix_then, MatrixGet};
+use pathfinding::directed::dijkstra::dijkstra;
+use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use Direction::*;
 
 thread_local! {
     static MAP: Vec<Vec<usize>> = load_matrix_then("inputs/2023/day17.input", |c| c.to_digit(10).unwrap() as usize);
@@ -55,9 +58,6 @@ enum Direction {
     Up,
     Down,
 }
-use pathfinding::directed::dijkstra::dijkstra;
-use rayon::iter::{IntoParallelIterator, ParallelIterator};
-use Direction::*;
 fn not_opposite(s: Direction, other: Direction) -> bool {
     !matches!(
         (s, other),
