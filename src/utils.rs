@@ -1,6 +1,6 @@
 #![allow(unused)]
 use std::{
-    collections::{BTreeMap, HashMap},
+    collections::{BTreeMap, BTreeSet, HashMap},
     fmt::Debug,
     hash::Hash,
     num::Wrapping,
@@ -10,6 +10,46 @@ use std::{
 };
 
 use chrono::format::Item;
+
+pub trait SetTools<T, R> {
+    fn split(self, f: impl Fn(&T) -> bool) -> (R, R)
+    where
+        Self: std::marker::Sized;
+}
+impl<T: Ord + Copy> SetTools<T, BTreeSet<T>> for &BTreeSet<T> {
+    fn split(self, f: impl Fn(&T) -> bool) -> (BTreeSet<T>, BTreeSet<T>)
+    where
+        Self: std::marker::Sized,
+    {
+        let mut l = BTreeSet::new();
+        let mut r = BTreeSet::new();
+        self.iter().for_each(|t| {
+            if f(t) {
+                r.insert(*t);
+            } else {
+                l.insert(*t);
+            }
+        });
+        (l, r)
+    }
+}
+impl<T: Ord> SetTools<T, BTreeSet<T>> for BTreeSet<T> {
+    fn split(self, f: impl Fn(&T) -> bool) -> (Self, Self)
+    where
+        Self: std::marker::Sized,
+    {
+        let mut l = BTreeSet::new();
+        let mut r = BTreeSet::new();
+        self.into_iter().for_each(|t| {
+            if f(&t) {
+                r.insert(t);
+            } else {
+                l.insert(t);
+            }
+        });
+        (l, r)
+    }
+}
 
 pub trait SliceTools<T> {
     fn diff(&self, rhs: &[T]) -> Option<usize>;

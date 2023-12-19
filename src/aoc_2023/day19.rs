@@ -1,10 +1,7 @@
-use rayon::iter::{IntoParallelIterator, ParallelIterator as _};
-
-use crate::utils::{bi_functors::BiFunctor, load_string};
+use crate::utils::{bi_functors::BiFunctor, load_string, SetTools};
 use std::{
     cmp::Ordering,
-    collections::{BTreeMap, HashMap},
-    sync::{atomic::AtomicUsize, Arc},
+    collections::{BTreeSet, HashMap},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -145,142 +142,29 @@ pub fn part1() -> usize {
         .sum()
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
-struct RatingsRange {
-    x: (usize, usize),
-    m: (usize, usize),
-    a: (usize, usize),
-    s: (usize, usize),
-}
-
-impl std::fmt::Debug for RatingsRange {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{{ x: {:?}, m: {:?}, a: {:?}, s: {:?} }}",
-            self.x, self.m, self.a, self.s
-        )
-    }
-}
-
-fn calc(wfstr: &str, rating: RatingsRange, wfs: &HashMap<String, WorkFlow>) -> usize {
-    // print!("{wfstr}: ");
+fn calc(
+    wfstr: &str,
+    rating: HashMap<char, BTreeSet<usize>>,
+    wfs: &HashMap<String, WorkFlow>,
+) -> usize {
     if wfstr == "A" {
-        // println!("Done\n");
-        let x = rating.x;
-        let m = rating.m;
-        let a = rating.a;
-        let s = rating.s;
-        return (x.1 - x.0) * (m.1 - m.0) * (a.1 - a.0) * (s.1 - s.0);
+        return rating.into_values().map(|s| s.len()).product();
     } else if wfstr == "R" {
-        // println!("fail\n");
         return 0;
     }
-    let wf = &wfs[wfstr];
-    // println!("{wf:?}");
-    // println!("Using rating: {rating:?}\n");
 
-    let mut rest = rating;
+    let wf = &wfs[wfstr];
+    let mut rest = rating.clone();
 
     let mut total = 0;
-    let mut orgy = rating;
     for rule in &wf.rules {
-        let mut rating = orgy;
-        match rule.var {
-            'x' => match rule.ordering {
-                Ordering::Greater => {
-                    if rating.x.0 > rule.num {
-                        continue;
-                    }
-                    if rating.x.1 >= rule.num {
-                        rating.x.0 = rule.num + 1;
-                        rest.x.1 = rule.num;
-                        orgy.x = (0, 1)
-                    }
-                }
-                Ordering::Less => {
-                    if rating.x.1 < rule.num {
-                        continue;
-                    }
-                    if rating.x.0 <= rule.num {
-                        rating.x.1 = rule.num - 1;
-                        rest.x.0 = rule.num;
-                        orgy.x = (0, 1)
-                    }
-                }
-                _ => unreachable!(),
-            },
-            'm' => match rule.ordering {
-                Ordering::Greater => {
-                    if rating.m.0 > rule.num {
-                        continue;
-                    }
-                    if rating.m.1 >= rule.num {
-                        rating.m.0 = rule.num + 1;
-                        rest.m.1 = rule.num;
-                        orgy.m = (0, 1)
-                    }
-                }
-                Ordering::Less => {
-                    if rating.m.1 < rule.num {
-                        continue;
-                    }
-                    if rating.m.0 <= rule.num {
-                        rating.m.1 = rule.num - 1;
-                        rest.m.0 = rule.num;
-                        orgy.m = (0, 1)
-                    }
-                }
-                _ => unreachable!(),
-            },
-            'a' => match rule.ordering {
-                Ordering::Greater => {
-                    if rating.a.0 > rule.num {
-                        continue;
-                    }
-                    if rating.a.1 >= rule.num {
-                        rating.a.0 = rule.num + 1;
-                        rest.a.1 = rule.num;
-                        orgy.a = (0, 1)
-                    }
-                }
-                Ordering::Less => {
-                    if rating.a.1 < rule.num {
-                        continue;
-                    }
-                    if rating.a.0 <= rule.num {
-                        rating.a.1 = rule.num - 1;
-                        rest.a.0 = rule.num;
-                        orgy.a = (0, 1)
-                    }
-                }
-                _ => unreachable!(),
-            },
-            's' => match rule.ordering {
-                Ordering::Greater => {
-                    if rating.s.0 > rule.num {
-                        continue;
-                    }
-                    if rating.s.1 >= rule.num {
-                        rating.s.0 = rule.num + 1;
-                        rest.s.1 = rule.num;
-                        orgy.s = (0, 1)
-                    }
-                }
-                Ordering::Less => {
-                    if rating.s.1 < rule.num {
-                        continue;
-                    }
-                    if rating.s.0 <= rule.num {
-                        rating.s.1 = rule.num - 1;
-                        rest.s.0 = rule.num;
-                        orgy.s = (0, 1)
-                    }
-                }
-                _ => unreachable!(),
-            },
-            _ => unreachable!(),
-        };
+        let mut rating = rest.clone();
+
+        let set = &rating[&rule.var];
+        let (non_fullfillers, fullfillers) = set.split(|c| c.cmp(&rule.num) == rule.ordering);
+
+        rest.insert(rule.var, non_fullfillers);
+        rating.insert(rule.var, fullfillers);
 
         total += calc(&rule.workflow, rating, wfs);
     }
@@ -293,13 +177,11 @@ fn calc(wfstr: &str, rating: RatingsRange, wfs: &HashMap<String, WorkFlow>) -> u
 pub fn part2() -> usize {
     let (workflows, _) = input();
 
-    println!("167409079868000");
-    let rating = RatingsRange {
-        x: (0, 4000),
-        m: (0, 4000),
-        a: (0, 4000),
-        s: (0, 4000),
-    };
-    println!("Starting range: {rating:?}");
+    let rating = HashMap::from([
+        ('x', (1..=4000).collect()),
+        ('m', (1..=4000).collect()),
+        ('a', (1..=4000).collect()),
+        ('s', (1..=4000).collect()),
+    ]);
     calc("in", rating, &workflows)
 }
