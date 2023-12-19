@@ -3,7 +3,7 @@ use rayon::iter::{IntoParallelIterator, ParallelIterator as _};
 use crate::utils::{bi_functors::BiFunctor, load_string};
 use std::{
     cmp::Ordering,
-    collections::HashMap,
+    collections::{BTreeMap, HashMap},
     sync::{atomic::AtomicUsize, Arc},
 };
 
@@ -145,31 +145,148 @@ pub fn part1() -> usize {
         .sum()
 }
 
-fn calc(wf: &str, wfs: &HashMap<String, WorkFlow>) -> usize {
-    let wf = &wfs[wf];
-    let mut rest = 3999 * 4;
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+struct RatingsRange {
+    x: (usize, usize),
+    m: (usize, usize),
+    a: (usize, usize),
+    s: (usize, usize),
+}
+
+impl std::fmt::Debug for RatingsRange {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{{ x: {:?}, m: {:?}, a: {:?}, s: {:?} }}",
+            self.x, self.m, self.a, self.s
+        )
+    }
+}
+
+fn calc(wfstr: &str, rating: RatingsRange, wfs: &HashMap<String, WorkFlow>) -> usize {
+    // print!("{wfstr}: ");
+    if wfstr == "A" {
+        // println!("Done\n");
+        let x = rating.x;
+        let m = rating.m;
+        let a = rating.a;
+        let s = rating.s;
+        return (x.1 - x.0) * (m.1 - m.0) * (a.1 - a.0) * (s.1 - s.0);
+    } else if wfstr == "R" {
+        // println!("fail\n");
+        return 0;
+    }
+    let wf = &wfs[wfstr];
+    // println!("{wf:?}");
+    // println!("Using rating: {rating:?}\n");
+
+    let mut rest = rating;
 
     let mut total = 0;
+    let mut orgy = rating;
     for rule in &wf.rules {
-        let accept_num = match rule.ordering {
-            Ordering::Less => rule.num - 1,
-            Ordering::Greater => 3999 - rule.num,
+        let mut rating = orgy;
+        match rule.var {
+            'x' => match rule.ordering {
+                Ordering::Greater => {
+                    if rating.x.0 > rule.num {
+                        continue;
+                    }
+                    if rating.x.1 >= rule.num {
+                        rating.x.0 = rule.num + 1;
+                        rest.x.1 = rule.num;
+                        orgy.x = (0, 1)
+                    }
+                }
+                Ordering::Less => {
+                    if rating.x.1 < rule.num {
+                        continue;
+                    }
+                    if rating.x.0 <= rule.num {
+                        rating.x.1 = rule.num - 1;
+                        rest.x.0 = rule.num;
+                        orgy.x = (0, 1)
+                    }
+                }
+                _ => unreachable!(),
+            },
+            'm' => match rule.ordering {
+                Ordering::Greater => {
+                    if rating.m.0 > rule.num {
+                        continue;
+                    }
+                    if rating.m.1 >= rule.num {
+                        rating.m.0 = rule.num + 1;
+                        rest.m.1 = rule.num;
+                        orgy.m = (0, 1)
+                    }
+                }
+                Ordering::Less => {
+                    if rating.m.1 < rule.num {
+                        continue;
+                    }
+                    if rating.m.0 <= rule.num {
+                        rating.m.1 = rule.num - 1;
+                        rest.m.0 = rule.num;
+                        orgy.m = (0, 1)
+                    }
+                }
+                _ => unreachable!(),
+            },
+            'a' => match rule.ordering {
+                Ordering::Greater => {
+                    if rating.a.0 > rule.num {
+                        continue;
+                    }
+                    if rating.a.1 >= rule.num {
+                        rating.a.0 = rule.num + 1;
+                        rest.a.1 = rule.num;
+                        orgy.a = (0, 1)
+                    }
+                }
+                Ordering::Less => {
+                    if rating.a.1 < rule.num {
+                        continue;
+                    }
+                    if rating.a.0 <= rule.num {
+                        rating.a.1 = rule.num - 1;
+                        rest.a.0 = rule.num;
+                        orgy.a = (0, 1)
+                    }
+                }
+                _ => unreachable!(),
+            },
+            's' => match rule.ordering {
+                Ordering::Greater => {
+                    if rating.s.0 > rule.num {
+                        continue;
+                    }
+                    if rating.s.1 >= rule.num {
+                        rating.s.0 = rule.num + 1;
+                        rest.s.1 = rule.num;
+                        orgy.s = (0, 1)
+                    }
+                }
+                Ordering::Less => {
+                    if rating.s.1 < rule.num {
+                        continue;
+                    }
+                    if rating.s.0 <= rule.num {
+                        rating.s.1 = rule.num - 1;
+                        rest.s.0 = rule.num;
+                        orgy.s = (0, 1)
+                    }
+                }
+                _ => unreachable!(),
+            },
             _ => unreachable!(),
         };
 
-        total += match &rule.workflow[..] {
-            "A" => accept_num,
-            "R" => 0,
-            xs => accept_num * calc(xs, wfs),
-        };
-
-        rest -= accept_num;
+        total += calc(&rule.workflow, rating, wfs);
     }
-    total += match &wf.var[..] {
-        "A" => rest,
-        "R" => 0,
-        xs => rest * calc(xs, wfs),
-    };
+
+    total += calc(&wf.var, rest, wfs);
+
     total
 }
 
@@ -177,5 +294,12 @@ pub fn part2() -> usize {
     let (workflows, _) = input();
 
     println!("167409079868000");
-    calc("in", &workflows)
+    let rating = RatingsRange {
+        x: (0, 4000),
+        m: (0, 4000),
+        a: (0, 4000),
+        s: (0, 4000),
+    };
+    println!("Starting range: {rating:?}");
+    calc("in", rating, &workflows)
 }
