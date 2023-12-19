@@ -1,11 +1,17 @@
+use rayon::iter::{IntoParallelIterator, ParallelIterator as _};
+
 use crate::utils::{bi_functors::BiFunctor, load_string};
-use std::{cmp::Ordering, collections::HashMap};
+use std::{
+    cmp::Ordering,
+    collections::HashMap,
+    sync::{atomic::AtomicUsize, Arc},
+};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Rule {
     var: char,
     ordering: Ordering,
-    num: isize,
+    num: usize,
     workflow: String,
 }
 
@@ -17,12 +23,12 @@ struct WorkFlow {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct Ratings {
-    x: isize,
-    m: isize,
-    a: isize,
-    s: isize,
+    x: usize,
+    m: usize,
+    a: usize,
+    s: usize,
 }
-fn sum(rating: Ratings) -> isize {
+fn sum(rating: Ratings) -> usize {
     rating.x + rating.m + rating.a + rating.s
 }
 
@@ -37,7 +43,7 @@ fn parse_rule(s: &str) -> Option<Rule> {
         '>' => Ordering::Greater,
         _ => unreachable!(),
     };
-    let num = first.collect::<String>().parse::<isize>().ok()?;
+    let num = first.collect::<String>().parse::<usize>().ok()?;
 
     Some(Rule {
         var,
@@ -46,8 +52,8 @@ fn parse_rule(s: &str) -> Option<Rule> {
         workflow,
     })
 }
-fn parse_rating(s: &str) -> isize {
-    s.split('=').nth(1).unwrap().parse::<isize>().unwrap()
+fn parse_rating(s: &str) -> usize {
+    s.split('=').nth(1).unwrap().parse::<usize>().unwrap()
 }
 
 fn input() -> (HashMap<String, WorkFlow>, Vec<Ratings>) {
@@ -90,58 +96,86 @@ fn input() -> (HashMap<String, WorkFlow>, Vec<Ratings>) {
         )
 }
 
-pub fn part1() -> isize {
+fn ok(rating: Ratings, wfs: &HashMap<String, WorkFlow>) -> bool {
+    let mut current_pos = "in";
+    'while_loop: while !matches!(current_pos, "A" | "R") {
+        let wf = &wfs[current_pos];
+        for rule in &wf.rules {
+            match rule.var {
+                'x' => {
+                    if rating.x.cmp(&rule.num) == rule.ordering {
+                        current_pos = &rule.workflow;
+                        continue 'while_loop;
+                    }
+                }
+                'm' => {
+                    if rating.m.cmp(&rule.num) == rule.ordering {
+                        current_pos = &rule.workflow;
+                        continue 'while_loop;
+                    }
+                }
+                'a' => {
+                    if rating.a.cmp(&rule.num) == rule.ordering {
+                        current_pos = &rule.workflow;
+                        continue 'while_loop;
+                    }
+                }
+                's' => {
+                    if rating.s.cmp(&rule.num) == rule.ordering {
+                        current_pos = &rule.workflow;
+                        continue 'while_loop;
+                    }
+                }
+                _ => unreachable!(),
+            }
+        }
+        current_pos = &wf.var;
+    }
+    current_pos == "A"
+}
+
+pub fn part1() -> usize {
     let (workflows, ratings) = input();
     //workflows.iter().for_each(|(n, w)| println!("{n}: {w:?}"));
     //ratings.iter().for_each(|w| println!("{w:?}"));
     ratings
         .into_iter()
-        .filter(|rating| {
-            print!("{rating:?}: ");
-            let mut current_pos = "in";
-            'while_loop: while !matches!(current_pos, "A" | "R") {
-                let wf = &workflows[current_pos];
-                print!("{current_pos} -> ");
-                for rule in &wf.rules {
-                    match rule.var {
-                        'x' => {
-                            if rating.x.cmp(&rule.num) == rule.ordering {
-                                current_pos = &rule.workflow;
-                                continue 'while_loop;
-                            }
-                        }
-                        'm' => {
-                            if rating.m.cmp(&rule.num) == rule.ordering {
-                                current_pos = &rule.workflow;
-                                continue 'while_loop;
-                            }
-                        }
-                        'a' => {
-                            if rating.a.cmp(&rule.num) == rule.ordering {
-                                current_pos = &rule.workflow;
-                                continue 'while_loop;
-                            }
-                        }
-                        's' => {
-                            if rating.s.cmp(&rule.num) == rule.ordering {
-                                current_pos = &rule.workflow;
-                                continue 'while_loop;
-                            }
-                        }
-                        _ => unreachable!(),
-                    }
-                }
-                current_pos = &wf.var;
-            }
-
-            println!("{current_pos}");
-
-            current_pos == "A"
-        })
+        .filter(|rating| ok(*rating, &workflows))
         .map(sum)
         .sum()
 }
 
+fn calc(wf: &str, wfs: &HashMap<String, WorkFlow>) -> usize {
+    let wf = &wfs[wf];
+    let mut rest = 3999 * 4;
+
+    let mut total = 0;
+    for rule in &wf.rules {
+        let accept_num = match rule.ordering {
+            Ordering::Less => rule.num - 1,
+            Ordering::Greater => 3999 - rule.num,
+            _ => unreachable!(),
+        };
+
+        total += match &rule.workflow[..] {
+            "A" => accept_num,
+            "R" => 0,
+            xs => accept_num * calc(xs, wfs),
+        };
+
+        rest -= accept_num;
+    }
+    total += match &wf.var[..] {
+        "A" => rest,
+        "R" => 0,
+        xs => rest * calc(xs, wfs),
+    };
+    total
+}
+
 pub fn part2() -> usize {
-    0
+    let (workflows, _) = input();
+
+    println!("167409079868000");
+    calc("in", &workflows)
 }
