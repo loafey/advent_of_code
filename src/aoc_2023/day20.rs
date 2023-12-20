@@ -67,14 +67,21 @@ fn input() -> Map {
     map
 }
 
-fn pulse_shitter(map: &mut Map) -> (usize, usize) {
+fn pulse_shitter(
+    count: usize,
+    map: &mut Map,
+    counter: &mut HashMap<String, usize>,
+) -> (usize, usize) {
     let mut work_stack =
         VecDeque::from([("broadcaster".to_string(), "broadcaster".to_string(), Low)]);
     let (mut lows, mut highs) = (0, 0);
     while !work_stack.is_empty() {
         let (me, sender, pulse) = work_stack.pop_front().unwrap();
-        if matches!(&me[..], "dl" | "rv" | "bt" | "fr") && pulse == Low {
-            println!("{me} {pulse:?}");
+        if matches!(&me[..], "dl" | "rv" | "bt" | "fr")
+            && pulse == Low
+            && !counter.contains_key(&me.to_string())
+        {
+            counter.insert(me.to_string(), count);
         }
         // println!("{sender} -{pulse:?}> {me}");
         match pulse {
@@ -132,7 +139,7 @@ pub fn part1() -> usize {
 
     let (mut lows, mut highs) = (0, 0);
     for _ in 0..1000 {
-        let (nlow, nhigh) = pulse_shitter(&mut map);
+        let (nlow, nhigh) = pulse_shitter(0, &mut map, &mut HashMap::new());
         lows += nlow;
         highs += nhigh;
         // map.iter().for_each(|(k, v)| println!("{k}: \t {v:?}"));
@@ -148,23 +155,15 @@ pub fn part2() -> usize {
     let rx_holder = map
         .iter()
         .find(|(_, m)| m.connected.contains(&"rx".to_string()))
-        .map(|(n, m)| {
-            println!("{m:?}");
-            n
-        })
-        .unwrap()
-        .clone();
+        .map(|(_, m)| m.connected.clone())
+        .unwrap();
 
     let mut i = 0;
+    let mut counter = HashMap::new();
     loop {
         i += 1;
-        pulse_shitter(&mut map);
-        if let Conjuction { state } = &map[&rx_holder].mtype {
-            // state.iter().for_each(|(s, _)| println!("{:?}", map[s]));
-            if state.iter().any(|(_, v)| *v) {
-                println!("{i}: {state:?}");
-            };
-        }
+        pulse_shitter(i, &mut map, &mut counter);
+        println!("{counter:?}");
     }
     0
 }
