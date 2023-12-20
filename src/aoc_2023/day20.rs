@@ -1,4 +1,4 @@
-use crate::utils::{load_string, IteratorEvalExt};
+use crate::utils::{load_string, IteratorEvalExt, NumExt};
 use std::{
     clone,
     collections::{HashMap, HashSet, VecDeque},
@@ -70,6 +70,7 @@ fn input() -> Map {
 fn pulse_shitter(
     count: usize,
     map: &mut Map,
+    which: &[String],
     counter: &mut HashMap<String, usize>,
 ) -> (usize, usize) {
     let mut work_stack =
@@ -77,10 +78,7 @@ fn pulse_shitter(
     let (mut lows, mut highs) = (0, 0);
     while !work_stack.is_empty() {
         let (me, sender, pulse) = work_stack.pop_front().unwrap();
-        if matches!(&me[..], "dl" | "rv" | "bt" | "fr")
-            && pulse == Low
-            && !counter.contains_key(&me.to_string())
-        {
+        if which.contains(&me) && pulse == Low && !counter.contains_key(&me.to_string()) {
             counter.insert(me.to_string(), count);
         }
         // println!("{sender} -{pulse:?}> {me}");
@@ -134,16 +132,12 @@ fn pulse_shitter(
 
 pub fn part1() -> usize {
     let mut map = input();
-    // map.iter().for_each(|(k, v)| println!("{k}: \t {v:?}"));
-    // println!();
 
     let (mut lows, mut highs) = (0, 0);
     for _ in 0..1000 {
-        let (nlow, nhigh) = pulse_shitter(0, &mut map, &mut HashMap::new());
+        let (nlow, nhigh) = pulse_shitter(0, &mut map, &[], &mut HashMap::new());
         lows += nlow;
         highs += nhigh;
-        // map.iter().for_each(|(k, v)| println!("{k}: \t {v:?}"));
-        // println!();
     }
 
     lows * highs
@@ -155,15 +149,22 @@ pub fn part2() -> usize {
     let rx_holder = map
         .iter()
         .find(|(_, m)| m.connected.contains(&"rx".to_string()))
-        .map(|(_, m)| m.connected.clone())
+        .map(|(n, _)| n)
         .unwrap();
+    let rs_holder = map
+        .iter()
+        .filter(|(_, m)| m.connected.contains(rx_holder))
+        .map(|(n, _)| n.clone())
+        .collect::<Vec<_>>();
 
     let mut i = 0;
     let mut counter = HashMap::new();
     loop {
         i += 1;
-        pulse_shitter(i, &mut map, &mut counter);
-        println!("{counter:?}");
+        pulse_shitter(i, &mut map, &rs_holder, &mut counter);
+        if counter.len() == rs_holder.len() {
+            break;
+        }
     }
-    0
+    counter.into_values().reduce(|a, b| a.lcm(&b)).unwrap()
 }
