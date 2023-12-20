@@ -58,7 +58,7 @@ fn input() -> Map {
 fn pulse_shitter(
     count: usize,
     map: &mut Map,
-    which: &[String],
+    which: &HashSet<String>,
     counter: &mut HashMap<String, usize>,
 ) -> (usize, usize) {
     let mut work_stack =
@@ -69,12 +69,10 @@ fn pulse_shitter(
         if which.contains(&me) && !pulse && !counter.contains_key(&me.to_string()) {
             counter.insert(me.to_string(), count);
         }
-        // println!("{sender} -{pulse:?}> {me}");
         match pulse {
             false => lows += 1,
             true => highs += 1,
         }
-        // println!("{sender} -{pulse:?}> {me}");
         if let Some(node) = map.get_mut(&me) {
             let connections = node.connected.clone();
             match &mut node.mtype {
@@ -110,7 +108,7 @@ pub fn part1() -> usize {
 
     let (mut lows, mut highs) = (0, 0);
     for _ in 0..1000 {
-        let (nlow, nhigh) = pulse_shitter(0, &mut map, &[], &mut HashMap::new());
+        let (nlow, nhigh) = pulse_shitter(0, &mut map, &HashSet::new(), &mut HashMap::new());
         lows += nlow;
         highs += nhigh;
     }
@@ -130,7 +128,7 @@ pub fn part2() -> usize {
         .iter()
         .filter(|(_, m)| m.connected.contains(rx_holder))
         .map(|(n, _)| n.clone())
-        .collect::<Vec<_>>();
+        .collect::<HashSet<_>>();
 
     let mut i = 0;
     let mut counter = HashMap::new();
