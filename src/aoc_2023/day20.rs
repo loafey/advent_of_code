@@ -1,18 +1,6 @@
 use crate::utils::{load_string, IteratorEvalExt, NumExt};
-use std::{
-    clone,
-    collections::{HashMap, HashSet, VecDeque},
-    fs::File,
-    io::Write,
-};
-use Signal::*;
+use std::collections::{HashMap, HashSet, VecDeque};
 use Type::*;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Signal {
-    Low,
-    High,
-}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Type {
@@ -74,54 +62,41 @@ fn pulse_shitter(
     counter: &mut HashMap<String, usize>,
 ) -> (usize, usize) {
     let mut work_stack =
-        VecDeque::from([("broadcaster".to_string(), "broadcaster".to_string(), Low)]);
+        VecDeque::from([("broadcaster".to_string(), "broadcaster".to_string(), false)]);
     let (mut lows, mut highs) = (0, 0);
     while !work_stack.is_empty() {
         let (me, sender, pulse) = work_stack.pop_front().unwrap();
-        if which.contains(&me) && pulse == Low && !counter.contains_key(&me.to_string()) {
+        if which.contains(&me) && !pulse && !counter.contains_key(&me.to_string()) {
             counter.insert(me.to_string(), count);
         }
         // println!("{sender} -{pulse:?}> {me}");
         match pulse {
-            Low => lows += 1,
-            High => highs += 1,
+            false => lows += 1,
+            true => highs += 1,
         }
         // println!("{sender} -{pulse:?}> {me}");
         if let Some(node) = map.get_mut(&me) {
             let connections = node.connected.clone();
             match &mut node.mtype {
                 FlipFlop { state } => {
-                    if matches!(pulse, Low) {
+                    if !pulse {
                         *state = !*state;
-                        let message = match *state {
-                            true => High,
-                            false => Low,
-                        };
+                        let message = *state;
                         for con in connections {
                             work_stack.push_back((con, me.clone(), message));
                         }
                     }
                 }
                 Conjuction { state } => {
-                    state.insert(
-                        sender.to_string(),
-                        match pulse {
-                            Low => false,
-                            High => true,
-                        },
-                    );
-                    let message = if state.values().all(|a| *a) {
-                        Low
-                    } else {
-                        High
-                    };
+                    state.insert(sender.to_string(), pulse);
+                    let message = !state.values().all(|a| *a);
                     for con in connections {
                         work_stack.push_back((con, me.clone(), message));
                     }
                 }
                 Broadcaster => {
                     for con in connections {
-                        work_stack.push_back((con, me.clone(), Low));
+                        work_stack.push_back((con, me.clone(), false));
                     }
                 }
             }
