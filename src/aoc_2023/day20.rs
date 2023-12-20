@@ -1,5 +1,10 @@
 use crate::utils::{load_string, IteratorEvalExt};
-use std::collections::{HashMap, HashSet};
+use std::{
+    clone,
+    collections::{HashMap, HashSet, VecDeque},
+    fs::File,
+    io::Write,
+};
 use Signal::*;
 use Type::*;
 
@@ -49,12 +54,7 @@ fn input() -> Map {
         .map(|(s, _)| s.clone())
         .collect::<HashSet<_>>();
 
-    for (s, m) in map
-        .iter()
-        .filter(|(_, a)| !matches!(a.mtype, Conjuction { .. }))
-        .map(|(a, b)| (a.clone(), b.clone()))
-        .eval()
-    {
+    for (s, m) in map.iter().map(|(a, b)| (a.clone(), b.clone())).eval() {
         for con in &m.connected {
             if conjucations.contains(con) {
                 if let Conjuction { state } = &mut map.get_mut(con).unwrap().mtype {
@@ -67,82 +67,104 @@ fn input() -> Map {
     map
 }
 
-fn pulse_shitter(me: &str, sender: &str, pulse: Signal, map: &mut Map) -> (usize, usize) {
-    let mut work_stack = vec![(me, sender, pulse)];
-    let (mut lows, mut highs) = match pulse {
-        Low => (1, 0),
-        High => (0, 1),
-    };
-    // println!("{sender} -{pulse:?}> {me}");
-    if let Some(node) = map.get_mut(me) {
-        let connections = node.connected.clone();
-        match &mut node.mtype {
-            FlipFlop { state } => {
-                if matches!(pulse, Low) {
-                    *state = !*state;
-                    let message = match *state {
-                        true => High,
-                        false => Low,
+fn pulse_shitter(map: &mut Map) -> (usize, usize) {
+    let mut work_stack =
+        VecDeque::from([("broadcaster".to_string(), "broadcaster".to_string(), Low)]);
+    let (mut lows, mut highs) = (0, 0);
+    while !work_stack.is_empty() {
+        let (me, sender, pulse) = work_stack.pop_front().unwrap();
+        if matches!(&me[..], "dl" | "rv" | "bt" | "fr") && pulse == Low {
+            println!("{me} {pulse:?}");
+        }
+        // println!("{sender} -{pulse:?}> {me}");
+        match pulse {
+            Low => lows += 1,
+            High => highs += 1,
+        }
+        // println!("{sender} -{pulse:?}> {me}");
+        if let Some(node) = map.get_mut(&me) {
+            let connections = node.connected.clone();
+            match &mut node.mtype {
+                FlipFlop { state } => {
+                    if matches!(pulse, Low) {
+                        *state = !*state;
+                        let message = match *state {
+                            true => High,
+                            false => Low,
+                        };
+                        for con in connections {
+                            work_stack.push_back((con, me.clone(), message));
+                        }
+                    }
+                }
+                Conjuction { state } => {
+                    state.insert(
+                        sender.to_string(),
+                        match pulse {
+                            Low => false,
+                            High => true,
+                        },
+                    );
+                    let message = if state.values().all(|a| *a) {
+                        Low
+                    } else {
+                        High
                     };
                     for con in connections {
-                        let (nlow, nhigh) = pulse_shitter(&con, me, message, map);
-                        lows += nlow;
-                        highs += nhigh;
+                        work_stack.push_back((con, me.clone(), message));
+                    }
+                }
+                Broadcaster => {
+                    for con in connections {
+                        work_stack.push_back((con, me.clone(), Low));
                     }
                 }
             }
-            Conjuction { state } => {
-                state.insert(
-                    sender.to_string(),
-                    match pulse {
-                        Low => false,
-                        High => true,
-                    },
-                );
-                let message = if state.values().all(|a| *a) {
-                    Low
-                } else {
-                    High
-                };
-                for con in connections {
-                    let (nlow, nhigh) = pulse_shitter(&con, me, message, map);
-                    lows += nlow;
-                    highs += nhigh;
-                }
-            }
-            Broadcaster => {
-                for con in connections {
-                    let (nlow, nhigh) = pulse_shitter(&con, me, Low, map);
-                    lows += nlow;
-                    highs += nhigh;
-                }
-            }
         }
-    } else if me == "output" {
-    } else {
-        unreachable!()
     }
     (lows, highs)
 }
 
 pub fn part1() -> usize {
     let mut map = input();
-    map.iter().for_each(|(k, v)| println!("{k}: \t {v:?}"));
-    println!();
+    // map.iter().for_each(|(k, v)| println!("{k}: \t {v:?}"));
+    // println!();
 
     let (mut lows, mut highs) = (0, 0);
-    for _ in 0..1 {
-        let (nlow, nhigh) = pulse_shitter("broadcaster", "button", Low, &mut map);
+    for _ in 0..1000 {
+        let (nlow, nhigh) = pulse_shitter(&mut map);
         lows += nlow;
         highs += nhigh;
-        map.iter().for_each(|(k, v)| println!("{k}: \t {v:?}"));
-        println!();
+        // map.iter().for_each(|(k, v)| println!("{k}: \t {v:?}"));
+        // println!();
     }
-    println!("{lows} {highs}");
 
     lows * highs
 }
 
-pub fn part2() -> isize {
+pub fn part2() -> usize {
+    let mut map = input();
+
+    let rx_holder = map
+        .iter()
+        .find(|(_, m)| m.connected.contains(&"rx".to_string()))
+        .map(|(n, m)| {
+            println!("{m:?}");
+            n
+        })
+        .unwrap()
+        .clone();
+
+    let mut i = 0;
+    loop {
+        i += 1;
+        pulse_shitter(&mut map);
+        if let Conjuction { state } = &map[&rx_holder].mtype {
+            // state.iter().for_each(|(s, _)| println!("{:?}", map[s]));
+            if state.iter().any(|(_, v)| *v) {
+                println!("{i}: {state:?}");
+            };
+        }
+    }
     0
 }
