@@ -1,6 +1,5 @@
-use std::collections::{HashMap, HashSet, VecDeque};
-type Set<T> = HashSet<T>;
 use crate::utils::{load_matrix_then, MatrixGet};
+use std::collections::{HashMap, VecDeque};
 use Spot::*;
 
 #[derive(Clone, Copy)]
@@ -127,12 +126,11 @@ pub fn part1() -> usize {
 enum Chunk {
     NotDone {
         map: Vec<Vec<Spot>>,
-        last_two: [usize; 2],
+        // last_two: [usize; 2],
     },
-    Done(usize),
+    // Done(usize),
 }
 
-const TEST_CHECK_AMOUNT: usize = 26501365;
 pub fn part2() -> usize {
     let (map, (y, x)) = input();
     let start = (y as isize, x as isize);
@@ -140,7 +138,7 @@ pub fn part2() -> usize {
         (0, 0),
         Chunk::NotDone {
             map: map.clone(),
-            last_two: [0, 0],
+            // last_two: [0, 0],
         },
     )]);
     let calc_chunk = |y, x| (y / map.len() as isize, x / map[0].len() as isize);
@@ -162,10 +160,11 @@ pub fn part2() -> usize {
                         chunk_coord,
                         Chunk::NotDone {
                             map: map.clone(),
-                            last_two: [0, 0],
+                            // last_two: [0, 0],
                         },
                     );
                     let chunk = chunks.get_mut(&chunk_coord).unwrap();
+                    #[allow(irrefutable_let_patterns)]
                     if let Chunk::NotDone { map, .. } = chunk {
                         let cor_x = (x.rem_euclid(map[0].len() as isize)) as usize;
                         let cor_y = (y.rem_euclid(map.len() as isize)) as usize;
@@ -175,7 +174,8 @@ pub fn part2() -> usize {
                 }
             };
 
-            if let Chunk::NotDone { map, last_two } = chunk {
+            #[allow(irrefutable_let_patterns)]
+            if let Chunk::NotDone { map, .. } = chunk {
                 let cor_x = (x.rem_euclid(map[0].len() as isize)) as usize;
                 let cor_y = (y.rem_euclid(map.len() as isize)) as usize;
 
@@ -218,8 +218,8 @@ pub fn part2() -> usize {
     }
 
     chunks
-        .into_iter()
-        .map(|(i, c)| match c {
+        .into_values()
+        .map(|c| match c {
             Chunk::NotDone { map, .. } => {
                 // println!("{i:?}");
                 // map.iter().for_each(|r| {
@@ -229,9 +229,8 @@ pub fn part2() -> usize {
                 println!();
                 map.into_iter()
                     .map(|r| r.into_iter().filter(|s| matches!(s, Visited)).count())
-                    .sum()
-            }
-            Chunk::Done(a) => a,
+                    .sum::<usize>()
+            } // Chunk::Done(a) => a,
         })
         .sum()
 }

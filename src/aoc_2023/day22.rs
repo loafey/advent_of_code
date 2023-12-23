@@ -1,14 +1,10 @@
-use std::{
-    collections::HashSet,
-    ops::{Add, Index, IndexMut, Sub},
-};
+use std::collections::HashSet;
 
 use euclid::{Box3D, Point3D};
 use rayon::iter::{ParallelBridge, ParallelIterator};
 
 use crate::utils::load_string;
 
-type Vec3 = Point3D<usize, ()>;
 fn parse_vec3(s: &str) -> Point3D<usize, ()> {
     let [x, y, z] = s
         .split(',')
@@ -21,8 +17,8 @@ fn parse_vec3(s: &str) -> Point3D<usize, ()> {
 
 type Shape = Box3D<usize, ()>;
 
-fn simulate(shapes: &mut Vec<Shape>) -> HashSet<usize> {
-    let org = shapes.clone();
+fn simulate(shapes: &mut [Shape]) -> HashSet<usize> {
+    let org = shapes.to_owned();
     let mut modified = HashSet::new();
     for (i, shape) in shapes.iter_mut().enumerate() {
         let mut c = *shape;
