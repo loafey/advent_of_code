@@ -1,5 +1,5 @@
 use crate::utils::{load_matrix_then, MatrixGet};
-use std::collections::{HashMap, VecDeque};
+use std::collections::VecDeque;
 use Spot::*;
 
 #[derive(Clone, Copy)]
@@ -123,13 +123,13 @@ pub fn part1() -> usize {
 //     0
 // }
 
-enum Chunk {
-    NotDone {
-        map: Vec<Vec<Spot>>,
-        // last_two: [usize; 2],
-    },
-    // Done(usize),
-}
+// enum Chunk {
+//     NotDone {
+//         map: Vec<Vec<Spot>>,
+//         // last_two: [usize; 2],
+//     },
+//     // Done(usize),
+// }
 
 pub fn part2() -> usize {
     // let (map, (y, x)) = input();
