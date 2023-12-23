@@ -75,10 +75,10 @@ pub fn part1() -> usize {
         i += 1;
     }
 
-    map.iter().for_each(|r| {
-        r.iter().for_each(|r| print!("{r:?}"));
-        println!();
-    });
+    // map.iter().for_each(|r| {
+    //     r.iter().for_each(|r| print!("{r:?}"));
+    //     println!();
+    // });
     map.into_iter()
         .map(|r| r.into_iter().filter(|s| matches!(s, Visited)).count())
         .sum()

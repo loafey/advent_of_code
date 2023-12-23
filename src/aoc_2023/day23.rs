@@ -97,8 +97,14 @@ fn longest_path(
 }
 
 pub fn part1() -> usize {
+    let (mat, start, end) = input();
+    longest_path(&mat, HashSet::new(), start, end)
+}
+
+#[allow(clippy::type_complexity)]
+fn input() -> (Vec<Vec<Spot>>, (usize, usize), (usize, usize)) {
     let mat = load_matrix::<Spot>("inputs/2023/day23.input");
-    let starting = mat[0]
+    let start = mat[0]
         .iter()
         .enumerate()
         .find(|(_, s)| matches!(s, Spot::Path))
@@ -111,14 +117,12 @@ pub fn part1() -> usize {
         .find(|(_, s)| matches!(s, Spot::Path))
         .map(|(x, _)| (mat.len() - 1, x))
         .unwrap();
-
-    println!("Starting at: {starting:?}");
-    println!("Going to: {end:?}");
-    longest_path(&mat, HashSet::new(), starting, end)
+    (mat, start, end)
 }
 
 pub fn part2() -> usize {
-    let mat = load_matrix::<Spot>("inputs/2023/day23.input")
+    let (mat, start, end) = input();
+    let mat = mat
         .into_iter()
         .map(|r| {
             r.into_iter()
@@ -130,19 +134,6 @@ pub fn part2() -> usize {
                 .collect::<Vec<_>>()
         })
         .collect::<Vec<_>>();
-    let starting = mat[0]
-        .iter()
-        .enumerate()
-        .find(|(_, s)| matches!(s, Spot::Path))
-        .map(|(x, _)| (0, x))
-        .unwrap();
 
-    let end = mat[mat.len() - 1]
-        .iter()
-        .enumerate()
-        .find(|(_, s)| matches!(s, Spot::Path))
-        .map(|(x, _)| (mat.len() - 1, x))
-        .unwrap();
-
-    longest_path(&mat, HashSet::new(), starting, end)
+    longest_path(&mat, HashSet::new(), start, end)
 }
