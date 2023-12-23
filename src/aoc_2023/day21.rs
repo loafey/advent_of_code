@@ -132,107 +132,108 @@ enum Chunk {
 }
 
 pub fn part2() -> usize {
-    let (map, (y, x)) = input();
-    let start = (y as isize, x as isize);
-    let mut chunks: HashMap<(isize, isize), Chunk> = HashMap::from([(
-        (0, 0),
-        Chunk::NotDone {
-            map: map.clone(),
-            // last_two: [0, 0],
-        },
-    )]);
-    let calc_chunk = |y, x| (y / map.len() as isize, x / map[0].len() as isize);
+    // let (map, (y, x)) = input();
+    // let start = (y as isize, x as isize);
+    // let mut chunks: HashMap<(isize, isize), Chunk> = HashMap::from([(
+    //     (0, 0),
+    //     Chunk::NotDone {
+    //         map: map.clone(),
+    //         // last_two: [0, 0],
+    //     },
+    // )]);
+    // let calc_chunk = |y, x| (y / map.len() as isize, x / map[0].len() as isize);
 
-    let mut stacks_stack = VecDeque::from([VecDeque::from([start])]);
+    // let mut stacks_stack = VecDeque::from([VecDeque::from([start])]);
 
-    let mut i = 0;
-    while !stacks_stack.is_empty() && i < 64 {
-        let visit_stack = stacks_stack.pop_front().unwrap();
-        let mut new_stack = VecDeque::new();
+    // let mut i = 0;
+    // while !stacks_stack.is_empty() && i < 64 {
+    //     let visit_stack = stacks_stack.pop_front().unwrap();
+    //     let mut new_stack = VecDeque::new();
 
-        for (y, x) in visit_stack {
-            let chunk_coord = calc_chunk(y, x);
-            let chunk = {
-                if let Some(map) = chunks.get_mut(&chunk_coord) {
-                    map
-                } else {
-                    chunks.insert(
-                        chunk_coord,
-                        Chunk::NotDone {
-                            map: map.clone(),
-                            // last_two: [0, 0],
-                        },
-                    );
-                    let chunk = chunks.get_mut(&chunk_coord).unwrap();
-                    #[allow(irrefutable_let_patterns)]
-                    if let Chunk::NotDone { map, .. } = chunk {
-                        let cor_x = (x.rem_euclid(map[0].len() as isize)) as usize;
-                        let cor_y = (y.rem_euclid(map.len() as isize)) as usize;
-                        map[cor_y][cor_x] = Visited;
-                    }
-                    chunk
-                }
-            };
+    //     for (y, x) in visit_stack {
+    //         let chunk_coord = calc_chunk(y, x);
+    //         let chunk = {
+    //             if let Some(map) = chunks.get_mut(&chunk_coord) {
+    //                 map
+    //             } else {
+    //                 chunks.insert(
+    //                     chunk_coord,
+    //                     Chunk::NotDone {
+    //                         map: map.clone(),
+    //                         // last_two: [0, 0],
+    //                     },
+    //                 );
+    //                 let chunk = chunks.get_mut(&chunk_coord).unwrap();
+    //                 #[allow(irrefutable_let_patterns)]
+    //                 if let Chunk::NotDone { map, .. } = chunk {
+    //                     let cor_x = (x.rem_euclid(map[0].len() as isize)) as usize;
+    //                     let cor_y = (y.rem_euclid(map.len() as isize)) as usize;
+    //                     map[cor_y][cor_x] = Visited;
+    //                 }
+    //                 chunk
+    //             }
+    //         };
 
-            #[allow(irrefutable_let_patterns)]
-            if let Chunk::NotDone { map, .. } = chunk {
-                let cor_x = (x.rem_euclid(map[0].len() as isize)) as usize;
-                let cor_y = (y.rem_euclid(map.len() as isize)) as usize;
+    //         #[allow(irrefutable_let_patterns)]
+    //         if let Chunk::NotDone { map, .. } = chunk {
+    //             let cor_x = (x.rem_euclid(map[0].len() as isize)) as usize;
+    //             let cor_y = (y.rem_euclid(map.len() as isize)) as usize;
 
-                // println!("{x} {y} | {cor_x} {cor_y}");
+    //             // println!("{x} {y} | {cor_x} {cor_y}");
 
-                let mut neighbors = Vec::new();
-                let mut nones = Vec::new();
-                [(1, 0), (-1, 0), (0, 1), (0, -1)]
-                    .into_iter()
-                    .map(|(ymod, xmod)| {
-                        (
-                            map.matrix_get(cor_y, cor_x, ymod, xmod).copied(),
-                            (cor_y as isize + ymod) as usize,
-                            (cor_x as isize + xmod) as usize,
-                            (y + ymod),
-                            (x + xmod),
-                        )
-                    })
-                    .for_each(|(s, cy, cx, y, x)| match s {
-                        Some(s) => {
-                            if matches!(s, Empty | Start) {
-                                neighbors.push((cy, cx, y, x))
-                            }
-                        }
-                        None => nones.push((y, x)),
-                    });
+    //             let mut neighbors = Vec::new();
+    //             let mut nones = Vec::new();
+    //             [(1, 0), (-1, 0), (0, 1), (0, -1)]
+    //                 .into_iter()
+    //                 .map(|(ymod, xmod)| {
+    //                     (
+    //                         map.matrix_get(cor_y, cor_x, ymod, xmod).copied(),
+    //                         (cor_y as isize + ymod) as usize,
+    //                         (cor_x as isize + xmod) as usize,
+    //                         (y + ymod),
+    //                         (x + xmod),
+    //                     )
+    //                 })
+    //                 .for_each(|(s, cy, cx, y, x)| match s {
+    //                     Some(s) => {
+    //                         if matches!(s, Empty | Start) {
+    //                             neighbors.push((cy, cx, y, x))
+    //                         }
+    //                     }
+    //                     None => nones.push((y, x)),
+    //                 });
 
-                map[cor_y][cor_x] = Empty;
-                for (cy, cx, y, x) in neighbors {
-                    map[cy][cx] = Visited;
-                    new_stack.push_back((y, x))
-                }
-                for (y, x) in nones {
-                    new_stack.push_back((y, x));
-                }
-            }
-        }
-        stacks_stack.push_back(new_stack);
-        i += 1;
-    }
+    //             map[cor_y][cor_x] = Empty;
+    //             for (cy, cx, y, x) in neighbors {
+    //                 map[cy][cx] = Visited;
+    //                 new_stack.push_back((y, x))
+    //             }
+    //             for (y, x) in nones {
+    //                 new_stack.push_back((y, x));
+    //             }
+    //         }
+    //     }
+    //     stacks_stack.push_back(new_stack);
+    //     i += 1;
+    // }
 
-    chunks
-        .into_values()
-        .map(|c| match c {
-            Chunk::NotDone { map, .. } => {
-                // println!("{i:?}");
-                // map.iter().for_each(|r| {
-                //     r.iter().for_each(|p| print!("{p:?}"));
-                //     println!();
-                // });
-                println!();
-                map.into_iter()
-                    .map(|r| r.into_iter().filter(|s| matches!(s, Visited)).count())
-                    .sum::<usize>()
-            } // Chunk::Done(a) => a,
-        })
-        .sum()
+    // chunks
+    //     .into_values()
+    //     .map(|c| match c {
+    //         Chunk::NotDone { map, .. } => {
+    //             // println!("{i:?}");
+    //             // map.iter().for_each(|r| {
+    //             //     r.iter().for_each(|p| print!("{p:?}"));
+    //             //     println!();
+    //             // });
+    //             println!();
+    //             map.into_iter()
+    //                 .map(|r| r.into_iter().filter(|s| matches!(s, Visited)).count())
+    //                 .sum::<usize>()
+    //         } // Chunk::Done(a) => a,
+    //     })
+    //     .sum()
+    0
 }
 
 // Works but ungodly slow
