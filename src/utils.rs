@@ -10,6 +10,21 @@ use std::{
 };
 
 use chrono::format::Item;
+use rayon::iter::IterBridge;
+
+pub trait FindSome<A, B> {
+    fn find_some(self, f: impl Fn(A) -> Option<B>) -> Option<B>;
+}
+impl<I: Iterator<Item = A>, A, B> FindSome<A, B> for I {
+    fn find_some(self, f: impl Fn(A) -> Option<B>) -> Option<B> {
+        for i in self {
+            if let Some(b) = f(i) {
+                return Some(b);
+            }
+        }
+        None
+    }
+}
 
 pub trait SetTools<T, R> {
     fn split(self, f: impl Fn(&T) -> bool) -> (R, R)
