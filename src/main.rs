@@ -16,6 +16,12 @@ mod aoc_2023;
 mod parser;
 mod utils;
 
+macro_rules! year {
+    () => {
+        aoc_2020::table()
+    };
+}
+
 fn main() {
     let benchmark = std::env::args().filter(|s| s == "--benchmark").count() == 1;
     let table = std::env::args().filter(|s| s == "--table").count() == 1;
@@ -30,13 +36,13 @@ fn main() {
         println!("{}\n", format_benchmark(aoc_2019::table().run_benchmarks()));
         println!("{}\n", format_benchmark(aoc_2018::table().run_benchmarks()));
     } else if table {
-        aoc_2023::table().run();
+        year!().run();
     } else if let Some(num) = num {
         println!("╍ Running day {num} ╍");
-        aoc_2023::table().run_day(num)
+        year!().run_day(num)
     } else {
         println!("╍ Running current day ╍");
-        aoc_2023::table().run_current_day()
+        year!().run_current_day()
     }
 }
 
