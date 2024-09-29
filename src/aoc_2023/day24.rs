@@ -1,6 +1,6 @@
-use crate::utils::{load_string, FindSome, IteratorEvalExt as _};
+use crate::utils::{load_string, IteratorEvalExt as _};
 use euclid::default::{Point2D, Point3D, Vector2D, Vector3D};
-use rayon::iter::{IntoParallelRefIterator, ParallelBridge, ParallelIterator as _};
+use rayon::iter::{ParallelBridge, ParallelIterator as _};
 use std::{collections::HashSet, fmt::Debug};
 
 fn parse_p3(s: &str) -> [f64; 3] {

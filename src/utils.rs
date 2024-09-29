@@ -430,7 +430,7 @@ impl NumExt for usize {
             return (m | n);
         }
         let shift = (m | n).trailing_zeros();
-        if m == Self::min_value() || n == Self::min_value() {
+        if m == Self::MIN || n == Self::MIN {
             return (1 << shift);
         }
         m >>= m.trailing_zeros();

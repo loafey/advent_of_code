@@ -30,10 +30,10 @@ fn main() {
         println!("{}\n", format_benchmark(aoc_2019::table().run_benchmarks()));
         println!("{}\n", format_benchmark(aoc_2018::table().run_benchmarks()));
     } else if table {
-        aoc_2020::table().run();
+        aoc_2023::table().run();
     } else if let Some(num) = num {
         println!("╍ Running day {num} ╍");
-        aoc_2020::table().run_day(num)
+        aoc_2023::table().run_day(num)
     } else {
         println!("╍ Running current day ╍");
         aoc_2023::table().run_current_day()

@@ -1,10 +1,7 @@
 use rand::seq::SliceRandom;
 
 use crate::utils::load_string;
-use std::{
-    collections::{BTreeSet as Set, HashMap as Map},
-    sync::{atomic::AtomicUsize, Arc},
-};
+use std::collections::{BTreeSet as Set, HashMap as Map};
 
 fn input() -> Map<String, Set<String>> {
     let mut map = load_string("inputs/2023/day25.input")

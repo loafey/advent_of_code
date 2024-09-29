@@ -1,5 +1,5 @@
 use crate::utils::{bi_functors::*, load_string};
-use std::{cmp::Ordering, collections::BTreeMap, usize};
+use std::{cmp::Ordering, collections::BTreeMap};
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
 #[rustfmt::skip]

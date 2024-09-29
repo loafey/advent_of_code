@@ -26,7 +26,7 @@ fn parse_sleep_ranges() -> HashMap<i32, Vec<Range<i32>>> {
             let hour = parse_next::<i32>(&mut time_split);
             let minutes = parse_next::<i32>(&mut time_split);
             if hour == 23 {
-                date += Duration::days(1);
+                date += Duration::try_days(1).unwrap();
                 minutes - 60
             } else {
                 minutes
