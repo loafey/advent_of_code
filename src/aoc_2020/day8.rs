@@ -65,8 +65,8 @@ pub fn part2() -> isize {
             "jmp" => {
                 let mut c = code.clone();
                 c[i].0 = "nop";
-                
-                if let Some(r) =ö term_check(c) {
+
+                if let Some(r) = term_check(c) {
                     return r;
                 }
             }
