@@ -17,7 +17,7 @@ fn input() -> Map {
         .lines()
         .map(|s| {
             let mut splat = s
-                .split(|c| c == '=' || c == ';' || c == ',' || c == ' ')
+                .split(['=', ';', ',', ' '])
                 .filter(|s| !s.is_empty())
                 .skip(1);
             let name = {

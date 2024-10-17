@@ -27,7 +27,7 @@ pub struct ParseStep<'a, T: 'a>(Box<dyn Iterator<Item = T> + 'a>);
 pub fn parse_step<'a, T: 'a, I: Iterator<Item = T> + 'a>(v: I) -> ParseStep<'a, T> {
     ParseStep(Box::new(v))
 }
-impl<'a, T> Neg for ParseStep<'a, T> {
+impl<T> Neg for ParseStep<'_, T> {
     type Output = Vec<T>;
 
     fn neg(self) -> Self::Output {
@@ -69,7 +69,7 @@ pub fn parse(p: &str) -> Parser<'_> {
     Parser(p)
 }
 pub struct Parser<'a>(&'a str);
-impl<'a, P: Pattern<'a> + 'a> BitOr<P> for Parser<'a> {
+impl<'a, P: Pattern + 'a> BitOr<P> for Parser<'a> {
     type Output = ParseStep<'a, &'a str>;
 
     fn bitor(self, rhs: P) -> Self::Output {
@@ -78,7 +78,7 @@ impl<'a, P: Pattern<'a> + 'a> BitOr<P> for Parser<'a> {
         parse_step(split)
     }
 }
-impl<'a, P: Pattern<'a> + 'a> Div<P> for Parser<'a> {
+impl<'a, P: Pattern + 'a> Div<P> for Parser<'a> {
     type Output = SplitOnce<Parser<'a>, Parser<'a>>;
 
     fn div(self, rhs: P) -> Self::Output {

@@ -38,7 +38,7 @@ fn input() -> HashMap<String, Monkey> {
     load_string("inputs/2022/day21.input")
         .lines()
         .map(|s| {
-            let mut splat = s.split(|c| c == ':' || c == ' ').filter(|s| !s.is_empty());
+            let mut splat = s.split([':', ' ']).filter(|s| !s.is_empty());
 
             let name = splat.next().unwrap();
             let next = splat.next().unwrap();

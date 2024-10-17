@@ -4,7 +4,7 @@ pub fn part1() -> usize {
     load_string("inputs/2020/day2.input")
         .lines()
         .map(|s| {
-            s.split(|c| matches!(c, ' ' | '-' | ':'))
+            s.split([' ', '-', ':'])
                 .array_chunks::<5>()
                 .filter(|[s, e, c, _, str]| {
                     let s = s.parse::<usize>().unwrap();
@@ -20,7 +20,7 @@ pub fn part2() -> usize {
     load_string("inputs/2020/day2.input")
         .lines()
         .map(|s| {
-            s.split(|c| matches!(c, ' ' | '-' | ':'))
+            s.split([' ', '-', ':'])
                 .array_chunks::<5>()
                 .filter(|[s, e, c, _, str]| {
                     let c = c.chars().next().unwrap();

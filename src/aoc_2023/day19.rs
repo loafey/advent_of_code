@@ -61,7 +61,7 @@ fn input() -> (HashMap<String, WorkFlow>, Vec<Ratings>) {
             |t| {
                 t.lines()
                     .map(|r| {
-                        let mut splat = r.split(|c| matches!(c, '{' | '}'));
+                        let mut splat = r.split(['{', '}']);
                         let name = splat.next().unwrap().to_string();
                         let rest = splat.next().unwrap();
                         let splat = rest.split(',');

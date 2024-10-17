@@ -13,7 +13,7 @@ fn parse_splat(splat: Is) -> impl Iterator<Item = &'static str> {
     splat
         .next()
         .unwrap()
-        .split(|c| c == ' ' || c == ':' || c == ',')
+        .split([' ', ':', ','])
         .filter(|s| !s.is_empty())
 }
 fn parse_splat_skip(skip: usize, splat: Is) -> impl Iterator<Item = &'static str> {

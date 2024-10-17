@@ -10,7 +10,7 @@ pub fn part1() -> usize {
         let coord = split
             .next()
             .map(|s| {
-                let mut split = s.split(|c| c == ':' || c == ',');
+                let mut split = s.split([':', ',']);
                 (
                     parse_next::<usize>(&mut split),
                     parse_next::<usize>(&mut split),
@@ -69,7 +69,7 @@ pub fn part2() -> usize {
             let coord = split
                 .next()
                 .map(|s| {
-                    let mut split = s.split(|c| c == ':' || c == ',');
+                    let mut split = s.split([':', ',']);
                     (
                         split.next().and_then(|s| s.parse::<usize>().ok()).unwrap(),
                         split.next().and_then(|s| s.parse::<usize>().ok()).unwrap(),

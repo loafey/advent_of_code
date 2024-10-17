@@ -6,7 +6,7 @@ fn load_input() -> impl Iterator<Item = (i32, i32, i32, i32)> {
     load_string("inputs/2022/day4.input")
         .lines()
         .map(|s| {
-            let [a, b, x, y] = s.split(|c| c == ',' || c == '-').collect::<Vec<_>>()[..] else {
+            let [a, b, x, y] = s.split([',', '-']).collect::<Vec<_>>()[..] else {
                 unreachable!()
             };
             (parse(a), parse(b), parse(x), parse(y))

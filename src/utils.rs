@@ -4,13 +4,46 @@ use std::{
     fmt::Debug,
     hash::Hash,
     num::Wrapping,
+    ops::Deref,
     path::Path,
     process::Output,
+    rc::Rc,
     str::FromStr,
+    sync::Arc,
 };
 
 use chrono::format::Item;
 use rayon::iter::IterBridge;
+
+#[derive(Clone, PartialEq, Eq)]
+struct Memoize<T>(Rc<T>);
+impl<T> std::hash::Hash for Memoize<T> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        0.hash(state);
+    }
+}
+impl<T> Deref for Memoize<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(Clone, PartialEq, Eq)]
+struct AtomicMemoize<T>(Arc<T>);
+impl<T> std::hash::Hash for AtomicMemoize<T> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        0.hash(state);
+    }
+}
+impl<T> Deref for AtomicMemoize<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 pub trait FindSome<A, B> {
     fn find_some(self, f: impl Fn(A) -> Option<B>) -> Option<B>;

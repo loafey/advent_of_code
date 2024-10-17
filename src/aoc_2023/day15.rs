@@ -19,7 +19,7 @@ struct BoxValue<'l> {
     value: usize,
 }
 
-impl<'l> PartialEq for BoxValue<'l> {
+impl PartialEq for BoxValue<'_> {
     fn eq(&self, other: &Self) -> bool {
         self.str == other.str
     }

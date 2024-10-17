@@ -7,7 +7,7 @@ fn input(s: &str) -> (&str, HashMap<&str, (&str, &str)>) {
         .lines()
         .map(|a| {
             let [i, a, b] = a
-                .split(|c| matches!(c, ' ' | '=' | ',' | ')' | '('))
+                .split([' ', '=', ',', ')', '('])
                 .filter(|s| !s.is_empty())
                 .array_chunks::<3>()
                 .next()

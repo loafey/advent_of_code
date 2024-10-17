@@ -5,7 +5,7 @@ pub fn part1() -> usize {
     load_string("inputs/2020/day4.input")
         .split("\n\n")
         .map(|p| {
-            p.split(|c| matches!(c, ' ' | '\n'))
+            p.split([' ', '\n'])
                 .filter_map(|s| s.split_once(':'))
                 .collect::<Map<_, _>>()
         })
@@ -23,7 +23,7 @@ pub fn part2() -> usize {
     load_string("inputs/2020/day4.input")
         .split("\n\n")
         .map(|p| {
-            p.split(|c| matches!(c, ' ' | '\n'))
+            p.split([' ', '\n'])
                 .filter_map(|s| s.split_once(':'))
                 .collect::<Map<_, _>>()
         })
