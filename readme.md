@@ -1,8 +1,8 @@
 # AoC Benchmarks
-## aoc_2024 Rust solutions 🤠 
+## 2024 Rust solutions 🤠 
 | Day | Part 1 runtime | Part 2 runtime |
 | --- | --- | --- |
-|1|0.00298588*s*|0.00195789*s*|
+|1|0.00020021*s*|0.00016075*s*|
 |2|❌|❌|
 |3|❌|❌|
 |4|❌|❌|
