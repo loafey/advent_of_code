@@ -1,0 +1,14 @@
+[package]
+name = "aoc_2020"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gen_days = { workspace = true }
+aoc_table = { workspace = true }
+utils = { workspace = true }
+memoize = { workspace = true }
+rayon = { workspace = true }
+
+[lib]
+path = "lib.rs"

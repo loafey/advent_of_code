@@ -9,14 +9,23 @@ edition = "2021"
 draw = []
 
 [dependencies]
-aoc_table = { git = "https://github.com/samhamnam/aoc_table" }
-zipperoni = { git = "https://github.com/samhamnam/zipperoni" }
+aoc_table = { workspace = true }
+rayon = { workspace = true}
+aoc_2024 = { path = "aoc_2024" }
+aoc_2023 = { path = "aoc_2023" }
+aoc_2022 = { path = "aoc_2022" }
+aoc_2020 = { path = "aoc_2020" }
+aoc_2019 = { path = "aoc_2019" }
+aoc_2018 = { path = "aoc_2018" }
+
+
+[workspace.dependencies]
 gen_days = { path = "gen_days" }
-chrono = "0.4.31"
+utils = { path = "utils" }
+aoc_table = { git = "https://github.com/samhamnam/aoc_table" }
 rayon = "1.8.0"
-rand = "0.8.5"
-serde = { version = "1.0.192", features = ["derive"] }
-serde_json = "1.0.108"
-pathfinding = "4.3.2"
+chrono = "0.4.31"
 memoize = "0.4.2"
+zipperoni = { git = "https://github.com/samhamnam/zipperoni" }
+pathfinding = "4.3.2"
 euclid = "0.22.9"
