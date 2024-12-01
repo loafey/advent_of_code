@@ -11,7 +11,7 @@ draw = []
 [dependencies]
 aoc_table = { git = "https://github.com/samhamnam/aoc_table" }
 zipperoni = { git = "https://github.com/samhamnam/zipperoni" }
-gen_days = { path = "crates/gen_days" }
+gen_days = { path = "gen_days" }
 chrono = "0.4.31"
 rayon = "1.8.0"
 rand = "0.8.5"

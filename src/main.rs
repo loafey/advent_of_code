@@ -20,7 +20,7 @@ mod utils;
 
 macro_rules! year {
     () => {
-        aoc_2024::table()
+        aoc_2023::table()
     };
 }
 

@@ -15,7 +15,7 @@ pub fn gen_days(item: TokenStream) -> TokenStream {
         name = &name[1..];
     }
     let path = format!(
-        "{}/../../{}",
+        "{}/../{}",
         env!("CARGO_MANIFEST_DIR"),
         &path[1..path.len() - 1]
     );
