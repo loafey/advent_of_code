@@ -14,12 +14,13 @@ mod aoc_2019;
 mod aoc_2020;
 mod aoc_2022;
 mod aoc_2023;
+mod aoc_2024;
 mod parser;
 mod utils;
 
 macro_rules! year {
     () => {
-        aoc_2020::table()
+        aoc_2024::table()
     };
 }
 
