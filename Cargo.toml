@@ -25,9 +25,9 @@ aoc_2018 = { path = "2018" }
 gen_days = { path = "gen_days" }
 utils = { path = "utils" }
 aoc_table = { git = "https://github.com/samhamnam/aoc_table" }
-rayon = "1.8.0"
-chrono = "0.4.31"
+rayon = "1.10.0"
+chrono = "0.4.38"
 memoize = "0.4.2"
 zipperoni = { git = "https://github.com/samhamnam/zipperoni" }
-pathfinding = "4.3.2"
-euclid = "0.22.9"
+pathfinding = "4.11.0"
+euclid = "0.22.11"
