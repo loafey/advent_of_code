@@ -32,6 +32,7 @@ fn main() {
         .and_then(|s| s.parse::<usize>().ok());
     if benchmark {
         println!("# AoC Benchmarks");
+        println!("{}\n", format_benchmark(aoc_2024::table().run_benchmarks()));
         println!("{}\n", format_benchmark(aoc_2023::table().run_benchmarks()));
         println!("{}\n", format_benchmark(aoc_2022::table().run_benchmarks()));
         println!("{}\n", format_benchmark(aoc_2020::table().run_benchmarks()));

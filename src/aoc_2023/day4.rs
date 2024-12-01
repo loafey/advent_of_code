@@ -29,10 +29,10 @@ fn parser() -> Vec<Card> {
         .collect()
 }
 
-pub fn part1() -> usize {
+pub fn part1() -> u128 {
     parser()
         .into_iter()
-        .map(|c| 2usize.pow(c.1 as u32 - 1))
+        .map(|c| 2u128.pow((c.1 as u32).checked_sub(1).unwrap_or_default()))
         .sum()
 }
 

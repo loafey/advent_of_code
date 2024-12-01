@@ -330,7 +330,7 @@ pub fn ascii_4_art_to_string(a: &[Vec<char>; 6], gap: usize) -> String {
 }
 
 pub fn load_string<P: AsRef<Path>>(p: P) -> String {
-    std::fs::read_to_string(p).unwrap()
+    std::fs::read_to_string(&p).unwrap_or_else(|_| panic!("failed to load {:?}", p.as_ref()))
 }
 // trait Splat<A, B> {
 //     type Output;
