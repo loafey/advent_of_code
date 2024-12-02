@@ -18,6 +18,18 @@ pub const True: CoolBool = Some(());
 #[allow(non_upper_case_globals)]
 pub const False: CoolBool = None;
 
+pub trait BooleanToCoolean {
+    fn c(self) -> CoolBool;
+}
+impl BooleanToCoolean for bool {
+    fn c(self) -> CoolBool {
+        match self {
+            true => True,
+            false => False,
+        }
+    }
+}
+
 use chrono::format::Item;
 use rayon::iter::IterBridge;
 
