@@ -1,8 +1,18 @@
 use std::cmp::{Ordering, Ordering::*};
-
 use utils::FindSome;
+type CoolBool = Option<()>;
+macro_rules! True {
+    () => {
+        Some(())
+    };
+}
+macro_rules! False {
+    () => {
+        None
+    };
+}
 
-fn is_alright(nums: impl Iterator<Item = i64>) -> Option<()> {
+fn is_alright(nums: impl Iterator<Item = i64>) -> CoolBool {
     let mut last: Option<(i64, Ordering)> = None;
     for num in nums {
         match last {
@@ -15,14 +25,14 @@ fn is_alright(nums: impl Iterator<Item = i64>) -> Option<()> {
                         (Equal, Equal) | (Less, Greater) | (Greater, Less)
                     )
                 {
-                    return None;
+                    False!()?
                 }
                 last = Some((num, lst.cmp(&num)))
             }
             None => last = Some((num, Equal)),
         }
     }
-    Some(())
+    True!()
 }
 
 pub fn part1() -> usize {
