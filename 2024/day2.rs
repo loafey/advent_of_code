@@ -1,4 +1,4 @@
-use std::cmp::Ordering;
+use std::cmp::{Ordering, Ordering::*};
 
 pub fn part1() -> i64 {
     let mut safe = 0;
@@ -7,23 +7,22 @@ pub fn part1() -> i64 {
         .map(|r| r.split_whitespace().map(|s| s.parse::<i64>().unwrap()))
     {
         let mut last: Option<(i64, Ordering)> = None;
-        for num in row {
-            if let Some((lst, dir)) = last {
-                let diff: i64 = lst - num;
-                if diff.abs() > 3 || lst == num {
-                    continue 'outer;
-                }
-                match (dir, lst.cmp(&num)) {
-                    (Ordering::Equal, Ordering::Equal)
-                    | (Ordering::Less, Ordering::Greater)
-                    | (Ordering::Greater, Ordering::Less) => {
+        for num in row.into_iter() {
+            match last {
+                Some((lst, dir)) => {
+                    let diff = lst - num;
+                    if diff.abs() > 3
+                        || lst == num
+                        || matches!(
+                            (dir, lst.cmp(&num)),
+                            (Equal, Equal) | (Less, Greater) | (Greater, Less)
+                        )
+                    {
                         continue 'outer;
                     }
-                    _ => {}
+                    last = Some((num, lst.cmp(&num)))
                 }
-                last = Some((num, lst.cmp(&num)))
-            } else {
-                last = Some((num, Ordering::Equal));
+                None => last = Some((num, Ordering::Equal)),
             }
         }
         safe += 1;
@@ -44,17 +43,15 @@ pub fn part2() -> i64 {
             let mut last: Option<(i64, Ordering)> = None;
             for num in row {
                 if let Some((lst, dir)) = last {
-                    let diff: i64 = lst - num;
-                    if diff.abs() > 3 || lst == num {
+                    let diff = lst - num;
+                    if diff.abs() > 3
+                        || lst == num
+                        || matches!(
+                            (dir, lst.cmp(&num)),
+                            (Equal, Equal) | (Less, Greater) | (Greater, Less)
+                        )
+                    {
                         continue 'outer;
-                    }
-                    match (dir, lst.cmp(&num)) {
-                        (Ordering::Equal, Ordering::Equal)
-                        | (Ordering::Less, Ordering::Greater)
-                        | (Ordering::Greater, Ordering::Less) => {
-                            continue 'outer;
-                        }
-                        _ => {}
                     }
                     last = Some((num, lst.cmp(&num)))
                 } else {
