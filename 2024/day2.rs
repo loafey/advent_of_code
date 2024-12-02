@@ -1,33 +1,34 @@
 use std::cmp::{Ordering, Ordering::*};
 
-pub fn part1() -> i64 {
-    let mut safe = 0;
-    'outer: for row in include_str!("../inputs/2024/day2.input")
+fn is_alright(nums: impl Iterator<Item = i64>) -> Option<()> {
+    let mut last: Option<(i64, Ordering)> = None;
+    for num in nums {
+        match last {
+            Some((lst, dir)) => {
+                let diff = lst - num;
+                if diff.abs() > 3
+                    || lst == num
+                    || matches!(
+                        (dir, lst.cmp(&num)),
+                        (Equal, Equal) | (Less, Greater) | (Greater, Less)
+                    )
+                {
+                    return None;
+                }
+                last = Some((num, lst.cmp(&num)))
+            }
+            None => last = Some((num, Equal)),
+        }
+    }
+    Some(())
+}
+
+pub fn part1() -> usize {
+    include_str!("../inputs/2024/day2.input")
         .lines()
         .map(|r| r.split_whitespace().map(|s| s.parse::<i64>().unwrap()))
-    {
-        let mut last: Option<(i64, Ordering)> = None;
-        for num in row.into_iter() {
-            match last {
-                Some((lst, dir)) => {
-                    let diff = lst - num;
-                    if diff.abs() > 3
-                        || lst == num
-                        || matches!(
-                            (dir, lst.cmp(&num)),
-                            (Equal, Equal) | (Less, Greater) | (Greater, Less)
-                        )
-                    {
-                        continue 'outer;
-                    }
-                    last = Some((num, lst.cmp(&num)))
-                }
-                None => last = Some((num, Ordering::Equal)),
-            }
-        }
-        safe += 1;
-    }
-    safe
+        .filter_map(is_alright)
+        .count()
 }
 pub fn part2() -> i64 {
     let mut safe = 0;
