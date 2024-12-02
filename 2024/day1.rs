@@ -1,27 +1,22 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BinaryHeap};
+
+use utils::parse_next;
 
 pub fn part1() -> i64 {
     let s = include_str!("../inputs/2024/day1.input");
-    let mut left = Vec::new();
-    let mut right = Vec::new();
+    let mut l = BinaryHeap::new();
+    let mut r = BinaryHeap::new();
 
     for i in s.lines().filter(|s| !s.is_empty()) {
         let mut nums = i.split_whitespace();
-        left.push(nums.next().unwrap().parse::<i64>().unwrap());
-        right.push(nums.next().unwrap().parse::<i64>().unwrap());
-    }
-    left.sort();
-    left.reverse();
-    right.sort();
-    right.reverse();
-
-    let mut ans = 0;
-    while let Some(left) = left.pop() {
-        let right = right.pop().unwrap();
-        ans += (left - right).abs();
+        l.push(parse_next::<i64>(&mut nums));
+        r.push(parse_next::<i64>(&mut nums));
     }
 
-    ans
+    l.into_iter_sorted()
+        .zip(r.into_iter_sorted())
+        .map(|(l, r)| (l - r).abs())
+        .sum()
 }
 
 pub fn part2() -> i64 {
@@ -31,16 +26,14 @@ pub fn part2() -> i64 {
 
     for i in s.lines().filter(|s| !s.is_empty()) {
         let mut nums = i.split_whitespace();
-        let value = nums.next().unwrap().parse::<i64>().unwrap();
+        let value = parse_next(&mut nums);
+        let key = parse_next(&mut nums);
+
         left.push(value);
-        let key = nums.next().unwrap().parse::<i64>().unwrap();
         *right.entry(key).or_default() += 1;
     }
 
-    let mut ans = 0;
-    for v in left {
-        ans += v * right.get(&v).copied().unwrap_or_default();
-    }
-
-    ans
+    left.into_iter()
+        .map(|v| v * right.get(&v).copied().unwrap_or_default())
+        .sum()
 }
