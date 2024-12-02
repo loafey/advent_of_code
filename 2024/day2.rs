@@ -1,5 +1,7 @@
 use std::cmp::{Ordering, Ordering::*};
 
+use utils::FindSome;
+
 fn is_alright(nums: impl Iterator<Item = i64>) -> Option<()> {
     let mut last: Option<(i64, Ordering)> = None;
     for num in nums {
@@ -30,22 +32,17 @@ pub fn part1() -> usize {
         .filter_map(is_alright)
         .count()
 }
-pub fn part2() -> i64 {
-    let mut safe = 0;
-    'outer: for row in include_str!("../inputs/2024/day2.input")
+pub fn part2() -> usize {
+    include_str!("../inputs/2024/day2.input")
         .lines()
         .map(|r| r.split_whitespace().map(|s| s.parse::<i64>().unwrap()))
-    {
-        let row = row.collect::<Vec<_>>();
-        for row_i in 0..row.len() {
-            let mut row = row.clone();
-            row.remove(row_i);
-
-            if is_alright(row.into_iter()).is_some() {
-                safe += 1;
-                continue 'outer;
-            }
-        }
-    }
-    safe
+        .filter_map(|row| {
+            let row = row.collect::<Vec<_>>();
+            (0..row.len()).find_some(|row_i| {
+                let mut row = row.clone();
+                row.remove(row_i);
+                is_alright(row.into_iter())
+            })
+        })
+        .count()
 }
