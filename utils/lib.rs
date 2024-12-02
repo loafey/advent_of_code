@@ -12,6 +12,12 @@ use std::{
     sync::Arc,
 };
 
+pub type CoolBool = Option<()>;
+#[allow(non_upper_case_globals)]
+pub const True: CoolBool = Some(());
+#[allow(non_upper_case_globals)]
+pub const False: CoolBool = None;
+
 use chrono::format::Item;
 use rayon::iter::IterBridge;
 

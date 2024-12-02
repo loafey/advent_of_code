@@ -1,38 +1,26 @@
 use std::cmp::{Ordering, Ordering::*};
-use utils::FindSome;
-type CoolBool = Option<()>;
-macro_rules! True {
-    () => {
-        Some(())
-    };
-}
-macro_rules! False {
-    () => {
-        None
-    };
-}
+use utils::{CoolBool, False, FindSome, True};
 
 fn is_alright(nums: impl Iterator<Item = i64>) -> CoolBool {
     let mut last: Option<(i64, Ordering)> = None;
     for num in nums {
         match last {
             Some((lst, dir)) => {
-                let diff = lst - num;
-                if diff.abs() > 3
+                if (lst - num).abs() > 3
                     || lst == num
                     || matches!(
                         (dir, lst.cmp(&num)),
                         (Equal, Equal) | (Less, Greater) | (Greater, Less)
                     )
                 {
-                    False!()?
+                    False?
                 }
                 last = Some((num, lst.cmp(&num)))
             }
             None => last = Some((num, Equal)),
         }
     }
-    True!()
+    True
 }
 
 pub fn part1() -> usize {
