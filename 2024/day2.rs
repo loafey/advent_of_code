@@ -1,18 +1,20 @@
 use std::cmp::{Ordering, Ordering::*};
-use utils::{BooleanToCoolean, CoolBool, FindSome, True};
+use utils::{CoolBool, False, FindSome, True};
 
 fn is_alright(nums: impl Iterator<Item = i64>) -> CoolBool {
     let mut last: Option<(i64, Ordering)> = None;
     for num in nums {
         match last {
             Some((lst, dir)) => {
-                ((lst - num).abs() > 3
+                if (lst - num).abs() > 3
                     || lst == num
                     || matches!(
                         (dir, lst.cmp(&num)),
                         (Equal, Equal) | (Less, Greater) | (Greater, Less)
-                    ))
-                .c()?;
+                    )
+                {
+                    False?
+                }
                 last = Some((num, lst.cmp(&num)))
             }
             None => last = Some((num, Equal)),
