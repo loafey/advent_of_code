@@ -10,25 +10,25 @@ fn solve(enable_do: bool) -> i64 {
     let mut sum = 0;
     for c in input.chars() {
         match (c, &*curr) {
-            ('d', "")
+            ('m', "")
+            | ('l', "mu")
+            | ('u', "m")
+            | ('(', "mul")
+            | ('d', "")
             | ('o', "d")
             | ('n', "do")
             | ('\'', "don")
             | ('t', "don'")
-            | ('m', "")
-            | ('u', "m")
-            | ('l', "mu")
-            | ('(', "mul")
             | ('(', "do")
             | ('(', "don't") => curr.push(c),
-            (')', "do(") | (')', "don't(") => {
-                enabled = *curr == *"do(";
-                curr.clear();
-            }
             (',', "mul(") => {
                 curr.push(c);
                 nums.push(num_curr.parse::<i64>().unwrap());
                 num_curr.clear();
+            }
+            (')', "do(") | (')', "don't(") => {
+                enabled = *curr == *"do(";
+                curr.clear();
             }
             (')', "mul(,") if !num_curr.is_empty() => {
                 nums.push(num_curr.parse::<i64>().unwrap());
@@ -47,6 +47,7 @@ fn solve(enable_do: bool) -> i64 {
             }
         }
     }
+
     sum
 }
 
