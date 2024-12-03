@@ -19,13 +19,9 @@ fn solve(enable_do: bool) -> i64 {
             | ('(', "mul")
             | ('(', "do")
             | ('(', "don't") => curr.push(c),
-            (')', "do(") => {
+            (')', "do(") | (')', "don't(") => {
+                enabled = curr == "do(";
                 curr = String::new();
-                enabled = true;
-            }
-            (')', "don't(") => {
-                curr = String::new();
-                enabled = false;
             }
             (',', "mul(") => {
                 curr.push(c);
