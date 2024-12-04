@@ -97,12 +97,3 @@ fn format_benchmark((s, v): (String, Vec<BenchmarkResults>)) -> String {
     s += &format!("\n### Total worst time: {total_time_worst:?}");
     s
 }
-
-fn format_time(duration: Duration) -> String {
-    // if duration.as_secs_f64() >= 0.1 {
-    //     format!("{}s", duration.as_secs_f64())
-    // } else {
-    //     format!("{}μs", duration.as_micros())
-    // }
-    format!("{:.8}*s*", duration.as_secs_f64())
-}
