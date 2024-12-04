@@ -1,5 +1,7 @@
 use std::time::Duration;
 
+use aoc_table::table_gen::BenchmarkResults;
+
 macro_rules! year {
     () => {
         aoc_2024::table()
@@ -32,21 +34,51 @@ fn main() {
 }
 
 #[allow(clippy::type_complexity)]
-fn format_benchmark(
-    (s, v): (String, Vec<(usize, (String, Duration), (String, Duration))>),
-) -> String {
-    let mut s = format!("## {s} \n| Day | Part 1 runtime | Part 2 runtime |\n| --- | --- | --- |");
-    for (day, (a1, d1), (a2, d2)) in v {
+fn format_benchmark((s, v): (String, Vec<BenchmarkResults>)) -> String {
+    let mut s =
+        format!("## {s} \n| Day | Part 1 avg | Best | Worst | Part 2 avg | Best | Worst |\n| --- | --- | --- | --- | --- | --- | --- |");
+    for BenchmarkResults {
+        day,
+        p1_ans,
+        p1_best,
+        p1_worst,
+        p1_avg,
+        p2_ans,
+        p2_best,
+        p2_worst,
+        p2_avg,
+    } in v
+    {
         let r = format!(
-            "\n|{}|{}|{}|",
+            "\n|{}|{}|{}|{}|{}|{}|{}|",
             day,
-            if !matches!(&a1[..], " " | "0" | "") {
-                format_time(d1)
+            if !matches!(&p1_ans[..], " " | "0" | "") {
+                format!("{p1_avg:?}")
             } else {
                 "❌".to_owned()
             },
-            if !matches!(&a2[..], " " | "0" | "") {
-                format_time(d2)
+            if !matches!(&p1_ans[..], " " | "0" | "") {
+                format!("{p1_best:?}")
+            } else {
+                "❌".to_owned()
+            },
+            if !matches!(&p1_ans[..], " " | "0" | "") {
+                format!("{p1_worst:?}")
+            } else {
+                "❌".to_owned()
+            },
+            if !matches!(&p2_ans[..], " " | "0" | "") {
+                format!("{p2_avg:?}")
+            } else {
+                "❌".to_owned()
+            },
+            if !matches!(&p2_ans[..], " " | "0" | "") {
+                format!("{p2_best:?}")
+            } else {
+                "❌".to_owned()
+            },
+            if !matches!(&p2_ans[..], " " | "0" | "") {
+                format!("{p2_worst:?}")
             } else {
                 "❌".to_owned()
             },
