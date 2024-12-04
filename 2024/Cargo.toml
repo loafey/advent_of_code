@@ -8,6 +8,7 @@ gen_days = { workspace = true }
 aoc_table = { workspace = true }
 utils = { workspace = true }
 arrayvec = { workspace = true }
+rayon = { workspace = true }
 
 [lib]
 path = "lib.rs"

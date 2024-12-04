@@ -107,6 +107,7 @@ dependencies = [
  "aoc_table",
  "arrayvec",
  "gen_days",
+ "rayon",
  "utils",
 ]
 

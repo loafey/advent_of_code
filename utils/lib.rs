@@ -215,12 +215,7 @@ impl<T> MatrixGet<T> for [Vec<T>] {
 pub const fn bytes_to_matrix<const Y: usize, const X: usize>(
     bytes: &'static [u8],
 ) -> &'static [[u8; Y]; X] {
-    unsafe {
-        std::mem::transmute::<&[u8], (&'static [[u8; Y]; X], usize)>(include_bytes!(
-            "../inputs/2024/day4.input"
-        ))
-    }
-    .0
+    unsafe { std::mem::transmute::<&[u8], (&'static [[u8; Y]; X], usize)>(bytes) }.0
 }
 
 impl<T, const N: usize> MatrixGet<T> for [[T; N]] {
