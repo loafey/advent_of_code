@@ -46,7 +46,7 @@ fn solver(map: &[Vec<Spot>], start: ((usize, usize), Direction)) -> usize {
         }
 
         let mut new_stack = Vec::new();
-        if let Some(p) = map.matrix_get(*y, *x, 0, 0) {
+        if let Some(p) = map.mget(*y, *x, 0, 0) {
             visited.insert((*y, *x, *dir));
             match (p, *dir) {
                 (MF, Left) | (MB, Right) => *dir = Down,

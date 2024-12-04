@@ -66,7 +66,7 @@ fn inputs(s: String) -> Vec<Vec<Map>> {
 fn get_neighbors(x: usize, y: usize, inputs: &[Vec<Map>]) -> Vec<usize> {
     let mut neighbors = ((-1..=1).flat_map(|y| (-1..=1).map(move |x| (y, x))))
         .filter(|c| !matches!(c, (0, 0)))
-        .filter_map(|(ymod, xmod)| inputs.matrix_get(y, x, ymod, xmod))
+        .filter_map(|(ymod, xmod)| inputs.mget(y, x, ymod, xmod))
         .filter_map(|m| match m {
             Num(n) => Some(*n),
             _ => None,

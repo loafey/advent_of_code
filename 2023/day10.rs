@@ -31,50 +31,50 @@ fn graph() -> ((usize, usize, char), Map) {
         let mut neighbors = Vec::new();
         match c {
             'F' => {
-                if let Some(bot) = matrix.matrix_get(y + 1, x, 0, 0) {
+                if let Some(bot) = matrix.mget(y + 1, x, 0, 0) {
                     neighbors.push((y + 1, x, *bot))
                 }
-                if let Some(right) = matrix.matrix_get(y, x + 1, 0, 0) {
+                if let Some(right) = matrix.mget(y, x + 1, 0, 0) {
                     neighbors.push((y, x + 1, *right))
                 }
             }
             '|' => {
-                if let Some(bot) = matrix.matrix_get(y + 1, x, 0, 0) {
+                if let Some(bot) = matrix.mget(y + 1, x, 0, 0) {
                     neighbors.push((y + 1, x, *bot))
                 }
-                if let Some(top) = matrix.matrix_get(y - 1, x, 0, 0) {
+                if let Some(top) = matrix.mget(y - 1, x, 0, 0) {
                     neighbors.push((y - 1, x, *top))
                 }
             }
             '-' => {
-                if let Some(right) = matrix.matrix_get(y, x + 1, 0, 0) {
+                if let Some(right) = matrix.mget(y, x + 1, 0, 0) {
                     neighbors.push((y, x + 1, *right))
                 }
-                if let Some(left) = matrix.matrix_get(y, x - 1, 0, 0) {
+                if let Some(left) = matrix.mget(y, x - 1, 0, 0) {
                     neighbors.push((y, x - 1, *left))
                 }
             }
             'L' | 'S' => {
-                if let Some(right) = matrix.matrix_get(y, x + 1, 0, 0) {
+                if let Some(right) = matrix.mget(y, x + 1, 0, 0) {
                     neighbors.push((y, x + 1, *right))
                 }
-                if let Some(top) = matrix.matrix_get(y - 1, x, 0, 0) {
+                if let Some(top) = matrix.mget(y - 1, x, 0, 0) {
                     neighbors.push((y - 1, x, *top))
                 }
             }
             'J' => {
-                if let Some(left) = matrix.matrix_get(y, x - 1, 0, 0) {
+                if let Some(left) = matrix.mget(y, x - 1, 0, 0) {
                     neighbors.push((y, x - 1, *left))
                 }
-                if let Some(top) = matrix.matrix_get(y - 1, x, 0, 0) {
+                if let Some(top) = matrix.mget(y - 1, x, 0, 0) {
                     neighbors.push((y - 1, x, *top))
                 }
             }
             '7' => {
-                if let Some(left) = matrix.matrix_get(y, x - 1, 0, 0) {
+                if let Some(left) = matrix.mget(y, x - 1, 0, 0) {
                     neighbors.push((y, x - 1, *left))
                 }
-                if let Some(bot) = matrix.matrix_get(y + 1, x, 0, 0) {
+                if let Some(bot) = matrix.mget(y + 1, x, 0, 0) {
                     neighbors.push((y + 1, x, *bot))
                 }
             }
@@ -158,22 +158,22 @@ pub fn part2() -> usize {
     let mut stack = vec![(0, 0)];
     while let Some((y, x)) = stack.pop() {
         ascii[y][x] = true;
-        if let Some(left) = ascii.matrix_get(y, x, 0, -1) {
+        if let Some(left) = ascii.mget(y, x, 0, -1) {
             if !left {
                 stack.push((y, x - 1))
             }
         }
-        if let Some(right) = ascii.matrix_get(y, x, 0, 1) {
+        if let Some(right) = ascii.mget(y, x, 0, 1) {
             if !right {
                 stack.push((y, x + 1))
             }
         }
-        if let Some(up) = ascii.matrix_get(y, x, -1, 0) {
+        if let Some(up) = ascii.mget(y, x, -1, 0) {
             if !up {
                 stack.push((y - 1, x))
             }
         }
-        if let Some(down) = ascii.matrix_get(y, x, 1, 0) {
+        if let Some(down) = ascii.mget(y, x, 1, 0) {
             if !down {
                 stack.push((y + 1, x))
             }

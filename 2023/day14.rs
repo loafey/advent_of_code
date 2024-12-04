@@ -1,5 +1,5 @@
-use utils::{load_string, MatrixGet as _};
 use std::collections::{HashMap, HashSet};
+use utils::{load_string, MatrixGet as _};
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 enum Spot {
@@ -23,7 +23,7 @@ fn tilt(table: &mut [Vec<Spot>], y_dir: isize, x_dir: isize) -> bool {
     for y in 0..table.len() {
         for x in 0..table[y].len() {
             if table[y][x] == Boulder {
-                if let Some(Empty) = table.matrix_get(y, x, y_dir, x_dir) {
+                if let Some(Empty) = table.mget(y, x, y_dir, x_dir) {
                     table[(y as isize + y_dir) as usize][(x as isize + x_dir) as usize] = Boulder;
                     table[y][x] = Empty;
                     moved = true;

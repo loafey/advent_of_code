@@ -10,7 +10,7 @@ fn is_corner(y: usize, x: usize) -> bool {
     MAP.with(|map| y == map.len() - 1 && x == map[0].len() - 1)
 }
 fn get(y: usize, x: usize, ymod: isize, xmod: isize) -> Option<usize> {
-    MAP.with(|map| map.matrix_get(y, x, ymod, xmod).copied())
+    MAP.with(|map| map.mget(y, x, ymod, xmod).copied())
 }
 type FilterFunc = fn(Direction, usize, &((usize, usize, Direction, usize), usize)) -> bool;
 

@@ -54,7 +54,7 @@ pub fn part1() -> usize {
             let neighbors = [(1, 0), (-1, 0), (0, 1), (0, -1)]
                 .into_iter()
                 .filter_map(|(ymod, xmod)| {
-                    map.matrix_get(y, x, ymod, xmod).copied().map(|s| {
+                    map.mget(y, x, ymod, xmod).copied().map(|s| {
                         (
                             s,
                             (y as isize + ymod) as usize,

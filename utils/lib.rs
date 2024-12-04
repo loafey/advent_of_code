@@ -164,20 +164,20 @@ pub fn load_matrix_then<T>(p: impl AsRef<Path>, f: fn(char) -> T) -> Vec<Vec<T>>
 }
 
 pub trait MatrixGet<T> {
-    fn matrix_get(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T>;
-    fn matrix_wrap(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> &T;
+    fn mget(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T>;
+    fn mwrap(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> &T;
 }
 impl<T> MatrixGet<T> for Vec<Vec<T>> {
-    fn matrix_get(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T> {
-        self[..].matrix_get(y, x, ymod, xmod)
+    fn mget(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T> {
+        self[..].mget(y, x, ymod, xmod)
     }
 
-    fn matrix_wrap(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> &T {
-        self[..].matrix_wrap(y, x, ymod, xmod)
+    fn mwrap(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> &T {
+        self[..].mwrap(y, x, ymod, xmod)
     }
 }
 impl<T> MatrixGet<T> for [Vec<T>] {
-    fn matrix_get(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T> {
+    fn mget(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T> {
         let Wrapping(x) = if xmod < 0 {
             Wrapping(x) - Wrapping(xmod.unsigned_abs())
         } else {
@@ -191,7 +191,7 @@ impl<T> MatrixGet<T> for [Vec<T>] {
         self.get(y)?.get(x)
     }
 
-    fn matrix_wrap(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> &T {
+    fn mwrap(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> &T {
         let Wrapping(mut x) = if xmod < 0 {
             Wrapping(x) - Wrapping(xmod.unsigned_abs())
         } else {
@@ -213,16 +213,16 @@ impl<T> MatrixGet<T> for [Vec<T>] {
 }
 
 impl<T, const X: usize, const Y: usize> MatrixGet<T> for ArrayVec<ArrayVec<T, X>, Y> {
-    fn matrix_get(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T> {
-        self[..].matrix_get(y, x, ymod, xmod)
+    fn mget(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T> {
+        self[..].mget(y, x, ymod, xmod)
     }
 
-    fn matrix_wrap(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> &T {
-        self[..].matrix_wrap(y, x, ymod, xmod)
+    fn mwrap(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> &T {
+        self[..].mwrap(y, x, ymod, xmod)
     }
 }
 impl<T, const X: usize> MatrixGet<T> for [ArrayVec<T, X>] {
-    fn matrix_get(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T> {
+    fn mget(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T> {
         let Wrapping(x) = if xmod < 0 {
             Wrapping(x) - Wrapping(xmod.unsigned_abs())
         } else {
@@ -236,7 +236,7 @@ impl<T, const X: usize> MatrixGet<T> for [ArrayVec<T, X>] {
         self.get(y)?.get(x)
     }
 
-    fn matrix_wrap(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> &T {
+    fn mwrap(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> &T {
         let Wrapping(mut x) = if xmod < 0 {
             Wrapping(x) - Wrapping(xmod.unsigned_abs())
         } else {

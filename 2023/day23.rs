@@ -35,7 +35,7 @@ impl From<char> for Spot {
 fn get_neigbors(mat: &[Vec<Spot>], y: usize, x: usize) -> Vec<((usize, usize), usize)> {
     [(-1, 0), (1, 0), (0, -1), (0, 1)]
         .into_iter()
-        .filter_map(|(ymod, xmod)| mat.matrix_get(y, x, ymod, xmod).map(|s| (ymod, xmod, s)))
+        .filter_map(|(ymod, xmod)| mat.mget(y, x, ymod, xmod).map(|s| (ymod, xmod, s)))
         .filter(|(_, _, s)| !matches!(s, Spot::Forest))
         .filter(|(ymod, xmod, s)| match s {
             Spot::Slope(s) => match s {
