@@ -1,51 +1,36 @@
 use arrayvec::ArrayVec;
+use utils::{bytes_to_matrix, MatrixGet};
 
-macro_rules! x {
-    ($x:expr) => {
-        ($x == ['X', 'M', 'A', 'S']) as i64
+#[rustfmt::skip]
+macro_rules! m { ($x:expr) => { $x == ['M', 'A', 'S'] } }
+macro_rules! gen {
+    ($ans:tt,$m:expr, $y:expr, $x:expr, $c:expr) => {
+        macro_rules! index { ([ $$y:expr, $$x:expr ]) => {
+            $m.mget($y, $x, $$y, $$x).copied().unwrap_or_default()
+        }}
+        macro_rules! ans { ($$($$k:tt)|+) => {
+            let k = [$$(index!($$k)),+];
+            $ans += (i32::from_be_bytes(k) == const {i32::from_be_bytes($c)}) as i64;
+        }}
     };
 }
-macro_rules! m {
-    ($x:expr) => {
-        $x == ['M', 'A', 'S']
-    };
-}
 
+#[rustfmt::skip]
 pub fn part1() -> i64 {
-    let inp = include_str!("../inputs/2024/day4.input");
-    let m = inp
-        .lines()
-        .filter(|s| !s.is_empty())
-        .map(|s| s.chars().collect::<ArrayVec<_, 140>>())
-        .collect::<ArrayVec<_, 140>>();
+    const M: &[[u8; 141]; 140] = bytes_to_matrix(include_bytes!("../inputs/2024/day4.input"));
 
     let mut ans = 0;
-    for (y, r) in m.iter().enumerate() {
-        for (x, _) in r.iter().enumerate().filter(|(_, c)| **c == 'X') {
-            if x + 3 < r.len() {
-                ans += x!([m[y][x], m[y][x + 1], m[y][x + 2], m[y][x + 3]]);
-            }
-            if x > 2 {
-                ans += x!([m[y][x], m[y][x - 1], m[y][x - 2], m[y][x - 3]]);
-            }
-            if y > 2 {
-                ans += x!([m[y][x], m[y - 1][x], m[y - 2][x], m[y - 3][x]]);
-            }
-            if y + 3 < m.len() {
-                ans += x!([m[y][x], m[y + 1][x], m[y + 2][x], m[y + 3][x]]);
-            }
-            if y > 2 && x > 2 {
-                ans += x!([m[y][x], m[y - 1][x - 1], m[y - 2][x - 2], m[y - 3][x - 3]]);
-            }
-            if y > 2 && x + 3 < r.len() {
-                ans += x!([m[y][x], m[y - 1][x + 1], m[y - 2][x + 2], m[y - 3][x + 3]]);
-            }
-            if y + 3 < m.len() && x > 2 {
-                ans += x!([m[y][x], m[y + 1][x - 1], m[y + 2][x - 2], m[y + 3][x - 3]]);
-            }
-            if y + 3 < m.len() && x + 3 < r.len() {
-                ans += x!([m[y][x], m[y + 1][x + 1], m[y + 2][x + 2], m[y + 3][x + 3]]);
-            }
+    for (y, r) in M.iter().enumerate() {
+        for (x, _) in r.iter().enumerate().filter(|(_, c)| **c == b'X') {
+            gen!(ans, M, y, x, [b'X', b'M', b'A', b'S']);
+            ans!([0, 0]|[ 0,  1] | [ 0,  2] | [ 0,  3]);
+            ans!([0, 0]|[ 0, -1] | [ 0, -2] | [ 0, -3]);
+            ans!([0, 0]|[-1,  0] | [-2,  0] | [-3,  0]);
+            ans!([0, 0]|[ 1,  0] | [ 2,  0] | [ 3,  0]);
+            ans!([0, 0]|[-1, -1] | [-2, -2] | [-3, -3]);
+            ans!([0, 0]|[-1,  1] | [-2,  2] | [-3,  3]);
+            ans!([0, 0]|[ 1, -1] | [ 2, -2] | [ 3, -3]);
+            ans!([0, 0]|[ 1,  1] | [ 2,  2] | [ 3,  3]);
         }
     }
     ans

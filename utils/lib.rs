@@ -212,6 +212,53 @@ impl<T> MatrixGet<T> for [Vec<T>] {
     }
 }
 
+pub const fn bytes_to_matrix<const Y: usize, const X: usize>(
+    bytes: &'static [u8],
+) -> &'static [[u8; Y]; X] {
+    unsafe {
+        std::mem::transmute::<&[u8], (&'static [[u8; Y]; X], usize)>(include_bytes!(
+            "../inputs/2024/day4.input"
+        ))
+    }
+    .0
+}
+
+impl<T, const N: usize> MatrixGet<T> for [[T; N]] {
+    fn mget(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T> {
+        let Wrapping(x) = if xmod < 0 {
+            Wrapping(x) - Wrapping(xmod.unsigned_abs())
+        } else {
+            Wrapping(x) + Wrapping(xmod.unsigned_abs())
+        };
+        let Wrapping(y) = if ymod < 0 {
+            Wrapping(y) - Wrapping(ymod.unsigned_abs())
+        } else {
+            Wrapping(y) + Wrapping(ymod.unsigned_abs())
+        };
+        self.get(y)?.get(x)
+    }
+
+    fn mwrap(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> &T {
+        let Wrapping(mut x) = if xmod < 0 {
+            Wrapping(x) - Wrapping(xmod.unsigned_abs())
+        } else {
+            Wrapping(x) + Wrapping(xmod.unsigned_abs())
+        };
+        let Wrapping(mut y) = if ymod < 0 {
+            Wrapping(y) - Wrapping(ymod.unsigned_abs())
+        } else {
+            Wrapping(y) + Wrapping(ymod.unsigned_abs())
+        };
+        if y > self.len() * 2 {
+            y = 0;
+        }
+        if x > self[0].len() * 2 {
+            x = 0;
+        }
+        &self[y % self.len()][x % self[0].len()]
+    }
+}
+
 impl<T, const X: usize, const Y: usize> MatrixGet<T> for ArrayVec<ArrayVec<T, X>, Y> {
     fn mget(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T> {
         self[..].mget(y, x, ymod, xmod)
