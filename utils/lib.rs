@@ -30,6 +30,7 @@ impl BooleanToCoolean for bool {
     }
 }
 
+use arrayvec::ArrayVec;
 use chrono::format::Item;
 use rayon::iter::IterBridge;
 
@@ -176,6 +177,51 @@ impl<T> MatrixGet<T> for Vec<Vec<T>> {
     }
 }
 impl<T> MatrixGet<T> for [Vec<T>] {
+    fn matrix_get(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T> {
+        let Wrapping(x) = if xmod < 0 {
+            Wrapping(x) - Wrapping(xmod.unsigned_abs())
+        } else {
+            Wrapping(x) + Wrapping(xmod.unsigned_abs())
+        };
+        let Wrapping(y) = if ymod < 0 {
+            Wrapping(y) - Wrapping(ymod.unsigned_abs())
+        } else {
+            Wrapping(y) + Wrapping(ymod.unsigned_abs())
+        };
+        self.get(y)?.get(x)
+    }
+
+    fn matrix_wrap(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> &T {
+        let Wrapping(mut x) = if xmod < 0 {
+            Wrapping(x) - Wrapping(xmod.unsigned_abs())
+        } else {
+            Wrapping(x) + Wrapping(xmod.unsigned_abs())
+        };
+        let Wrapping(mut y) = if ymod < 0 {
+            Wrapping(y) - Wrapping(ymod.unsigned_abs())
+        } else {
+            Wrapping(y) + Wrapping(ymod.unsigned_abs())
+        };
+        if y > self.len() * 2 {
+            y = 0;
+        }
+        if x > self[0].len() * 2 {
+            x = 0;
+        }
+        &self[y % self.len()][x % self[0].len()]
+    }
+}
+
+impl<T, const X: usize, const Y: usize> MatrixGet<T> for ArrayVec<ArrayVec<T, X>, Y> {
+    fn matrix_get(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T> {
+        self[..].matrix_get(y, x, ymod, xmod)
+    }
+
+    fn matrix_wrap(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> &T {
+        self[..].matrix_wrap(y, x, ymod, xmod)
+    }
+}
+impl<T, const X: usize> MatrixGet<T> for [ArrayVec<T, X>] {
     fn matrix_get(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T> {
         let Wrapping(x) = if xmod < 0 {
             Wrapping(x) - Wrapping(xmod.unsigned_abs())
