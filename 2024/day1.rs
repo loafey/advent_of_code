@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BinaryHeap};
+use std::collections::{BinaryHeap, HashMap};
 
 use utils::parse_next;
 
@@ -22,7 +22,7 @@ pub fn part1() -> i64 {
 pub fn part2() -> i64 {
     let s = include_str!("../inputs/2024/day1.input");
     let mut left = Vec::new();
-    let mut right: BTreeMap<i64, i64> = BTreeMap::new();
+    let mut right: HashMap<i64, i64> = HashMap::new();
 
     for i in s.lines().filter(|s| !s.is_empty()) {
         let mut nums = i.split_whitespace();
