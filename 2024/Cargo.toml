@@ -7,7 +7,7 @@ edition = "2021"
 gen_days = { workspace = true }
 aoc_table = { workspace = true }
 utils = { workspace = true }
-arrayvec = "0.7.6"
+arrayvec = { workspace = true }
 
 [lib]
 path = "lib.rs"

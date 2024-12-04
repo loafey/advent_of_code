@@ -31,3 +31,4 @@ memoize = "0.4.2"
 zipperoni = { git = "https://github.com/samhamnam/zipperoni" }
 pathfinding = "4.11.0"
 euclid = "0.22.11"
+arrayvec = "0.7.6"

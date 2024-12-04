@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 chrono = { workspace = true }
+arrayvec = { workspace = true }
 rayon = { workspace = true }
 
 [lib]
