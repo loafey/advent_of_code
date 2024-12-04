@@ -37,6 +37,10 @@ fn main() {
 fn format_benchmark((s, v): (String, Vec<BenchmarkResults>)) -> String {
     let mut s =
         format!("## {s} \n| Day | Part 1 avg | Best | Worst | Part 2 avg | Best | Worst |\n| --- | --- | --- | --- | --- | --- | --- |");
+
+    let mut total_time_avg = Duration::default();
+    let mut total_time_best = Duration::default();
+    let mut total_time_worst = Duration::default();
     for BenchmarkResults {
         day,
         p1_ans,
@@ -49,6 +53,9 @@ fn format_benchmark((s, v): (String, Vec<BenchmarkResults>)) -> String {
         p2_avg,
     } in v
     {
+        total_time_best += p1_best + p2_best;
+        total_time_avg += p1_avg + p2_avg;
+        total_time_worst += p1_worst + p2_worst;
         let r = format!(
             "\n|{}|{}|{}|{}|{}|{}|{}|",
             day,
@@ -85,6 +92,9 @@ fn format_benchmark((s, v): (String, Vec<BenchmarkResults>)) -> String {
         );
         s += &r;
     }
+    s += &format!("\n### Total average time: {total_time_avg:?}");
+    s += &format!("\n### Total best time: {total_time_best:?}");
+    s += &format!("\n### Total worst time: {total_time_worst:?}");
     s
 }
 
