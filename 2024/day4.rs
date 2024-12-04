@@ -1,54 +1,50 @@
+use arrayvec::ArrayVec;
+
+macro_rules! x {
+    ($x:expr) => {
+        ($x == ['X', 'M', 'A', 'S']) as i64
+    };
+}
+macro_rules! m {
+    ($x:expr) => {
+        $x == ['M', 'A', 'S']
+    };
+}
+
 pub fn part1() -> i64 {
     let inp = include_str!("../inputs/2024/day4.input");
     let m = inp
         .lines()
         .filter(|s| !s.is_empty())
-        .map(|s| s.chars().collect::<Vec<_>>())
-        .collect::<Vec<_>>();
+        .map(|s| s.chars().collect::<ArrayVec<_, 140>>())
+        .collect::<ArrayVec<_, 140>>();
 
     let mut ans = 0;
     for (y, r) in m.iter().enumerate() {
         for (x, _) in r.iter().enumerate().filter(|(_, c)| **c == 'X') {
-            let mut checks = Vec::new();
             if x + 3 < r.len() {
-                let c = m[y][x..x + 4].to_vec();
-                checks.push(c);
+                ans += x!([m[y][x], m[y][x + 1], m[y][x + 2], m[y][x + 3]]);
             }
             if x > 2 {
-                let mut c = m[y][x - 3..=x].to_vec();
-                c.reverse();
-                checks.push(c);
+                ans += x!([m[y][x], m[y][x - 1], m[y][x - 2], m[y][x - 3]]);
             }
             if y > 2 {
-                let c = vec![m[y][x], m[y - 1][x], m[y - 2][x], m[y - 3][x]];
-                checks.push(c);
+                ans += x!([m[y][x], m[y - 1][x], m[y - 2][x], m[y - 3][x]]);
             }
             if y + 3 < m.len() {
-                let c = vec![m[y][x], m[y + 1][x], m[y + 2][x], m[y + 3][x]];
-                checks.push(c);
+                ans += x!([m[y][x], m[y + 1][x], m[y + 2][x], m[y + 3][x]]);
             }
             if y > 2 && x > 2 {
-                let d = vec![m[y][x], m[y - 1][x - 1], m[y - 2][x - 2], m[y - 3][x - 3]];
-                checks.push(d);
+                ans += x!([m[y][x], m[y - 1][x - 1], m[y - 2][x - 2], m[y - 3][x - 3]]);
             }
-
             if y > 2 && x + 3 < r.len() {
-                let c = vec![m[y][x], m[y - 1][x + 1], m[y - 2][x + 2], m[y - 3][x + 3]];
-                checks.push(c);
+                ans += x!([m[y][x], m[y - 1][x + 1], m[y - 2][x + 2], m[y - 3][x + 3]]);
             }
-
             if y + 3 < m.len() && x > 2 {
-                let c = vec![m[y][x], m[y + 1][x - 1], m[y + 2][x - 2], m[y + 3][x - 3]];
-                checks.push(c);
+                ans += x!([m[y][x], m[y + 1][x - 1], m[y + 2][x - 2], m[y + 3][x - 3]]);
             }
-
             if y + 3 < m.len() && x + 3 < r.len() {
-                let d = vec![m[y][x], m[y + 1][x + 1], m[y + 2][x + 2], m[y + 3][x + 3]];
-                checks.push(d);
-            }
-
-            for c in checks {
-                ans += (c == ['X', 'M', 'A', 'S']) as i64
+                ans += x!([m[y][x], m[y + 1][x + 1], m[y + 2][x + 2], m[y + 3][x + 3]]);
             }
         }
     }
@@ -60,8 +56,8 @@ pub fn part2() -> i64 {
     let m = inp
         .lines()
         .filter(|s| !s.is_empty())
-        .map(|s| s.chars().collect::<Vec<_>>())
-        .collect::<Vec<_>>();
+        .map(|s| s.chars().collect::<ArrayVec<_, 140>>())
+        .collect::<ArrayVec<_, 140>>();
 
     let mut ans = 0;
     for (y, r) in m.iter().enumerate() {
@@ -72,9 +68,7 @@ pub fn part2() -> i64 {
                 let s1 = [m[y - 1][x + 1], m[y][x], m[y + 1][x - 1]];
                 let s2 = [m[y + 1][x - 1], m[y][x], m[y - 1][x + 1]];
 
-                if (f1 == ['M', 'A', 'S'] || f2 == ['M', 'A', 'S'])
-                    && (s1 == ['M', 'A', 'S'] || s2 == ['M', 'A', 'S'])
-                {
+                if (m!(f1) || m!(f2)) && (m!(s1) || m!(s2)) {
                     ans += 1;
                 }
             }
