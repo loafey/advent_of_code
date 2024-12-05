@@ -21,8 +21,9 @@ fn input() -> ([[bool; 100]; 100], &'static str) {
 pub fn part1() -> usize {
     let (rules, input) = input();
     let mut sum = 0;
+    let mut visited: [bool; 100];
     'outer: for inp in input.lines().filter(|s| !s.is_empty()) {
-        let mut visited: [bool; 100] = unsafe { std::mem::zeroed() };
+        visited = unsafe { std::mem::zeroed() };
         let nums = inp
             .split(',')
             .map(|s| s.parse::<usize>().unwrap())
