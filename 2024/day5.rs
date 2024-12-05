@@ -77,7 +77,6 @@ pub fn part2() -> i64 {
         }
     }
 
-    println!("{wrongs:?}");
     wrongs.iter_mut().for_each(|v| {
         v.sort_by(|a, b| {
             if let Some(r) = rules.get(a) {
