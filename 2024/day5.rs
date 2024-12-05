@@ -52,7 +52,7 @@ pub fn part2() -> i64 {
         let nums = inp
             .split(',')
             .map(|s| s.parse::<i64>().unwrap())
-            .collect::<Vec<_>>();
+            .collect::<ArrayVec<_, 23>>();
 
         for num in &nums {
             if let Some(r) = rules.get(num) {
