@@ -9,7 +9,6 @@ aoc_table = { workspace = true }
 utils = { workspace = true }
 arrayvec = { workspace = true }
 rayon = { workspace = true }
-micromap = "0.0.15"
 
 [lib]
 path = "lib.rs"

@@ -1,78 +1,71 @@
 use arrayvec::ArrayVec;
-use micromap::Set;
-use std::{cmp::Ordering::*, collections::HashMap};
+use std::cmp::Ordering::*;
 use utils::bi_functors::BiFunctorExtExt;
 
-fn input() -> (HashMap<i64, Set<i64, 25>>, &'static str) {
+fn input() -> ([[bool; 100]; 100], &'static str) {
     let (rules_input, input) = include_str!("../inputs/2024/day5.input")
         .split_once("\n\n")
         .unwrap();
 
-    let mut rules: HashMap<i64, Set<i64, 25>> = HashMap::new();
+    let mut rules: [[bool; 100]; 100] = unsafe { std::mem::zeroed() };
     for r in rules_input.lines() {
         let (a, b) = r
             .split_once('|')
             .unwrap()
-            .splet(|s| s.parse::<i64>().unwrap());
-        rules.entry(a).or_default().insert(b);
+            .splet(|s| s.parse::<usize>().unwrap());
+        rules[a][b] = true;
     }
     (rules, input)
 }
 
-pub fn part1() -> i64 {
+pub fn part1() -> usize {
     let (rules, input) = input();
     let mut sum = 0;
     'outer: for inp in input.lines().filter(|s| !s.is_empty()) {
-        let mut visited: Set<_, 25> = Set::new();
+        let mut visited: [bool; 100] = unsafe { std::mem::zeroed() };
         let nums = inp
             .split(',')
-            .map(|s| s.parse::<i64>().unwrap())
+            .map(|s| s.parse::<usize>().unwrap())
             .collect::<ArrayVec<_, 23>>();
 
         for num in &nums {
-            if let Some(r) = rules.get(num) {
-                for r in r {
-                    if visited.contains_key(r) {
-                        continue 'outer;
-                    }
+            for (i, r) in rules[*num].iter().enumerate() {
+                if *r && visited[i] {
+                    continue 'outer;
                 }
             }
-            visited.insert(*num);
+            visited[*num] = true;
         }
         sum += nums[nums.len() / 2]
     }
 
     sum
 }
-pub fn part2() -> i64 {
+pub fn part2() -> usize {
     let (rules, input) = input();
     let mut sum = 0;
     'outer: for inp in input.lines().filter(|s| !s.is_empty()) {
-        let mut visited: Set<_, 25> = Set::new();
+        let mut visited: [bool; 100] = unsafe { std::mem::zeroed() };
         let nums = inp
             .split(',')
-            .map(|s| s.parse::<i64>().unwrap())
+            .map(|s| s.parse::<usize>().unwrap())
             .collect::<ArrayVec<_, 23>>();
 
         for num in &nums {
-            if let Some(r) = rules.get(num) {
-                for r in r {
-                    if visited.contains_key(r) {
-                        let mut nums = nums;
-                        nums.sort_by(|a, b| match rules.get(a) {
-                            Some(r) => match r.contains_key(b) {
-                                true => Less,
-                                false => Greater,
-                            },
-                            None => Equal,
-                        });
-                        sum += nums[nums.len() / 2];
+            for (i, r) in rules[*num].iter().enumerate() {
+                if *r && visited[i] {
+                    let mut nums = nums;
+                    nums.sort_by(|a, b| match rules[*a][*b] {
+                        true => Less,
+                        false => Greater,
+                    });
+                    sum += nums[nums.len() / 2];
 
-                        continue 'outer;
-                    }
+                    continue 'outer;
                 }
             }
-            visited.insert(*num);
+
+            visited[*num] = true;
         }
     }
 
