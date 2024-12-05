@@ -107,6 +107,7 @@ dependencies = [
  "aoc_table",
  "arrayvec",
  "gen_days",
+ "micromap",
  "rayon",
  "utils",
 ]
@@ -422,6 +423,12 @@ dependencies = [
  "quote",
  "syn 1.0.109",
 ]
+
+[[package]]
+name = "micromap"
+version = "0.0.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c5b72ada413a5bd6bc65d6eef149fdc5138298f3bb89653d1a521f0fea7f9c73"
 
 [[package]]
 name = "mio"

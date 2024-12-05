@@ -3,3 +3,6 @@
 *.input
 inputs/
 *.dump
+flamegraph.svg
+perf.data
+perf.data.old

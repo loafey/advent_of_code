@@ -24,30 +24,22 @@
           latest.rust-src
           latest.rustfmt
         ];
+
+        pkg = (naersk.lib.${system}.override {
+          cargo = toolchain;
+          rustc = toolchain;
+        }).buildPackage {
+          src = ./.;
+          nativeBuildInputs = with pkgs; [
+            pkg-config
+            openssl
+            gcc
+            cargo-flamegraph
+          ];
+        };
       in
       {
-        defaultPackage = (naersk.lib.${system}.override {
-          cargo = toolchain;
-          rustc = toolchain;
-        }).buildPackage {
-          src = ./.;
-          nativeBuildInputs = with pkgs; [
-            pkg-config
-            openssl
-            gcc
-          ];
-        };
-
-        devShell = (naersk.lib.${system}.override {
-          cargo = toolchain;
-          rustc = toolchain;
-        }).buildPackage {
-          src = ./.;
-          nativeBuildInputs = with pkgs; [
-            pkg-config
-            openssl
-            gcc
-          ];
-        };
+        defaultPackage = pkg;
+        devShell = pkg;
       });
 }

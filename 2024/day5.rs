@@ -1,41 +1,43 @@
-use std::{
-    cmp::Ordering,
-    collections::{HashMap, HashSet},
-};
-
+use arrayvec::ArrayVec;
+use micromap::Set;
+use std::{cmp::Ordering::*, collections::HashMap};
 use utils::bi_functors::BiFunctorExtExt;
 
-pub fn part1() -> i64 {
+fn input() -> (HashMap<i64, Set<i64, 25>>, &'static str) {
     let (rules_input, input) = include_str!("../inputs/2024/day5.input")
         .split_once("\n\n")
         .unwrap();
 
-    let mut rules: HashMap<i64, Vec<i64>> = HashMap::new();
+    let mut rules: HashMap<i64, Set<i64, 25>> = HashMap::new();
     for r in rules_input.lines() {
         let (a, b) = r
             .split_once('|')
             .unwrap()
             .splet(|s| s.parse::<i64>().unwrap());
-        rules.entry(a).or_default().push(b);
+        rules.entry(a).or_default().insert(b);
     }
+    (rules, input)
+}
 
+pub fn part1() -> i64 {
+    let (rules, input) = input();
     let mut sum = 0;
     'outer: for inp in input.lines().filter(|s| !s.is_empty()) {
-        let mut visited = HashSet::new();
+        let mut visited: Set<_, 25> = Set::new();
         let nums = inp
             .split(',')
             .map(|s| s.parse::<i64>().unwrap())
-            .collect::<Vec<_>>();
+            .collect::<ArrayVec<_, 23>>();
 
         for num in &nums {
             if let Some(r) = rules.get(num) {
                 for r in r {
-                    if visited.contains(r) {
+                    if visited.contains_key(r) {
                         continue 'outer;
                     }
                 }
             }
-            visited.insert(num);
+            visited.insert(*num);
         }
         sum += nums[nums.len() / 2]
     }
@@ -43,22 +45,10 @@ pub fn part1() -> i64 {
     sum
 }
 pub fn part2() -> i64 {
-    let (rules_input, input) = include_str!("../inputs/2024/day5.input")
-        .split_once("\n\n")
-        .unwrap();
-
-    let mut rules: HashMap<i64, Vec<i64>> = HashMap::new();
-    for r in rules_input.lines() {
-        let (a, b) = r
-            .split_once('|')
-            .unwrap()
-            .splet(|s| s.parse::<i64>().unwrap());
-        rules.entry(a).or_default().push(b);
-    }
-
-    let mut wrongs = Vec::new();
+    let (rules, input) = input();
+    let mut sum = 0;
     'outer: for inp in input.lines().filter(|s| !s.is_empty()) {
-        let mut visited = HashSet::new();
+        let mut visited: Set<_, 25> = Set::new();
         let nums = inp
             .split(',')
             .map(|s| s.parse::<i64>().unwrap())
@@ -67,33 +57,23 @@ pub fn part2() -> i64 {
         for num in &nums {
             if let Some(r) = rules.get(num) {
                 for r in r {
-                    if visited.contains(r) {
-                        wrongs.push(nums);
+                    if visited.contains_key(r) {
+                        let mut nums = nums;
+                        nums.sort_by(|a, b| match rules.get(a) {
+                            Some(r) => match r.contains_key(b) {
+                                true => Less,
+                                false => Greater,
+                            },
+                            None => Equal,
+                        });
+                        sum += nums[nums.len() / 2];
+
                         continue 'outer;
                     }
                 }
             }
-            visited.insert(num);
+            visited.insert(*num);
         }
-    }
-
-    wrongs.iter_mut().for_each(|v| {
-        v.sort_by(|a, b| {
-            if let Some(r) = rules.get(a) {
-                if r.contains(b) {
-                    Ordering::Less
-                } else {
-                    Ordering::Greater
-                }
-            } else {
-                Ordering::Equal
-            }
-        })
-    });
-
-    let mut sum = 0;
-    for wrong in wrongs {
-        sum += wrong[wrong.len() / 2];
     }
 
     sum
