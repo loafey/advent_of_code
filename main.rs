@@ -34,7 +34,15 @@ fn main() {
 }
 
 fn format_time(time: Duration) -> String {
-    let time = format!("{time:?}");
+    let time = if time.as_secs() > 1 {
+        format!("{}s", time.as_secs())
+    } else if time.as_millis() > 1 {
+        format!("{}ms", time.as_millis())
+    } else if time.as_micros() > 1 {
+        format!("{}µs", time.as_micros())
+    } else {
+        format!("{}ns", time.as_nanos())
+    };
     let color = if time.contains("µs") {
         "🦀"
     } else if time.contains("ms") {
@@ -42,7 +50,7 @@ fn format_time(time: Duration) -> String {
     } else {
         "🤡"
     };
-    format!("{color} {time}")
+    format!("{color}: {time}")
 }
 
 #[allow(clippy::type_complexity)]
