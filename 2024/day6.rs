@@ -1,6 +1,6 @@
-use std::collections::HashSet;
-
+use std::{collections::HashSet, mem::transmute};
 use utils::FindSome;
+type Grid = &'static [[u8; 131]; 130];
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, PartialOrd, Ord)]
 #[repr(u8)]
@@ -22,7 +22,22 @@ impl Dir {
     }
 }
 
-pub fn get_path(mut y: isize, mut x: isize, m: &[Vec<char>]) -> HashSet<(isize, isize)> {
+fn find_start(m: Grid) -> (isize, isize) {
+    m.iter()
+        .enumerate()
+        .find_some(|(y, v)| {
+            v.iter().enumerate().find_some(|(x, a)| {
+                if *a == b'^' {
+                    Some((y as isize, x as isize))
+                } else {
+                    None
+                }
+            })
+        })
+        .unwrap()
+}
+
+fn get_path(mut y: isize, mut x: isize, m: Grid) -> HashSet<(isize, isize)> {
     let mut visited = HashSet::new();
     let mut dir = Dir::Up;
     loop {
@@ -36,7 +51,7 @@ pub fn get_path(mut y: isize, mut x: isize, m: &[Vec<char>]) -> HashSet<(isize, 
         let Some(c) = m.get(ny as usize).and_then(|v| v.get(nx as usize)) else {
             break;
         };
-        if *c == '#' {
+        if *c == b'#' {
             dir = dir.inc();
         } else {
             y = ny;
@@ -45,52 +60,17 @@ pub fn get_path(mut y: isize, mut x: isize, m: &[Vec<char>]) -> HashSet<(isize, 
     }
     visited
 }
-
 pub fn part1() -> usize {
-    let m = include_str!("../inputs/2024/day6.input")
-        .lines()
-        .filter(|s| !s.is_empty())
-        .map(|s| s.chars().collect::<Vec<_>>())
-        .collect::<Vec<_>>();
-
-    let (y, x) = m
-        .iter()
-        .enumerate()
-        .find_some(|(y, v)| {
-            v.iter().enumerate().find_some(|(x, a)| {
-                if *a == '^' {
-                    Some((y as isize, x as isize))
-                } else {
-                    None
-                }
-            })
-        })
-        .unwrap();
-
-    get_path(y, x, &m).len()
+    let (m, _) =
+        unsafe { transmute::<&str, (Grid, usize)>(include_str!("../inputs/2024/day6.input")) };
+    let (y, x) = find_start(m);
+    get_path(y, x, m).len()
 }
 pub fn part2() -> usize {
-    let m = include_str!("../inputs/2024/day6.input")
-        .lines()
-        .filter(|s| !s.is_empty())
-        .map(|s| s.chars().collect::<Vec<_>>())
-        .collect::<Vec<_>>();
-
-    let (y, x) = m
-        .iter()
-        .enumerate()
-        .find_some(|(y, v)| {
-            v.iter().enumerate().find_some(|(x, a)| {
-                if *a == '^' {
-                    Some((y as isize, x as isize))
-                } else {
-                    None
-                }
-            })
-        })
-        .unwrap();
-
-    let og_path = get_path(y, x, &m);
+    let (m, _) =
+        unsafe { transmute::<&str, (Grid, usize)>(include_str!("../inputs/2024/day6.input")) };
+    let (y, x) = find_start(m);
+    let og_path = get_path(y, x, m);
 
     let mut loopy = 0;
     for (py, px) in og_path {
@@ -98,10 +78,9 @@ pub fn part2() -> usize {
         let mut dir = Dir::Up;
         let mut y = y;
         let mut x = x;
-        loop {
+        loopy += loop {
             if !visited.insert((y, x, dir)) {
-                loopy += 1;
-                break;
+                break 1;
             }
             let (ny, nx) = match dir {
                 Dir::Up => (y - 1, x),
@@ -110,9 +89,9 @@ pub fn part2() -> usize {
                 Dir::Left => (y, x - 1),
             };
             let Some(c) = m.get(ny as usize).and_then(|v| v.get(nx as usize)) else {
-                break;
+                break 0;
             };
-            if *c == '#' || (ny, nx) == (py, px) {
+            if *c == b'#' || (ny, nx) == (py, px) {
                 dir = dir.inc();
             } else {
                 y = ny;
