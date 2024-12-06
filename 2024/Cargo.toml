@@ -9,6 +9,7 @@ aoc_table = { workspace = true }
 utils = { workspace = true }
 arrayvec = { workspace = true }
 rayon = { workspace = true }
+rustc-hash = "2.1.0"
 
 [lib]
 path = "lib.rs"

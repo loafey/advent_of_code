@@ -1,4 +1,5 @@
-use std::{collections::HashSet, mem::transmute};
+use rustc_hash::FxHashSet;
+use std::mem::transmute;
 use utils::FindSome;
 type Grid = &'static [[u8; 131]; 130];
 
@@ -37,8 +38,8 @@ fn find_start(m: Grid) -> (isize, isize) {
         .unwrap()
 }
 
-fn get_path(mut y: isize, mut x: isize, m: Grid) -> HashSet<(isize, isize)> {
-    let mut visited = HashSet::new();
+fn get_path(mut y: isize, mut x: isize, m: Grid) -> FxHashSet<(isize, isize)> {
+    let mut visited = FxHashSet::default();
     let mut dir = Dir::Up;
     loop {
         visited.insert((y, x));
@@ -73,8 +74,9 @@ pub fn part2() -> usize {
     let og_path = get_path(y, x, m);
 
     let mut loopy = 0;
+    let mut visited = FxHashSet::default();
     for (py, px) in og_path {
-        let mut visited = HashSet::new();
+        visited.clear();
         let mut dir = Dir::Up;
         let mut y = y;
         let mut x = x;
