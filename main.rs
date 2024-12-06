@@ -42,7 +42,7 @@ fn format_time(time: Duration) -> String {
     } else {
         "🤡"
     };
-    format!("{color}: {time}")
+    format!("{color} {time}")
 }
 
 #[allow(clippy::type_complexity)]
