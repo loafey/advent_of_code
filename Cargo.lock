@@ -114,7 +114,7 @@ dependencies = [
 [[package]]
 name = "aoc_table"
 version = "0.1.0"
-source = "git+https://github.com/samhamnam/aoc_table#926446cca004800529a7ddc208fbd84a49732946"
+source = "git+https://github.com/samhamnam/aoc_table#8bbef66e8935c3e814d39efc240fec4ad256b02a"
 dependencies = [
  "chrono",
  "crossterm",
