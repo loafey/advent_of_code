@@ -17,11 +17,11 @@ fn main() {
     if benchmark {
         println!("# AoC Benchmarks");
         println!("{}\n", format_benchmark(aoc_2024::table().run_benchmarks()));
-        println!("{}\n", format_benchmark(aoc_2023::table().run_benchmarks()));
-        println!("{}\n", format_benchmark(aoc_2022::table().run_benchmarks()));
-        println!("{}\n", format_benchmark(aoc_2020::table().run_benchmarks()));
-        println!("{}\n", format_benchmark(aoc_2019::table().run_benchmarks()));
-        println!("{}\n", format_benchmark(aoc_2018::table().run_benchmarks()));
+        // println!("{}\n", format_benchmark(aoc_2023::table().run_benchmarks()));
+        // println!("{}\n", format_benchmark(aoc_2022::table().run_benchmarks()));
+        // println!("{}\n", format_benchmark(aoc_2020::table().run_benchmarks()));
+        // println!("{}\n", format_benchmark(aoc_2019::table().run_benchmarks()));
+        // println!("{}\n", format_benchmark(aoc_2018::table().run_benchmarks()));
     } else if table {
         year!().run();
     } else if let Some(num) = num {
