@@ -33,7 +33,3 @@ pathfinding = "4.11.0"
 euclid = "0.22.11"
 arrayvec = "0.7.6"
 
-[target.x86_64-unknown-linux-gnu]
-linker = "/usr/bin/clang"
-rustflags = ["-Clink-arg=-fuse-ld=lld", "-Clink-arg=-Wl,--no-rosegment"]
-
