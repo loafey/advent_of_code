@@ -1,6 +1,6 @@
 use rayon::prelude::*;
 use rustc_hash::FxHashSet;
-use std::mem::transmute;
+use std::{hash::Hash, mem::transmute};
 use utils::FindSome;
 type Grid = &'static [[u8; 131]; 130];
 
@@ -39,11 +39,29 @@ fn find_start(m: Grid) -> (isize, isize) {
         .unwrap()
 }
 
-fn get_path(mut y: isize, mut x: isize, m: Grid) -> FxHashSet<(isize, isize)> {
+#[derive(Eq)]
+struct Visited {
+    x: isize,
+    y: isize,
+    dir: Dir,
+}
+impl Hash for Visited {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.x.hash(state);
+        self.y.hash(state);
+    }
+}
+impl PartialEq for Visited {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y
+    }
+}
+
+fn get_path(mut y: isize, mut x: isize, m: Grid) -> FxHashSet<Visited> {
     let mut visited = FxHashSet::default();
     let mut dir = Dir::Up;
     loop {
-        visited.insert((y, x));
+        visited.insert(Visited { x, y, dir });
         let (ny, nx) = match dir {
             Dir::Up => (y - 1, x),
             Dir::Down => (y + 1, x),
@@ -60,6 +78,7 @@ fn get_path(mut y: isize, mut x: isize, m: Grid) -> FxHashSet<(isize, isize)> {
             x = nx;
         }
     }
+    visited.remove(&Visited { x, y, dir: Dir::Up });
     visited
 }
 pub fn part1() -> usize {
@@ -76,31 +95,46 @@ pub fn part2() -> usize {
 
     og_path
         .into_par_iter()
-        .map(|(py, px)| {
-            let mut visited = FxHashSet::default();
-            let mut dir = Dir::Up;
-            let mut y = y;
-            let mut x = x;
-            loop {
-                if !visited.insert((y, x, dir)) {
-                    break 1;
+        .map(
+            |Visited {
+                 x: px,
+                 y: py,
+                 mut dir,
+             }| {
+                let mut visited = FxHashSet::default();
+                let mut y = py
+                    + match dir {
+                        Dir::Up => 1,
+                        Dir::Down => -1,
+                        _ => 0,
+                    };
+                let mut x = px
+                    + match dir {
+                        Dir::Right => -1,
+                        Dir::Left => 1,
+                        _ => 0,
+                    };
+                loop {
+                    if !visited.insert((y, x, dir)) {
+                        break 1;
+                    }
+                    let (ny, nx) = match dir {
+                        Dir::Up => (y - 1, x),
+                        Dir::Right => (y, x + 1),
+                        Dir::Down => (y + 1, x),
+                        Dir::Left => (y, x - 1),
+                    };
+                    let Some(c) = m.get(ny as usize).and_then(|v| v.get(nx as usize)) else {
+                        break 0;
+                    };
+                    if *c == b'#' || (ny, nx) == (py, px) {
+                        dir = dir.inc();
+                    } else {
+                        y = ny;
+                        x = nx;
+                    }
                 }
-                let (ny, nx) = match dir {
-                    Dir::Up => (y - 1, x),
-                    Dir::Right => (y, x + 1),
-                    Dir::Down => (y + 1, x),
-                    Dir::Left => (y, x - 1),
-                };
-                let Some(c) = m.get(ny as usize).and_then(|v| v.get(nx as usize)) else {
-                    break 0;
-                };
-                if *c == b'#' || (ny, nx) == (py, px) {
-                    dir = dir.inc();
-                } else {
-                    y = ny;
-                    x = nx;
-                }
-            }
-        })
+            },
+        )
         .sum()
 }
