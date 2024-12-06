@@ -36,13 +36,13 @@ fn main() {
 fn format_time(time: Duration) -> String {
     let time = format!("{time:?}");
     let color = if time.contains("µs") {
-        "aquamarine"
+        "🦀"
     } else if time.contains("ms") {
-        "orange"
+        "💅"
     } else {
-        "red"
+        "🤡"
     };
-    format!("<span style=\"color: {color}\">{time}</span>")
+    format!("{color}: {time}")
 }
 
 #[allow(clippy::type_complexity)]
