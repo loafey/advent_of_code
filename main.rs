@@ -33,6 +33,18 @@ fn main() {
     }
 }
 
+fn format_time(time: Duration) -> String {
+    let time = format!("{time:?}");
+    let color = if time.contains("µs") {
+        "aquamarine"
+    } else if time.contains("ms") {
+        "orange"
+    } else {
+        "red"
+    };
+    format!("<span style=\"color: {color}\">{time}</span>")
+}
+
 #[allow(clippy::type_complexity)]
 fn format_benchmark((s, v): (String, Vec<BenchmarkResults>)) -> String {
     let mut s =
@@ -60,32 +72,32 @@ fn format_benchmark((s, v): (String, Vec<BenchmarkResults>)) -> String {
             "\n|{}|{}|{}|{}|{}|{}|{}|",
             day,
             if !matches!(&p1_ans[..], " " | "0" | "") {
-                format!("{p1_avg:?}")
+                format_time(p1_avg)
             } else {
                 "❌".to_owned()
             },
             if !matches!(&p1_ans[..], " " | "0" | "") {
-                format!("{p1_best:?}")
+                format_time(p1_best)
             } else {
                 "❌".to_owned()
             },
             if !matches!(&p1_ans[..], " " | "0" | "") {
-                format!("{p1_worst:?}")
+                format_time(p1_worst)
             } else {
                 "❌".to_owned()
             },
             if !matches!(&p2_ans[..], " " | "0" | "") {
-                format!("{p2_avg:?}")
+                format_time(p2_avg)
             } else {
                 "❌".to_owned()
             },
             if !matches!(&p2_ans[..], " " | "0" | "") {
-                format!("{p2_best:?}")
+                format_time(p2_best)
             } else {
                 "❌".to_owned()
             },
             if !matches!(&p2_ans[..], " " | "0" | "") {
-                format!("{p2_worst:?}")
+                format_time(p2_worst)
             } else {
                 "❌".to_owned()
             },

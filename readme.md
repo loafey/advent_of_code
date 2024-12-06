@@ -2,12 +2,12 @@
 ## 2024 Rust solutions 🤠 
 | Day | Part 1 avg | Best | Worst | Part 2 avg | Best | Worst |
 | --- | --- | --- | --- | --- | --- | --- |
-|1|111.259µs|106.335µs|158.596µs|95.116µs|93.079µs|136.103µs|
-|2|83.284µs|81.477µs|109.441µs|224.874µs|220.225µs|242.607µs|
-|3|113.666µs|111.275µs|133.017µs|113.222µs|111.765µs|132.696µs|
-|4|79.835µs|78.702µs|94.793µs|81.628µs|80.014µs|118.519µs|
-|5|177.801µs|174.326µs|199.505µs|203.186µs|179.136µs|283.065µs|
-|6|155.061µs|150.811µs|258.849µs|34.234531ms|32.557983ms|48.752525ms|
+|1|<span style="color: aquamarine">171.581µs</span>|<span style="color: aquamarine">163.293µs</span>|<span style="color: aquamarine">314.99µs</span>|<span style="color: aquamarine">135.755µs</span>|<span style="color: aquamarine">125.438µs</span>|<span style="color: aquamarine">330.007µs</span>|
+|2|<span style="color: aquamarine">139.813µs</span>|<span style="color: aquamarine">134.167µs</span>|<span style="color: aquamarine">165.457µs</span>|<span style="color: aquamarine">394.97µs</span>|<span style="color: aquamarine">376.522µs</span>|<span style="color: aquamarine">415.773µs</span>|
+|3|<span style="color: aquamarine">174.237µs</span>|<span style="color: aquamarine">164.898µs</span>|<span style="color: aquamarine">197.794µs</span>|<span style="color: aquamarine">168.16µs</span>|<span style="color: aquamarine">159.8µs</span>|<span style="color: aquamarine">178.378µs</span>|
+|4|<span style="color: aquamarine">124.991µs</span>|<span style="color: aquamarine">116.358µs</span>|<span style="color: aquamarine">135.634µs</span>|<span style="color: aquamarine">127.524µs</span>|<span style="color: aquamarine">121.177µs</span>|<span style="color: aquamarine">186.2µs</span>|
+|5|<span style="color: aquamarine">260.678µs</span>|<span style="color: aquamarine">251.923µs</span>|<span style="color: aquamarine">292.501µs</span>|<span style="color: aquamarine">288.771µs</span>|<span style="color: aquamarine">278.393µs</span>|<span style="color: aquamarine">339.645µs</span>|
+|6|<span style="color: aquamarine">77.382µs</span>|<span style="color: aquamarine">72.915µs</span>|<span style="color: aquamarine">182.29µs</span>|<span style="color: orange">16.52178ms</span>|<span style="color: orange">13.206404ms</span>|<span style="color: orange">23.044716ms</span>|
 |7|❌|❌|❌|❌|❌|❌|
 |8|❌|❌|❌|❌|❌|❌|
 |9|❌|❌|❌|❌|❌|❌|
@@ -27,7 +27,7 @@
 |23|❌|❌|❌|❌|❌|❌|
 |24|❌|❌|❌|❌|❌|❌|
 |25|❌|❌|❌|❌|❌|❌|
-### Total average time: 35.674618ms
-### Total best time: 33.946008ms
-### Total worst time: 50.62314ms
+### Total average time: 18.63462ms
+### Total best time: 15.205638ms
+### Total worst time: 25.964563ms
 
