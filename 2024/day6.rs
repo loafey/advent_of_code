@@ -1,8 +1,8 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use utils::FindSome;
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, PartialOrd, Ord)]
 #[repr(u8)]
 enum Dir {
     Up,
@@ -87,15 +87,9 @@ pub fn part2() -> usize {
         for px in 0..m[py].len() {
             let mut visited = HashSet::new();
             let mut dir = Dir::Up;
-            let mut m = m.clone();
-            match m[py][px] {
-                '.' => m[py][px] = '#',
-                _ => continue,
-            }
             let mut y = y;
             let mut x = x;
             loop {
-                // println!("{y}:{x}:{dir:?} {visited:?}");
                 if !visited.insert((y, x, dir)) {
                     loopy += 1;
                     break;
@@ -109,7 +103,7 @@ pub fn part2() -> usize {
                 let Some(c) = m.get(ny as usize).and_then(|v| v.get(nx as usize)) else {
                     break;
                 };
-                if *c == '#' {
+                if *c == '#' || (ny, nx) == (py as isize, px as isize) {
                     dir = match (dir as u8 + 1) % 4 {
                         0 => Dir::Up,
                         1 => Dir::Right,
