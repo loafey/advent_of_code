@@ -24,11 +24,11 @@ aoc_2018 = { path = "2018" }
 [workspace.dependencies]
 gen_days = { path = "gen_days" }
 utils = { path = "utils" }
-aoc_table = { git = "https://github.com/samhamnam/aoc_table" }
+aoc_table = { git = "https://github.com/loafey/aoc_table" }
 rayon = "1.10.0"
 chrono = "0.4.38"
 memoize = "0.4.2"
-zipperoni = { git = "https://github.com/samhamnam/zipperoni" }
+zipperoni = { git = "https://github.com/loafey/zipperoni" }
 pathfinding = "4.11.0"
 euclid = "0.22.11"
 arrayvec = "0.7.6"

@@ -115,7 +115,7 @@ dependencies = [
 [[package]]
 name = "aoc_table"
 version = "0.1.0"
-source = "git+https://github.com/samhamnam/aoc_table#8bbef66e8935c3e814d39efc240fec4ad256b02a"
+source = "git+https://github.com/loafey/aoc_table#8bbef66e8935c3e814d39efc240fec4ad256b02a"
 dependencies = [
  "chrono",
  "crossterm",
@@ -981,4 +981,4 @@ dependencies = [
 [[package]]
 name = "zipperoni"
 version = "0.1.0"
-source = "git+https://github.com/samhamnam/zipperoni#c0e0acc8eacb75b78aa718b703eba198d2077bb4"
+source = "git+https://github.com/loafey/zipperoni#c0e0acc8eacb75b78aa718b703eba198d2077bb4"
