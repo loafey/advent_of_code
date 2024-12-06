@@ -1,5 +1,5 @@
 use rayon::prelude::*;
-use rustc_hash::FxHashSet;
+use rustc_hash::{FxBuildHasher, FxHashSet as HashSet};
 use std::{hash::Hash, mem::transmute};
 use utils::FindSome;
 type Grid = &'static [[u8; 131]; 130];
@@ -57,8 +57,8 @@ impl PartialEq for Visited {
     }
 }
 
-fn get_path(mut y: isize, mut x: isize, m: Grid) -> FxHashSet<Visited> {
-    let mut visited = FxHashSet::default();
+fn get_path(mut y: isize, mut x: isize, m: Grid) -> HashSet<Visited> {
+    let mut visited = HashSet::with_capacity_and_hasher(5208, FxBuildHasher);
     let mut dir = Dir::Up;
     loop {
         visited.insert(Visited { x, y, dir });
@@ -101,7 +101,7 @@ pub fn part2() -> usize {
                  y: py,
                  mut dir,
              }| {
-                let mut visited = FxHashSet::default();
+                let mut visited = HashSet::with_capacity_and_hasher(6058, FxBuildHasher);
                 let mut y = py
                     + match dir {
                         Dir::Up => 1,
