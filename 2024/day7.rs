@@ -1,45 +1,27 @@
 use rayon::prelude::*;
 
-#[derive(Debug, Clone, Copy)]
-enum Op {
-    Mul,
-    Add,
-    Concat,
+fn concat(acc: i64, v: i64) -> i64 {
+    let mut pow = 10;
+    while v >= pow {
+        pow *= 10;
+    }
+    acc * pow + v
 }
 
-fn oppify(len: usize, cc: bool) -> Vec<Vec<Op>> {
-    match len {
-        0 => {
-            if cc {
-                vec![vec![Op::Mul], vec![Op::Add], vec![Op::Concat]]
-            } else {
-                vec![vec![Op::Mul], vec![Op::Add]]
+fn oppify(result: i64, vals: &[i64], cc: bool, acc: i64) -> Option<i64> {
+    match vals {
+        [] => match acc == result {
+            true => Some(acc),
+            false => None,
+        },
+        [x, rest @ ..] => match cc {
+            true => oppify(result, rest, cc, acc + x)
+                .or_else(|| oppify(result, rest, cc, acc * x))
+                .or_else(|| oppify(result, rest, cc, concat(acc, *x))),
+            false => {
+                oppify(result, rest, cc, acc + x).or_else(|| oppify(result, rest, cc, acc * x))
             }
-        }
-        x => {
-            if cc {
-                let mut next = oppify(x - 1, cc);
-                let mut res = next.clone();
-                let mut tres = next.clone();
-
-                next.iter_mut().for_each(|s| s.push(Op::Add));
-                res.iter_mut().for_each(|s| s.push(Op::Mul));
-                tres.iter_mut().for_each(|s| s.push(Op::Concat));
-
-                next.append(&mut res);
-                next.append(&mut tres);
-                next
-            } else {
-                let mut next = oppify(x - 1, cc);
-                let mut res = next.clone();
-
-                next.iter_mut().for_each(|s| s.push(Op::Add));
-                res.iter_mut().for_each(|s| s.push(Op::Mul));
-
-                next.append(&mut res);
-                next
-            }
-        }
+        },
     }
 }
 
@@ -48,7 +30,7 @@ fn calc(cc: bool) -> i64 {
 
     data.lines()
         .par_bridge()
-        .map(|l| {
+        .filter_map(|l| {
             let (result, vals) = l.split_once(':').unwrap();
             let result = result.parse::<i64>().unwrap();
             let vals = vals
@@ -56,34 +38,7 @@ fn calc(cc: bool) -> i64 {
                 .map(|s| s.parse::<i64>().unwrap())
                 .collect::<Vec<_>>();
 
-            let oppify = oppify(vals.len() - 2, cc);
-            let mut res = 0;
-            for op in oppify {
-                let mut i = 0;
-                let ans = vals
-                    .iter()
-                    .copied()
-                    .reduce(|acc, v| {
-                        i += 1;
-                        match op[i - 1] {
-                            Op::Mul => acc * v,
-                            Op::Add => acc + v,
-                            Op::Concat => {
-                                let mut pow = 10;
-                                while v >= pow {
-                                    pow *= 10;
-                                }
-                                acc * pow + v
-                            }
-                        }
-                    })
-                    .unwrap();
-                if ans == result {
-                    res = ans;
-                    break;
-                }
-            }
-            res
+            oppify(result, &vals, cc, 0)
         })
         .sum()
 }
