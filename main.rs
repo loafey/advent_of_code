@@ -12,7 +12,6 @@ fn main() {
     {
         // Trick rayon to spin up worker threads before running days
         use rayon::prelude::*;
-        #[allow(dropping_copy_types)]
         (0..1).into_par_iter().sum::<i64>();
     }
 
