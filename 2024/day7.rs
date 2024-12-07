@@ -16,6 +16,7 @@ fn oppify(vals: &[i64], cc: bool, acc: i64, result: i64) -> Option<i64> {
                 oppify(rest, cc, acc + x, result),
                 oppify(rest, cc, acc * x, result),
                 oppify(rest, cc, acc.concat(*x), result)
+            ),
             false => first!(
                 oppify(rest, cc, acc + x, result),
                 oppify(rest, cc, acc * x, result)
