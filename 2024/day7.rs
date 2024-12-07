@@ -1,3 +1,4 @@
+use arrayvec::ArrayVec;
 use rayon::prelude::*;
 
 fn concat(acc: i64, v: i64) -> i64 {
@@ -36,7 +37,7 @@ fn calc(cc: bool) -> i64 {
             let vals = vals
                 .split_whitespace()
                 .map(|s| s.parse::<i64>().unwrap())
-                .collect::<Vec<_>>();
+                .collect::<ArrayVec<_, 12>>();
 
             oppify(result, &vals, cc, 0)
         })
