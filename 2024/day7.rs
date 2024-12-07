@@ -2,6 +2,7 @@ use arrayvec::ArrayVec;
 use rayon::prelude::*;
 use utils::{first, Concat};
 
+#[inline(always)]
 fn oppify(vals: &[i64], cc: bool, result: i64, acc: i64) -> Option<i64> {
     if acc > result {
         return None;
