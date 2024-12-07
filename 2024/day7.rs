@@ -2,7 +2,7 @@ use arrayvec::ArrayVec;
 use rayon::prelude::*;
 use utils::{first, Concat};
 
-fn oppify(vals: &[i64], cc: bool, acc: i64, result: i64) -> Option<i64> {
+fn oppify(vals: &[i64], cc: bool, result: i64, acc: i64) -> Option<i64> {
     if acc > result {
         return None;
     }
@@ -11,17 +11,13 @@ fn oppify(vals: &[i64], cc: bool, acc: i64, result: i64) -> Option<i64> {
             true => Some(acc),
             false => None,
         },
-        [x, rest @ ..] => match cc {
-            true => first!(
-                oppify(rest, cc, acc + x, result),
-                oppify(rest, cc, acc * x, result),
-                oppify(rest, cc, acc.concat(*x), result)
-            ),
-            false => first!(
-                oppify(rest, cc, acc + x, result),
-                oppify(rest, cc, acc * x, result)
-            ),
-        },
+        [x, rest @ ..] => {
+            let oppify = |acc| oppify(rest, cc, result, acc);
+            match cc {
+                true => first!(oppify(acc + x), oppify(acc * x), oppify(acc.concat(*x))),
+                false => first!(oppify(acc + x), oppify(acc * x)),
+            }
+        }
     }
 }
 
@@ -39,7 +35,7 @@ fn calc(cc: bool) -> i64 {
                     .collect::<ArrayVec<_, 12>>(),
             )
         })
-        .filter_map(|(result, vals)| oppify(&vals, cc, 0, result))
+        .filter_map(|(result, vals)| oppify(&vals, cc, result, 0))
         .sum()
 }
 
