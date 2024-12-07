@@ -10,6 +10,7 @@ utils = { workspace = true }
 arrayvec = { workspace = true }
 rayon = { workspace = true }
 rustc-hash = "2.1.0"
+memoize = { workspace = true }
 
 [lib]
 path = "lib.rs"
