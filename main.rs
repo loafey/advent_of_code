@@ -9,6 +9,13 @@ macro_rules! year {
 }
 
 fn main() {
+    {
+        // Trick rayon to spin up worker threads before running days
+        use rayon::prelude::*;
+        #[allow(dropping_copy_types)]
+        (0..1).into_par_iter().sum::<i64>();
+    }
+
     let benchmark = std::env::args().filter(|s| s == "--benchmark").count() == 1;
     let table = std::env::args().filter(|s| s == "--table").count() == 1;
     let num = std::env::args()
@@ -26,6 +33,7 @@ fn main() {
         year!().run();
     } else if let Some(num) = num {
         println!("╍ Running day {num} ╍");
+
         year!().run_day(num)
     } else {
         println!("╍ Running current day ╍");
