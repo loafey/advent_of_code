@@ -1,6 +1,6 @@
 use arrayvec::ArrayVec;
 use rayon::prelude::*;
-use utils::Concat;
+use utils::{first, Concat};
 
 fn oppify(vals: &[i64], cc: bool, acc: i64, result: i64) -> Option<i64> {
     if acc > result {
@@ -12,12 +12,14 @@ fn oppify(vals: &[i64], cc: bool, acc: i64, result: i64) -> Option<i64> {
             false => None,
         },
         [x, rest @ ..] => match cc {
-            true => oppify(rest, cc, acc + x, result)
-                .or_else(|| oppify(rest, cc, acc * x, result))
-                .or_else(|| oppify(rest, cc, acc.concat(*x), result)),
-            false => {
-                oppify(rest, cc, acc + x, result).or_else(|| oppify(rest, cc, acc * x, result))
-            }
+            true => first!(
+                oppify(rest, cc, acc + x, result),
+                oppify(rest, cc, acc * x, result),
+                oppify(rest, cc, acc.concat(*x), result)
+            false => first!(
+                oppify(rest, cc, acc + x, result),
+                oppify(rest, cc, acc * x, result)
+            ),
         },
     }
 }

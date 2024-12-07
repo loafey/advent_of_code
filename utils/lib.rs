@@ -12,6 +12,16 @@ use std::{
     sync::Arc,
 };
 
+#[macro_export]
+macro_rules! first {
+    ($x:expr) => {
+        $x
+    };
+    ($x:expr, $($y:expr),*) => {
+        Option::or_else($x, || first!($($y),+))
+    };
+}
+
 pub trait Concat {
     fn concat(self, rhs: Self) -> Self;
 }
