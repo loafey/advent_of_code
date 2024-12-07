@@ -12,6 +12,100 @@ use std::{
     sync::Arc,
 };
 
+pub trait Concat {
+    fn concat(self, rhs: Self) -> Self;
+}
+impl Concat for u8 {
+    fn concat(self, rhs: Self) -> Self {
+        let mut pow = 10;
+        while rhs >= pow {
+            pow *= 10;
+        }
+        self * pow + rhs
+    }
+}
+impl Concat for i8 {
+    fn concat(self, rhs: Self) -> Self {
+        let mut pow = 10;
+        while rhs >= pow {
+            pow *= 10;
+        }
+        self * pow + rhs
+    }
+}
+impl Concat for u16 {
+    fn concat(self, rhs: Self) -> Self {
+        let mut pow = 10;
+        while rhs >= pow {
+            pow *= 10;
+        }
+        self * pow + rhs
+    }
+}
+impl Concat for i16 {
+    fn concat(self, rhs: Self) -> Self {
+        let mut pow = 10;
+        while rhs >= pow {
+            pow *= 10;
+        }
+        self * pow + rhs
+    }
+}
+impl Concat for u32 {
+    fn concat(self, rhs: Self) -> Self {
+        let mut pow = 10;
+        while rhs >= pow {
+            pow *= 10;
+        }
+        self * pow + rhs
+    }
+}
+impl Concat for i32 {
+    fn concat(self, rhs: Self) -> Self {
+        let mut pow = 10;
+        while rhs >= pow {
+            pow *= 10;
+        }
+        self * pow + rhs
+    }
+}
+impl Concat for u64 {
+    fn concat(self, rhs: Self) -> Self {
+        let mut pow = 10;
+        while rhs >= pow {
+            pow *= 10;
+        }
+        self * pow + rhs
+    }
+}
+impl Concat for i64 {
+    fn concat(self, rhs: Self) -> Self {
+        let mut pow = 10;
+        while rhs >= pow {
+            pow *= 10;
+        }
+        self * pow + rhs
+    }
+}
+impl Concat for u128 {
+    fn concat(self, rhs: Self) -> Self {
+        let mut pow = 10;
+        while rhs >= pow {
+            pow *= 10;
+        }
+        self * pow + rhs
+    }
+}
+impl Concat for i128 {
+    fn concat(self, rhs: Self) -> Self {
+        let mut pow = 10;
+        while rhs >= pow {
+            pow *= 10;
+        }
+        self * pow + rhs
+    }
+}
+
 pub type CoolBool = Option<()>;
 #[allow(non_upper_case_globals)]
 pub const True: CoolBool = Some(());

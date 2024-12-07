@@ -1,15 +1,11 @@
 use arrayvec::ArrayVec;
 use rayon::prelude::*;
-
-fn concat(acc: i64, v: i64) -> i64 {
-    let mut pow = 10;
-    while v >= pow {
-        pow *= 10;
-    }
-    acc * pow + v
-}
+use utils::Concat;
 
 fn oppify(result: i64, vals: &[i64], cc: bool, acc: i64) -> Option<i64> {
+    if acc > result {
+        return None;
+    }
     match vals {
         [] => match acc == result {
             true => Some(acc),
@@ -18,7 +14,7 @@ fn oppify(result: i64, vals: &[i64], cc: bool, acc: i64) -> Option<i64> {
         [x, rest @ ..] => match cc {
             true => oppify(result, rest, cc, acc + x)
                 .or_else(|| oppify(result, rest, cc, acc * x))
-                .or_else(|| oppify(result, rest, cc, concat(acc, *x))),
+                .or_else(|| oppify(result, rest, cc, acc.concat(*x))),
             false => {
                 oppify(result, rest, cc, acc + x).or_else(|| oppify(result, rest, cc, acc * x))
             }
