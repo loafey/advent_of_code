@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use rustc_hash::FxHashSet;
 
 fn find_chars(mat: &[Vec<char>], c: char) -> Vec<(usize, usize)> {
@@ -53,13 +51,6 @@ pub fn part1() -> usize {
         }
     }
 
-    for l in &m {
-        for c in l {
-            print!("{c}")
-        }
-        println!()
-    }
-
     posses.len()
 }
 
@@ -81,7 +72,6 @@ pub fn part2() -> usize {
             if !matches!(c, '#' | '.') {
                 posses.insert((y, x));
                 let others = find_chars(&m, c);
-                // println!("{c}: {others:?}");
                 for (ny, nx) in others {
                     if (ny, nx) == (y, x) {
                         continue;
@@ -93,7 +83,6 @@ pub fn part2() -> usize {
                     let mut bx = x.wrapping_add(xdiff);
 
                     loop {
-                        println!("{by}:{bx}");
                         if by < y_max && bx < x_max {
                             if m[by][bx] == '.' {
                                 m[by][bx] = '#';
@@ -108,13 +97,6 @@ pub fn part2() -> usize {
                 }
             }
         }
-    }
-
-    for l in &m {
-        for c in l {
-            print!("{c}")
-        }
-        println!()
     }
 
     posses.len()
