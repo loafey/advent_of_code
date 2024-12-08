@@ -1,6 +1,7 @@
 use rustc_hash::FxHashSet;
+use utils::bytes_to_matrix;
 
-fn find_chars(mat: &[Vec<char>], c: char) -> Vec<(usize, usize)> {
+fn find_chars(mat: &[[u8; 51]; 50], c: u8) -> Vec<(usize, usize)> {
     let mut ans = Vec::new();
     #[allow(clippy::needless_range_loop)]
     for y in 0..mat.len() {
@@ -15,10 +16,7 @@ fn find_chars(mat: &[Vec<char>], c: char) -> Vec<(usize, usize)> {
 }
 
 pub fn part1() -> usize {
-    let mut m = include_str!("../inputs/2024/day8.input")
-        .lines()
-        .map(|s| s.chars().collect::<Vec<_>>())
-        .collect::<Vec<_>>();
+    let m = bytes_to_matrix::<51, 50>(include_bytes!("../inputs/2024/day8.input"));
 
     let y_max = m.len();
     let x_max = m[0].len();
@@ -29,9 +27,8 @@ pub fn part1() -> usize {
     for y in 0..y_max {
         for x in 0..x_max {
             let c = m[y][x];
-            if !matches!(c, '#' | '.') {
-                let others = find_chars(&m, c);
-                // println!("{c}: {others:?}");
+            if !matches!(c, b'#' | b'.') {
+                let others = find_chars(m, c);
                 for (ny, nx) in others {
                     if (ny, nx) == (y, x) {
                         continue;
@@ -41,9 +38,6 @@ pub fn part1() -> usize {
                     let bx = x.wrapping_add(x.wrapping_sub(nx));
 
                     if by < y_max && bx < x_max {
-                        if m[by][bx] == '.' {
-                            m[by][bx] = '#';
-                        }
                         posses.insert((by, bx));
                     }
                 }
@@ -55,10 +49,7 @@ pub fn part1() -> usize {
 }
 
 pub fn part2() -> usize {
-    let mut m = include_str!("../inputs/2024/day8.input")
-        .lines()
-        .map(|s| s.chars().collect::<Vec<_>>())
-        .collect::<Vec<_>>();
+    let m = bytes_to_matrix::<51, 50>(include_bytes!("../inputs/2024/day8.input"));
 
     let y_max = m.len();
     let x_max = m[0].len();
@@ -69,9 +60,9 @@ pub fn part2() -> usize {
     for y in 0..y_max {
         for x in 0..x_max {
             let c = m[y][x];
-            if !matches!(c, '#' | '.') {
+            if !matches!(c, b'#' | b'.') {
                 posses.insert((y, x));
-                let others = find_chars(&m, c);
+                let others = find_chars(m, c);
                 for (ny, nx) in others {
                     if (ny, nx) == (y, x) {
                         continue;
@@ -84,9 +75,6 @@ pub fn part2() -> usize {
 
                     loop {
                         if by < y_max && bx < x_max {
-                            if m[by][bx] == '.' {
-                                m[by][bx] = '#';
-                            }
                             posses.insert((by, bx));
                         } else {
                             break;
