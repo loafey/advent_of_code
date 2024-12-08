@@ -22,7 +22,10 @@ fn main() {
         .and_then(|s| s.parse::<usize>().ok());
     if benchmark {
         println!("# AoC Benchmarks");
-        println!("{}\n", format_benchmark(aoc_2024::table().run_benchmarks()));
+        println!(
+            "{}\n",
+            format_benchmark(aoc_2024::table().run_benchmarks(10000, true))
+        );
         // println!("{}\n", format_benchmark(aoc_2023::table().run_benchmarks()));
         // println!("{}\n", format_benchmark(aoc_2022::table().run_benchmarks()));
         // println!("{}\n", format_benchmark(aoc_2020::table().run_benchmarks()));
@@ -68,7 +71,7 @@ fn format_benchmark((s, v): (String, Vec<BenchmarkResults>)) -> String {
     let mut total_time_avg = Duration::default();
     let mut total_time_best = Duration::default();
     let mut total_time_worst = Duration::default();
-    let mut total_amount = v.len();
+    let total_amount = v.len();
     for BenchmarkResults {
         day,
         p1_ans,
