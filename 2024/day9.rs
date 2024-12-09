@@ -52,7 +52,7 @@ fn solve(breakie: bool) -> i64 {
         if right_most == 0 {
             break;
         }
-        if left_most > right_most {
+        if left_most >= right_most {
             left_most = reset_point;
             reset_set = false;
             right_most -= 1;
@@ -72,7 +72,7 @@ fn solve(breakie: bool) -> i64 {
         }
         let a = map[left_most];
         let b = map[right_most];
-        if a.len() >= b.len() && left_most < right_most {
+        if a.len() >= b.len() {
             let diff = a.len() - b.len();
             map[left_most] = b;
             map[right_most] = Data::Empty(b.len());
