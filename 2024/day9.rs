@@ -52,6 +52,12 @@ fn solve(breakie: bool) -> i64 {
         if right_most == 0 {
             break;
         }
+        if left_most > right_most {
+            left_most = reset_point;
+            reset_set = false;
+            right_most -= 1;
+            continue;
+        }
         if !matches!(map[left_most], Data::Empty(_)) {
             left_most += 1;
             continue;
@@ -102,10 +108,10 @@ fn solve(breakie: bool) -> i64 {
 }
 
 pub fn part1() -> i64 {
-    println!("6291146824486");
+    // println!("6291146824486");
     solve(true)
 }
 pub fn part2() -> i64 {
-    println!("6307279963620");
+    // println!("6307279963620");
     solve(false)
 }
