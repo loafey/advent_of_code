@@ -19,7 +19,7 @@ fn solve(breakie: bool) -> i64 {
         .map(|s| s as u8 - 0x30)
         .collect::<Vec<_>>();
 
-    let mut map = Vec::new();
+    let mut map = Vec::with_capacity(94503);
 
     let mut alt = false;
     let mut id = 0;
