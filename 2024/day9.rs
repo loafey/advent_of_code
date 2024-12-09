@@ -45,6 +45,8 @@ fn solve(breakie: bool) -> i64 {
     }
 
     let mut left_most = 0;
+    let mut reset_point = 0;
+    let mut reset_set = false;
     let mut right_most = map.len() - 1;
     while left_most < map.len() {
         if right_most == 0 {
@@ -58,6 +60,10 @@ fn solve(breakie: bool) -> i64 {
             right_most -= 1;
             continue;
         }
+        if !reset_set {
+            reset_set = true;
+            reset_point = left_most;
+        }
         let a = map[left_most];
         let b = map[right_most];
         if a.len() >= b.len() && left_most < right_most {
@@ -67,13 +73,14 @@ fn solve(breakie: bool) -> i64 {
             if diff > 0 {
                 map.insert(left_most + 1, Data::Empty(diff));
             }
-            left_most = 0;
-            // right_most = map.len() - 1;
+            left_most = reset_point;
+            reset_set = false;
         } else {
             left_most += 1;
         }
         if left_most >= map.len() {
-            left_most = 0;
+            left_most = reset_point;
+            reset_set = false;
             right_most -= 1;
         }
     }
@@ -95,8 +102,10 @@ fn solve(breakie: bool) -> i64 {
 }
 
 pub fn part1() -> i64 {
+    println!("6291146824486");
     solve(true)
 }
 pub fn part2() -> i64 {
+    println!("6307279963620");
     solve(false)
 }
