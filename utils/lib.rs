@@ -25,96 +25,20 @@ macro_rules! first {
 pub trait Concat {
     fn concat(self, rhs: Self) -> Self;
 }
-impl Concat for u8 {
-    fn concat(self, rhs: Self) -> Self {
-        let mut pow = 10;
-        while rhs >= pow {
-            pow *= 10;
-        }
-        self * pow + rhs
-    }
+macro_rules! gen_concat {
+    ($($y:ty),*) => {
+        $(impl Concat for $y {
+            fn concat(self, rhs: Self) -> Self {
+                let mut pow = 10;
+                while rhs >= pow {
+                    pow *= 10;
+                }
+                self * pow + rhs
+            }
+        })+
+    };
 }
-impl Concat for i8 {
-    fn concat(self, rhs: Self) -> Self {
-        let mut pow = 10;
-        while rhs >= pow {
-            pow *= 10;
-        }
-        self * pow + rhs
-    }
-}
-impl Concat for u16 {
-    fn concat(self, rhs: Self) -> Self {
-        let mut pow = 10;
-        while rhs >= pow {
-            pow *= 10;
-        }
-        self * pow + rhs
-    }
-}
-impl Concat for i16 {
-    fn concat(self, rhs: Self) -> Self {
-        let mut pow = 10;
-        while rhs >= pow {
-            pow *= 10;
-        }
-        self * pow + rhs
-    }
-}
-impl Concat for u32 {
-    fn concat(self, rhs: Self) -> Self {
-        let mut pow = 10;
-        while rhs >= pow {
-            pow *= 10;
-        }
-        self * pow + rhs
-    }
-}
-impl Concat for i32 {
-    fn concat(self, rhs: Self) -> Self {
-        let mut pow = 10;
-        while rhs >= pow {
-            pow *= 10;
-        }
-        self * pow + rhs
-    }
-}
-impl Concat for u64 {
-    fn concat(self, rhs: Self) -> Self {
-        let mut pow = 10;
-        while rhs >= pow {
-            pow *= 10;
-        }
-        self * pow + rhs
-    }
-}
-impl Concat for i64 {
-    fn concat(self, rhs: Self) -> Self {
-        let mut pow = 10;
-        while rhs >= pow {
-            pow *= 10;
-        }
-        self * pow + rhs
-    }
-}
-impl Concat for u128 {
-    fn concat(self, rhs: Self) -> Self {
-        let mut pow = 10;
-        while rhs >= pow {
-            pow *= 10;
-        }
-        self * pow + rhs
-    }
-}
-impl Concat for i128 {
-    fn concat(self, rhs: Self) -> Self {
-        let mut pow = 10;
-        while rhs >= pow {
-            pow *= 10;
-        }
-        self * pow + rhs
-    }
-}
+gen_concat!(u8, i8, u16, i16, u32, i32, u64, i64, u128, i128);
 
 pub type CoolBool = Option<()>;
 #[allow(non_upper_case_globals)]
