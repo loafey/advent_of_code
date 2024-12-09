@@ -85,7 +85,6 @@ fn solve(breakie: bool) -> i64 {
             right_most -= 1;
         }
     }
-
     let mut sum = 0;
     let mut gi = 0;
     for v in map {
