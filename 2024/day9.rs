@@ -16,8 +16,7 @@ fn solve(breakie: bool) -> i64 {
     let chas = include_str!("../inputs/2024/day9.input")
         .chars()
         .filter(|s| s.is_numeric())
-        .map(|s| s as u8 - 0x30)
-        .collect::<Vec<_>>();
+        .map(|s| s as u8 - 0x30);
 
     let mut map = Vec::with_capacity(94503);
 
@@ -51,22 +50,18 @@ fn solve(breakie: bool) -> i64 {
     while left_most < map.len() {
         if right_most == 0 {
             break;
-        }
-        if left_most >= right_most {
+        } else if left_most >= right_most {
             left_most = reset_point;
             reset_set = false;
             right_most -= 1;
             continue;
-        }
-        if !matches!(map[left_most], Data::Empty(_)) {
+        } else if !matches!(map[left_most], Data::Empty(_)) {
             left_most += 1;
             continue;
-        }
-        if matches!(map[right_most], Data::Empty(_)) {
+        } else if matches!(map[right_most], Data::Empty(_)) {
             right_most -= 1;
             continue;
-        }
-        if !reset_set {
+        } else if !reset_set {
             reset_set = true;
             reset_point = left_most;
         }
