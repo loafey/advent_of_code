@@ -16,7 +16,7 @@ fn solve(breakie: bool) -> i64 {
     let chas = include_str!("../inputs/2024/day9.input")
         .chars()
         .filter(|s| s.is_numeric())
-        .map(|s| format!("{s}").parse::<i64>().unwrap())
+        .map(|s| s as u8 - 0x30)
         .collect::<Vec<_>>();
 
     let mut map = Vec::new();
