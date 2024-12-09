@@ -12,7 +12,7 @@ impl Data {
     }
 }
 
-fn solve(breakie: bool) -> i64 {
+fn solve(breakie: bool, count_test: usize) -> i64 {
     let chas = include_str!("../inputs/2024/day9.input")
         .chars()
         .filter(|s| s.is_numeric())
@@ -47,7 +47,13 @@ fn solve(breakie: bool) -> i64 {
     let mut reset_point = 0;
     let mut reset_set = false;
     let mut right_most = map.len() - 1;
+    let mut count = 0;
     while left_most < map.len() {
+        if count > count_test {
+            // println!("{reset_point}: {count}");
+            count = 0;
+            reset_point += 1;
+        }
         if right_most == 0 {
             break;
         } else if left_most >= right_most {
@@ -65,6 +71,7 @@ fn solve(breakie: bool) -> i64 {
             reset_set = true;
             reset_point = left_most;
         }
+        count += 1;
         let a = map[left_most];
         let b = map[right_most];
         if a.len() >= b.len() {
@@ -103,9 +110,9 @@ fn solve(breakie: bool) -> i64 {
 
 pub fn part1() -> i64 {
     // println!("6291146824486");
-    solve(true)
+    solve(true, usize::MAX)
 }
 pub fn part2() -> i64 {
     // println!("6307279963620");
-    solve(false)
+    solve(false, 4880)
 }
