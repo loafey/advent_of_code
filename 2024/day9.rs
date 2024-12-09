@@ -64,7 +64,9 @@ fn solve(breakie: bool) -> i64 {
             let diff = a.len() - b.len();
             map[left_most] = b;
             map[right_most] = Data::Empty(b.len());
-            map.insert(left_most + 1, Data::Empty(diff));
+            if diff > 0 {
+                map.insert(left_most + 1, Data::Empty(diff));
+            }
             left_most = 0;
             right_most = map.len() - 1;
         } else {
