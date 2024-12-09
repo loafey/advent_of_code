@@ -68,7 +68,7 @@ fn solve(breakie: bool) -> i64 {
                 map.insert(left_most + 1, Data::Empty(diff));
             }
             left_most = 0;
-            right_most = map.len() - 1;
+            // right_most = map.len() - 1;
         } else {
             left_most += 1;
         }
