@@ -15,6 +15,11 @@ pub fn matrixy(item: TokenStream) -> TokenStream {
     let end = s
         .find("\n")
         .expect("could not find any new lines, is this a matrix?");
+    s.lines().for_each(|s| {
+        if s.len() != end {
+            panic!("uneven input")
+        }
+    });
     let lines = s.lines().filter(|s| !s.is_empty()).count();
 
     format!(
