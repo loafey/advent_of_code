@@ -11,6 +11,7 @@ arrayvec = { workspace = true }
 rayon = { workspace = true }
 rustc-hash = "2.1.0"
 memoize = { workspace = true }
+pathfinding = { workspace = true }
 
 [lib]
 path = "lib.rs"

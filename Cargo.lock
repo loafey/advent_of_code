@@ -108,6 +108,7 @@ dependencies = [
  "arrayvec",
  "gen_days",
  "memoize",
+ "pathfinding",
  "rayon",
  "rustc-hash",
  "utils",
