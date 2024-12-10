@@ -107,6 +107,7 @@ dependencies = [
  "aoc_table",
  "arrayvec",
  "gen_days",
+ "matrixy",
  "memoize",
  "pathfinding",
  "rayon",
@@ -396,6 +397,10 @@ checksum = "e999beba7b6e8345721bd280141ed958096a2e4abdf74f67ff4ce49b4b54e47a"
 dependencies = [
  "hashbrown 0.12.3",
 ]
+
+[[package]]
+name = "matrixy"
+version = "0.1.0"
 
 [[package]]
 name = "memchr"

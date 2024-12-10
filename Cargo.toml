@@ -20,9 +20,13 @@ aoc_2020 = { path = "2020" }
 aoc_2019 = { path = "2019" }
 aoc_2018 = { path = "2018" }
 
+[workspace]
+members = ["matrixy"]
+
 
 [workspace.dependencies]
 gen_days = { path = "gen_days" }
+matrixy = { path = "matrixy" }
 utils = { path = "utils" }
 aoc_table = { git = "https://github.com/loafey/aoc_table" }
 rayon = "1.10.0"

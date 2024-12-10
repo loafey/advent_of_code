@@ -12,6 +12,7 @@ rayon = { workspace = true }
 rustc-hash = "2.1.0"
 memoize = { workspace = true }
 pathfinding = { workspace = true }
+matrixy = { workspace = true }
 
 [lib]
 path = "lib.rs"

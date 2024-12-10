@@ -1,8 +1,9 @@
 use rayon::prelude::*;
 use rustc_hash::{FxBuildHasher, FxHashSet as HashSet};
-use std::{hash::Hash, mem::transmute};
+use std::hash::Hash;
 use utils::FindSome;
-type Grid = &'static [[u8; 131]; 130];
+
+matrixy::matrixy!("../inputs/2024/day6.input");
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, PartialOrd, Ord)]
 #[repr(u8)]
@@ -24,7 +25,7 @@ impl Dir {
     }
 }
 
-fn find_start(m: Grid) -> (isize, isize) {
+fn find_start(m: Map) -> (isize, isize) {
     m.iter()
         .enumerate()
         .find_some(|(y, v)| {
@@ -57,7 +58,7 @@ impl PartialEq for Visited {
     }
 }
 
-fn get_path(mut y: isize, mut x: isize, m: Grid) -> HashSet<Visited> {
+fn get_path(mut y: isize, mut x: isize, m: Map) -> HashSet<Visited> {
     let mut visited = HashSet::with_capacity_and_hasher(5208, FxBuildHasher);
     let mut dir = Dir::Up;
     loop {
@@ -82,16 +83,12 @@ fn get_path(mut y: isize, mut x: isize, m: Grid) -> HashSet<Visited> {
     visited
 }
 pub fn part1() -> usize {
-    let (m, _) =
-        unsafe { transmute::<&str, (Grid, usize)>(include_str!("../inputs/2024/day6.input")) };
-    let (y, x) = find_start(m);
-    get_path(y, x, m).len()
+    let (y, x) = find_start(MAP);
+    get_path(y, x, MAP).len()
 }
 pub fn part2() -> usize {
-    let (m, _) =
-        unsafe { transmute::<&str, (Grid, usize)>(include_str!("../inputs/2024/day6.input")) };
-    let (y, x) = find_start(m);
-    let og_path = get_path(y, x, m);
+    let (y, x) = find_start(MAP);
+    let og_path = get_path(y, x, MAP);
 
     og_path
         .into_par_iter()
@@ -124,7 +121,7 @@ pub fn part2() -> usize {
                         Dir::Down => (y + 1, x),
                         Dir::Left => (y, x - 1),
                     };
-                    let Some(c) = m.get(ny as usize).and_then(|v| v.get(nx as usize)) else {
+                    let Some(c) = MAP.get(ny as usize).and_then(|v| v.get(nx as usize)) else {
                         break 0;
                     };
                     if *c == b'#' || (ny, nx) == (py, px) {

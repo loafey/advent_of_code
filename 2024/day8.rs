@@ -1,11 +1,9 @@
 use rustc_hash::{FxHashMap, FxHashSet};
-use utils::bytes_to_matrix;
 
 const Y_MAX: usize = 50;
 const X_MAX: usize = 50;
-type M = &'static [[u8; X_MAX + 1]; Y_MAX];
 
-fn find_chars(mat: M) -> FxHashMap<u8, Vec<(usize, usize)>> {
+fn find_chars(mat: Map) -> FxHashMap<u8, Vec<(usize, usize)>> {
     let mut ans: FxHashMap<u8, Vec<(usize, usize)>> = FxHashMap::default();
     #[allow(clippy::needless_range_loop)]
     for y in 0..mat.len() {
@@ -19,9 +17,10 @@ fn find_chars(mat: M) -> FxHashMap<u8, Vec<(usize, usize)>> {
     ans
 }
 
+matrixy::matrixy!("../inputs/2024/day8.input");
+
 pub fn part1() -> usize {
-    let m: M = bytes_to_matrix(include_bytes!("../inputs/2024/day8.input"));
-    let chars = find_chars(m);
+    let chars = find_chars(MAP);
 
     let mut posses = FxHashSet::default();
     #[allow(clippy::needless_range_loop)]
@@ -45,8 +44,7 @@ pub fn part1() -> usize {
 }
 
 pub fn part2() -> usize {
-    let m: M = bytes_to_matrix(include_bytes!("../inputs/2024/day8.input"));
-    let chars = find_chars(m);
+    let chars = find_chars(MAP);
 
     let mut posses = FxHashSet::default();
     #[allow(clippy::needless_range_loop)]

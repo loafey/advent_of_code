@@ -1,5 +1,5 @@
 use arrayvec::ArrayVec;
-use utils::{bytes_to_matrix, MatrixGet};
+use utils::MatrixGet;
 
 #[rustfmt::skip]
 macro_rules! m { ($x:expr) => { i32::from_be_bytes($x) == const { i32::from_be_bytes([0,b'M', b'A', b'S']) } } }
@@ -15,14 +15,14 @@ macro_rules! gen {
     };
 }
 
+matrixy::matrixy!("../inputs/2024/day4.input");
+
 #[rustfmt::skip]
 pub fn part1() -> i64 {
-    const M: &[[u8; 141]; 140] = bytes_to_matrix(include_bytes!("../inputs/2024/day4.input"));
-
     let mut ans = 0;
-    for (y, r) in M.iter().enumerate() {
+    for (y, r) in MAP.iter().enumerate() {
         for (x, _) in r.iter().enumerate().filter(|(_, c)| **c == b'X') {
-            gen!(ans, M, y, x, [b'X', b'M', b'A', b'S']);
+            gen!(ans, MAP, y, x, [b'X', b'M', b'A', b'S']);
             ans!([0, 0]|[ 0,  1] | [ 0,  2] | [ 0,  3]);
             ans!([0, 0]|[ 0, -1] | [ 0, -2] | [ 0, -3]);
             ans!([0, 0]|[-1,  0] | [-2,  0] | [-3,  0]);

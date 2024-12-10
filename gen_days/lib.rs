@@ -1,5 +1,3 @@
-#![feature(proc_macro_span)]
-
 use std::fs;
 
 use proc_macro::TokenStream;

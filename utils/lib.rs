@@ -240,12 +240,6 @@ impl<T> MatrixGet<T> for [Vec<T>] {
     }
 }
 
-pub const fn bytes_to_matrix<const Y: usize, const X: usize>(
-    bytes: &'static [u8],
-) -> &'static [[u8; Y]; X] {
-    unsafe { std::mem::transmute::<&[u8], (&'static [[u8; Y]; X], usize)>(bytes) }.0
-}
-
 impl<T, const N: usize> MatrixGet<T> for [[T; N]] {
     fn mget(&self, y: usize, x: usize, ymod: isize, xmod: isize) -> Option<&T> {
         let Wrapping(x) = if xmod < 0 {
