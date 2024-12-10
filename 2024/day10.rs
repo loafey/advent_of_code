@@ -3,6 +3,8 @@ use pathfinding::{directed::count_paths::count_paths, prelude::dfs};
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rustc_hash::FxHashSet;
 
+matrixy!("../inputs/2024/day10.input");
+
 #[inline(always)]
 fn neighbors(y: usize, x: usize) -> Vec<(usize, usize)> {
     let cur = MAP[y][x];
@@ -22,8 +24,6 @@ fn neighbors(y: usize, x: usize) -> Vec<(usize, usize)> {
     check!(y, x.wrapping_add(1));
     res
 }
-
-matrixy!("../inputs/2024/day10.input");
 
 fn solve(func: fn((usize, usize)) -> usize) -> usize {
     let zeros = MAP
