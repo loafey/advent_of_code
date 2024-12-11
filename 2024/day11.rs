@@ -11,7 +11,6 @@ fn solve(amount: usize) -> i64 {
         .map(|s| (s, 1))
         .collect::<FxHashMap<_, _>>();
 
-    // println!("{stones:?}");
     for _ in 0..amount {
         let mut edit = Vec::new();
         for (k, v) in &stones {
@@ -31,7 +30,6 @@ fn solve(amount: usize) -> i64 {
                 edit.push((k * 2024, v));
             }
         }
-        // println!("{stones:?}: {edit:?}");
         for (nk, nv) in edit {
             let entry = stones.entry(nk).or_insert(0);
             *entry += nv;
@@ -39,15 +37,6 @@ fn solve(amount: usize) -> i64 {
                 stones.remove(&nk);
             }
         }
-        // println!(
-        //     "{:?}",
-        //     stones
-        //         .iter()
-        //         .map(|(i, j)| format!("{i}").repeat(*j as usize))
-        //         .collect::<Vec<_>>()
-        //         .join(" ")
-        // );
-        // println!("After {j} blinks:\n{stones:?}");
     }
 
     stones.into_values().sum()
