@@ -22,24 +22,6 @@ macro_rules! first {
     };
 }
 
-pub trait Concat {
-    fn concat(self, rhs: Self) -> Self;
-}
-macro_rules! gen_concat {
-    ($($y:ty),*) => {
-        $(impl Concat for $y {
-            fn concat(self, rhs: Self) -> Self {
-                let mut pow = 10;
-                while rhs >= pow {
-                    pow *= 10;
-                }
-                self * pow + rhs
-            }
-        })+
-    };
-}
-gen_concat!(u8, i8, u16, i16, u32, i32, u64, i64, u128, i128);
-
 pub type CoolBool = Option<()>;
 #[allow(non_upper_case_globals)]
 pub const True: CoolBool = Some(());
@@ -569,42 +551,74 @@ impl<'a, I: Iterator<Item = &'a str>> ParseAndCollect for I {
     }
 }
 
+#[allow(clippy::len_without_is_empty)]
 pub trait NumExt {
-    fn lcm(self, other: &Self) -> Self;
-    fn gcd(self, other: &Self) -> Self;
+    fn lcm(self, other: Self) -> Self;
+    fn gcd(self, other: Self) -> Self;
+    fn concat(self, rhs: Self) -> Self;
+    fn split(self) -> (Self, Self)
+    where
+        Self: std::marker::Sized;
+    fn len(self) -> u32;
 }
-impl NumExt for usize {
-    // yoinked from here https://docs.rs/num-integer/0.1.45/src/num_integer/lib.rs.html#828
-    fn lcm(self, other: &Self) -> Self {
-        if self == 0 && *other == 0 {
-            return 0;
-        }
-        let gcd = self.gcd(other);
-        self * (*other / gcd) //.abs()
-    }
 
-    // yoinked from https://docs.rs/num-integer/0.1.45/src/num_integer/lib.rs.html#459
-    fn gcd(self, other: &Self) -> Self {
-        let mut m = self;
-        let mut n = *other;
-        if m == 0 || n == 0 {
-            return (m | n);
-        }
-        let shift = (m | n).trailing_zeros();
-        if m == Self::MIN || n == Self::MIN {
-            return (1 << shift);
-        }
-        m >>= m.trailing_zeros();
-        n >>= n.trailing_zeros();
-        while m != n {
-            if m > n {
-                m -= n;
-                m >>= m.trailing_zeros();
-            } else {
-                n -= m;
-                n >>= n.trailing_zeros();
+macro_rules! gen_num_exts {
+    ($($y:ty),*) => {
+        $(impl NumExt for $y {
+            fn concat(self, rhs: Self) -> Self {
+                let mut pow = 10;
+                while rhs >= pow {
+                    pow *= 10;
+                }
+                self * pow + rhs
             }
-        }
-        m << shift
-    }
+
+            // yoinked from here https://docs.rs/num-integer/0.1.45/src/num_integer/lib.rs.html#828
+            fn lcm(self, other: Self) -> Self {
+                if self == 0 && other == 0 {
+                    return 0;
+                }
+                let gcd = self.gcd(other);
+                self * (other / gcd) //.abs()
+            }
+
+            // yoinked from https://docs.rs/num-integer/0.1.45/src/num_integer/lib.rs.html#459
+            fn gcd(self, other: Self) -> Self {
+                let mut m = self;
+                let mut n = other;
+                if m == 0 || n == 0 {
+                    return (m | n);
+                }
+                let shift = (m | n).trailing_zeros();
+                if m == Self::MIN || n == Self::MIN {
+                    return (1 << shift);
+                }
+                m >>= m.trailing_zeros();
+                n >>= n.trailing_zeros();
+                while m != n {
+                    if m > n {
+                        m -= n;
+                        m >>= m.trailing_zeros();
+                    } else {
+                        n -= m;
+                        n >>= n.trailing_zeros();
+                    }
+                }
+                m << shift
+            }
+
+
+            fn split(self) -> (Self, Self) {
+                let len = self.len() / 2;
+                let base: Self = 10;
+                let div = base.pow(len);
+                (self / div, self % div)
+            }
+
+            fn len(self) -> u32 {
+                (self as f64).log(10.0).floor() as u32 + 1
+            }
+        })+
+    };
 }
+gen_num_exts!(u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, usize, isize);

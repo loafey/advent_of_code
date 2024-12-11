@@ -1,5 +1,5 @@
-use utils::{load_string, IteratorEvalExt, NumExt};
 use std::collections::{HashMap, HashSet, VecDeque};
+use utils::{load_string, IteratorEvalExt, NumExt};
 use Type::*;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -139,5 +139,5 @@ pub fn part2() -> usize {
             break;
         }
     }
-    counter.into_values().reduce(|a, b| a.lcm(&b)).unwrap()
+    counter.into_values().reduce(|a, b| a.lcm(b)).unwrap()
 }

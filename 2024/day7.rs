@@ -1,6 +1,6 @@
 use arrayvec::ArrayVec;
 use rayon::prelude::*;
-use utils::{first, Concat};
+use utils::{first, NumExt};
 
 #[inline(always)]
 fn oppify(vals: &[i64], cc: bool, result: i64, acc: i64) -> Option<i64> {

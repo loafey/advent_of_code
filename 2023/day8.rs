@@ -1,5 +1,5 @@
-use utils::{load_string, NumExt};
 use std::collections::HashMap;
+use utils::{load_string, NumExt};
 
 fn input(s: &str) -> (&str, HashMap<&str, (&str, &str)>) {
     let (insts, moves) = s.split_once("\n\n").unwrap();
@@ -48,6 +48,6 @@ pub fn part2() -> usize {
         .keys()
         .filter(|a| a.ends_with('A'))
         .map(|p| (calc(insts, &moves, p, "Z")))
-        .reduce(|a, b| a.lcm(&b))
+        .reduce(|a, b| a.lcm(b))
         .unwrap_or_default()
 }

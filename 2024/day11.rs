@@ -1,7 +1,5 @@
-use std::fmt::format;
-
 use rustc_hash::FxHashMap;
-use utils::bi_functors::BiFunctorExtExt;
+use utils::{bi_functors::BiFunctorExtExt, NumExt};
 
 fn solve(amount: usize) -> i64 {
     let s = include_str!("../inputs/2024/day11.input");
@@ -16,12 +14,11 @@ fn solve(amount: usize) -> i64 {
         for (k, v) in &stones {
             let k = *k;
             let v = *v;
-            let f = format!("{k}");
             if k == 0 {
                 edit.push((k, -v));
                 edit.push((1, v));
-            } else if f.len() % 2 == 0 {
-                let (a, b) = f.split_at(f.len() / 2).splet(|s| s.parse::<i64>().unwrap());
+            } else if k.len() % 2 == 0 {
+                let (a, b) = k.split();
                 edit.push((k, -v));
                 edit.push((a, v));
                 edit.push((b, v));
