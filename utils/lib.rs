@@ -610,14 +610,6 @@ macro_rules! gen_num_exts {
             }
 
             fn len(mut self) -> u32 {
-                // let mut result = 0;
-                // while self != 0 {
-                //     self /= 10;
-                //     result += 1;
-                // }
-                // return result;
-                // (std::mem::size_of::<Self>() * 8 - 1) as u32 - self.leading_zeros()
-
                 (self as f64).log(10.0).floor() as u32 + 1
             }
         })+
