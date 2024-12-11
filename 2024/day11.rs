@@ -1,5 +1,5 @@
 use rustc_hash::FxHashMap;
-use utils::{bi_functors::BiFunctorExtExt, NumExt};
+use utils::NumExt;
 
 fn solve(amount: usize) -> i64 {
     let s = include_str!("../inputs/2024/day11.input");
