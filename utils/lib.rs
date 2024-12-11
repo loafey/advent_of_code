@@ -521,12 +521,6 @@ pub mod bi_functors {
             ab(e1, e2)
         }
     }
-    //impl<A, D> BiFunctor<A, D, A, D> for (A, A) {
-    //    fn splat(self, a: fn(A) -> D, b: fn(A) -> D) -> (D, D) {
-    //        let (e1, e2) = self;
-    //        (a(e1), b(e2))
-    //    }
-    //}
 }
 
 pub trait FoldDefault<A, B: Default> {
