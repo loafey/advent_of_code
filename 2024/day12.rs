@@ -1,12 +1,11 @@
 use rayon::prelude::*;
 use rustc_hash::FxHashMap;
-use std::sync::Arc;
 use utils::MatrixGet;
 
 fn find_shapes(
     blowup: bool,
 ) -> impl ParallelIterator<Item = (FxHashMap<(usize, usize), i32>, usize)> {
-    let map = Arc::new(if !blowup {
+    let map = if !blowup {
         include_str!("../inputs/2024/day12.input")
             .lines()
             .filter(|l| !l.is_empty())
@@ -31,7 +30,7 @@ fn find_shapes(
         map.insert(0, vec![0; map[0].len()]);
         map.push(vec![0; map[0].len()]);
         map
-    });
+    };
 
     (b'A'..=b'Z')
         .into_par_iter()
