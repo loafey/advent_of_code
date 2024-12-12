@@ -21,7 +21,17 @@ fn main() {
         .nth(1)
         .and_then(|s| s.parse::<usize>().ok());
     if benchmark {
-        println!("# AoC Benchmarks");
+        println!(
+            "# AoC Benchmarks ({})",
+            String::from_utf8_lossy(
+                &std::process::Command::new("bash")
+                    .args(["-c", "echo $HOSTNAME"])
+                    .output()
+                    .unwrap()
+                    .stdout
+            )
+            .trim()
+        );
         println!(
             "{}\n",
             format_benchmark(aoc_2024::table().run_benchmarks(10000, true))
