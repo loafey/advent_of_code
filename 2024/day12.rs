@@ -134,12 +134,10 @@ pub fn part2() -> usize {
                 *perimiter.entry((y + 1, x)).or_insert(0) += 1;
                 *perimiter.entry((y, x - 1)).or_insert(0) += 1;
                 *perimiter.entry((y, x + 1)).or_insert(0) += 1;
-                map[y][x] = b'.';
+                map[y][x] = 0;
             }
             for ((y, x), v) in &perimiter {
-                if *v <= 4 {
-                    map[*y][*x] += *v as u8;
-                }
+                if *v <= 4 {}
             }
             println!();
             let perimiter = perimiter.into_values().filter(|c| *c <= 4).sum::<usize>();
@@ -148,7 +146,7 @@ pub fn part2() -> usize {
 
             for r in &map {
                 for c in r {
-                    print!("{c}\t")
+                    print!("{c:?}\t")
                 }
                 println!()
             }
