@@ -46,10 +46,6 @@ pub fn part1() -> usize {
                 };
             }
 
-            let mut paint = vec![
-                vec!['.'; to_remove.iter().map(|(_, x)| *x + 3).max().unwrap()];
-                to_remove.iter().map(|(y, _)| *y + 3).max().unwrap()
-            ];
             to_remove.sort();
             to_remove.dedup();
             let area = to_remove.len();
@@ -57,25 +53,16 @@ pub fn part1() -> usize {
             for (y, x) in to_remove {
                 let y = y + 1;
                 let x = x + 1;
-                perimiter.insert((y, x), c);
-                perimiter.entry((y - 1, x)).or_insert(b'|');
-                perimiter.entry((y + 1, x)).or_insert(b'|');
-                perimiter.entry((y, x - 1)).or_insert(b'|');
-                perimiter.entry((y, x + 1)).or_insert(b'|');
+                perimiter.insert((y, x), 60);
+                *perimiter.entry((y - 1, x)).or_insert(0) += 1;
+                *perimiter.entry((y + 1, x)).or_insert(0) += 1;
+                *perimiter.entry((y, x - 1)).or_insert(0) += 1;
+                *perimiter.entry((y, x + 1)).or_insert(0) += 1;
                 map[y - 1][x - 1] = b'.';
             }
-            for ((y, x), c) in &perimiter {
-                paint[*y][*x] = *c as char;
-            }
-            let perimiter = perimiter.into_values().filter(|c| *c == b'|').count();
-            for r in paint {
-                for x in r {
-                    print!("{x}")
-                }
-                println!()
-            }
+            let perimiter = perimiter.into_values().filter(|c| *c <= 4).sum::<usize>();
             sum += area * perimiter;
-            println!(" {area} | {perimiter}")
+            // println!("{}: {area} | {perimiter}", c as char)
         }
     }
 
