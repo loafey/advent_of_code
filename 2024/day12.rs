@@ -2,7 +2,6 @@ use rayon::prelude::*;
 use rustc_hash::FxHashMap;
 use std::sync::Arc;
 use utils::MatrixGet;
-matrixy::matrixy!("../inputs/2024/day12.input");
 
 fn find_shapes(
     blowup: bool,
@@ -137,7 +136,6 @@ pub fn part2() -> usize {
     let perimeters = find_shapes(true);
 
     perimeters
-        .into_par_iter()
         .map(|(mut perimiter, area)| {
             let mut sides = 0;
 
