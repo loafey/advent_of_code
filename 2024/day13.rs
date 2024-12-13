@@ -8,7 +8,7 @@ fn solve((ax, ay): (i64, i64), (bx, by): (i64, i64), (gx, gy): (i64, i64)) -> Op
     }
 }
 
-fn parse_and_solve(xmod: i64, ymod: i64) -> i64 {
+fn parse_and_solve(m: i64) -> i64 {
     let input = include_str!("../inputs/2024/day13.input")
         .split("\n\n")
         .filter(|s| !s.is_empty())
@@ -36,14 +36,14 @@ fn parse_and_solve(xmod: i64, ymod: i64) -> i64 {
 
     input
         .into_iter()
-        .filter_map(|(a, b, (gx, gy))| solve(a, b, (gx + xmod, gy + ymod)))
+        .filter_map(|(a, b, (gx, gy))| solve(a, b, (gx + m, gy + m)))
         .map(|(b, a)| a * 3 + b)
         .sum()
 }
 
 pub fn part1() -> i64 {
-    parse_and_solve(0, 0)
+    parse_and_solve(0)
 }
 pub fn part2() -> i64 {
-    parse_and_solve(10000000000000, 10000000000000)
+    parse_and_solve(10000000000000)
 }
