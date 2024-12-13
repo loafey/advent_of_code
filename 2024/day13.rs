@@ -15,22 +15,16 @@ fn parse_and_solve(m: i64) -> i64 {
         .map(|r| {
             let s = [' ', 'X', '+', ',', 'Y', ':', 'A', 'B', '='];
             let mut l = r.lines();
-            let a = l.next().unwrap();
-            let mut a = a.split(s).filter(|s| !s.is_empty()).skip(1);
-            let a1 = a.next().unwrap().parse::<i64>().unwrap();
-            let a2 = a.next().unwrap().parse::<i64>().unwrap();
-
-            let b = l.next().unwrap();
-            let mut b = b.split(s).filter(|s| !s.is_empty()).skip(1);
-            let b1 = b.next().unwrap().parse::<i64>().unwrap();
-            let b2 = b.next().unwrap().parse::<i64>().unwrap();
-
-            let p = l.next().unwrap();
-            let mut p = p.split(s).filter(|s| !s.is_empty()).skip(1);
-            let p1 = p.next().unwrap().parse::<i64>().unwrap();
-            let p2 = p.next().unwrap().parse::<i64>().unwrap();
-
-            ((a1, a2), (b1, b2), (p1, p2))
+            macro_rules! p {
+                () => {{
+                    let a = l.next().unwrap();
+                    let mut a = a.split(s).filter(|s| !s.is_empty()).skip(1);
+                    let a1 = a.next().unwrap().parse::<i64>().unwrap();
+                    let a2 = a.next().unwrap().parse::<i64>().unwrap();
+                    (a1, a2)
+                }};
+            }
+            (p!(), p!(), p!())
         })
         .collect::<Vec<_>>();
 
