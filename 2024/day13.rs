@@ -1,5 +1,5 @@
-use rayon::prelude::*;
-use utils::first;
+// use rayon::prelude::*;
+use utils::NumExt;
 
 #[derive(Debug)]
 struct Game {
@@ -8,35 +8,75 @@ struct Game {
     goal: (i64, i64),
 }
 
-#[memoize::memoize]
-fn solve(
-    cur: (i64, i64),
-    a: (i64, i64),
-    b: (i64, i64),
-    g: (i64, i64),
-    p: (usize, usize),
-) -> Option<(i64, i64, usize, usize)> {
-    let (curx, cury) = cur;
-    let (ax, ay) = a;
-    let (bx, by) = b;
-    let (gx, gy) = g;
-    let (pa, pb) = p;
-    if ax + curx == gx && ay + cury == gy {
-        return Some((gx, gy, pa + 1, pb));
-    } else if bx + curx == gx && by + cury == gy {
-        return Some((gx, gy, pa, pb + 1));
-    }
-    if curx > gx || cury > gy {
-        return None;
+fn solve((ax, ay): (i64, i64), (bx, by): (i64, i64), (gx, gy): (i64, i64)) -> Option<(i64, i64)> {
+    // println!("{a:?} {b:?} {g:?}");
+    let mut b_div = gx / bx;
+    println!("starting a at: {b_div}");
+    let mut binary = 1;
+    let binary_mod = 2;
+    loop {
+        // println!("{b_div} {binary}");
+        // std::thread::sleep(std::time::Duration::from_millis(200));
+        let x_diff = gx / (bx * b_div);
+        let y_diff = gy / (by * b_div);
+        if x_diff >= 1 && y_diff >= 1 {
+            if binary != 1 {
+                b_div += binary / binary_mod;
+                b_div -= 1;
+                binary = 1;
+            } else {
+                break;
+            }
+        } else {
+            b_div -= binary;
+            binary *= binary_mod;
+        }
+
+        if b_div <= 0 {
+            if binary != 1 {
+                b_div += binary / binary_mod;
+                binary = 1;
+            } else {
+                return None;
+            }
+        }
     }
 
-    first![
-        solve((curx + ax, cury + ay), a, b, g, (pa + 1, pb)),
-        solve((curx + bx, cury + by), a, b, g, (pa, pb + 1))
-    ]
+    let mut binary = 1;
+    let mut a_div = gx / ax;
+    println!("starting b at: {b_div}");
+    loop {
+        let x_diff = gx as f64 / ((bx * b_div) + (ax * a_div)) as f64;
+        let y_diff = gy as f64 / ((by * b_div) + (ay * a_div)) as f64;
+
+        println!("{binary}: {a_div} {b_div} {x_diff} {y_diff}");
+        if x_diff != 1.0 || y_diff != 1.0 {
+            println!("bin!");
+            a_div -= binary;
+            binary *= binary_mod;
+            if a_div == 0 {
+                b_div -= 1;
+                a_div = gx / ax;
+                binary = 1;
+            }
+        }
+        if x_diff == 1.0 && y_diff == 1.0 {
+            break;
+        }
+
+        if b_div <= 0 {
+            if binary != 1 {
+                a_div += binary / binary_mod;
+                binary = 1;
+            } else {
+                return None;
+            }
+        }
+    }
+    Some((b_div, a_div))
 }
 
-fn parse_and_solve(xmod: i64, ymod: i64) -> usize {
+fn parse_and_solve(xmod: i64, ymod: i64) -> i64 {
     let input = include_str!("../inputs/2024/day13.input")
         .split("\n\n")
         .filter(|s| !s.is_empty())
@@ -75,21 +115,21 @@ fn parse_and_solve(xmod: i64, ymod: i64) -> usize {
         .collect::<Vec<_>>();
 
     input
-        .into_par_iter()
+        .into_iter()
         .filter_map(
             |Game {
                  a,
                  b,
                  goal: (gx, gy),
-             }| solve((0, 0), a, b, (gx + xmod, gy + ymod), (0, 0)),
+             }| solve(a, b, (gx + xmod, gy + ymod)),
         )
-        .map(|(_, _, a, b)| a * 3 + b)
+        .map(|(b, a)| a * 3 + b)
         .sum()
 }
 
-pub fn part1() -> usize {
+pub fn part1() -> i64 {
     parse_and_solve(0, 0)
 }
-pub fn part2() -> usize {
+pub fn part2() -> i64 {
     parse_and_solve(10000000000000, 10000000000000)
 }
