@@ -1,5 +1,3 @@
-use rayon::prelude::*;
-
 fn solve((ax, ay): (i64, i64), (bx, by): (i64, i64), (gx, gy): (i64, i64)) -> Option<(i64, i64)> {
     let m = (ax * gy - gx * ay) / (ax * by - bx * ay);
     let n = (gx - m * bx) / ax;
