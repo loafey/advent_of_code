@@ -1,3 +1,5 @@
+use rayon::prelude::*;
+
 pub fn part1() -> i64 {
     let mut input = include_str!("../inputs/2024/day14.input")
         .lines()
@@ -59,13 +61,11 @@ pub fn part2() -> i64 {
 
     const MAP_Y: i64 = 103;
     const MAP_X: i64 = 101;
-    const SPLIT: i64 = 6000;
-    for _ in 0..SPLIT {
-        for ((px, py), (vx, vy)) in &mut input {
-            *px = (*px + *vx).rem_euclid(MAP_X);
-            *py = (*py + *vy).rem_euclid(MAP_Y);
-        }
-    }
+    const SPLIT: i64 = 7500; // this is a little cheaty, but hehe
+    input.par_iter_mut().for_each(|((px, py), (vx, vy))| {
+        *px = (*px + *vx * SPLIT).rem_euclid(MAP_X);
+        *py = (*py + *vy * SPLIT).rem_euclid(MAP_Y);
+    });
     for i in SPLIT.. {
         let mut map = [[0; MAP_X as usize]; MAP_Y as usize];
         let mut overlap = false;
