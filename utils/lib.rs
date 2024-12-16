@@ -12,7 +12,7 @@ use std::{
     sync::Arc,
 };
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, PartialOrd, Ord)]
 #[repr(u8)]
 #[allow(unused)]
 pub enum Direction {

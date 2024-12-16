@@ -1,5 +1,7 @@
+use std::collections::BTreeMap;
+
 use pathfinding::prelude::{dijkstra, yen};
-use rustc_hash::FxHashSet;
+use rustc_hash::{FxHashMap, FxHashSet};
 use utils::{Direction, Direction::*, FindSome};
 
 fn find(g: u8, map: Map) -> (usize, usize) {
@@ -56,7 +58,108 @@ pub fn part1() -> usize {
     .unwrap_or_default()
     .1
 }
+
+fn expr() {
+    let (sy, sx) = find(b'S', MAP);
+    let (ey, ex) = find(b'E', MAP);
+    let mut map = BTreeMap::default();
+    let mut visited = FxHashSet::default();
+    let mut stack = vec![(sy, sx, East)];
+    while let Some((y, x, d)) = stack.pop() {
+        if !visited.insert((y, x, d)) {
+            continue;
+        }
+
+        let mut r = Vec::new();
+        let (dy, dx) = match d {
+            North => (y - 1, x),
+            East => (y, x + 1),
+            South => (y + 1, x),
+            West => (y, x - 1),
+        };
+        if MAP[dy][dx] != b'#' {
+            r.push(((dy, dx, d), 1));
+            stack.push((dy, dx, d));
+        }
+        let (ky, kx) = match d.rotate_r() {
+            North => (y - 1, x),
+            East => (y, x + 1),
+            South => (y + 1, x),
+            West => (y, x - 1),
+        };
+        if MAP[ky][kx] != b'#' {
+            r.push(((y, x, d.rotate_r()), 1000));
+            stack.push((y, x, d.rotate_r()));
+        }
+        let (ky, kx) = match d.rotate_l() {
+            North => (y - 1, x),
+            East => (y, x + 1),
+            South => (y + 1, x),
+            West => (y, x - 1),
+        };
+        if MAP[ky][kx] != b'#' {
+            r.push(((y, x, d.rotate_l()), 1000));
+            stack.push((y, x, d.rotate_l()));
+        }
+
+        map.insert((y, x, d), r);
+    }
+
+    let mut last = 0;
+    loop {
+        let to_remove = map
+            .iter()
+            .filter(|(m, v)| v.len() == 1)
+            .map(|(k, v)| (*k, v[0]))
+            .collect::<Vec<_>>();
+        for (k, (d1, w1)) in to_remove {
+            for (m, n) in &mut map {
+                for (d2, w2) in n {
+                    // println!("{k:?} == {d2:?}");
+                    if *d2 == k {
+                        *d2 = d1;
+                        *w2 += w1;
+                        break;
+                    }
+                }
+            }
+        }
+        if last == map.len() {
+            break;
+        }
+        last = map.len();
+    }
+
+    for (v, d) in &map {
+        println!("{v:?}:\t{d:?}")
+    }
+
+    let mut draw = MAP
+        .iter()
+        .map(|r| {
+            r.iter()
+                .filter(|c| **c != b'\n')
+                .map(|c| *c as char)
+                .map(|c| if c == '.' { ' ' } else { c })
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
+    for (k, r) in map {
+        let (y, x, _) = k;
+        draw[y][x] = '*';
+        // println!("{k:?}:\t{r:?}");
+    }
+    for r in draw {
+        for c in r {
+            print!("{c}")
+        }
+        println!()
+    }
+}
+
 pub fn part2() -> usize {
+    expr();
+
     let (sy, sx) = find(b'S', MAP);
     let (ey, ex) = find(b'E', MAP);
 
