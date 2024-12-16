@@ -69,7 +69,7 @@ pub fn part2() -> usize {
     astar_bag(
         &(sy, sx, East),
         successors,
-        |(y, x, _)| (*y, *x).manhattan_distance(&(ey, ex)),
+        |_| 0,
         |(y, x, _)| (*y, *x) == (ey, ex),
     )
     .unwrap()
