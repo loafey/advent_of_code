@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::iter::Successors;
 
 use pathfinding::prelude::{dijkstra, yen};
 use rustc_hash::{FxHashMap, FxHashSet};
@@ -52,17 +52,22 @@ pub fn part1() -> usize {
     let (sy, sx) = find(b'S', MAP);
     let (ey, ex) = find(b'E', MAP);
 
-    dijkstra(&(sy, sx, East), successors, |(y, x, _)| {
-        (*y, *x) == (ey, ex)
-    })
+    // let map = expr();
+
+    dijkstra(
+        &(sy, sx, East),
+        successors, //|c| map.get(c).unwrap_or(&Vec::new()).clone(),
+        |(y, x, _)| (*y, *x) == (ey, ex),
+    )
     .unwrap_or_default()
     .1
 }
 
-fn expr() {
+#[allow(clippy::type_complexity)]
+fn expr() -> FxHashMap<(usize, usize, Direction), Vec<((usize, usize, Direction), i32)>> {
     let (sy, sx) = find(b'S', MAP);
     let (ey, ex) = find(b'E', MAP);
-    let mut map = BTreeMap::default();
+    let mut map = FxHashMap::default();
     let mut visited = FxHashSet::default();
     let mut stack = vec![(sy, sx, East)];
     while let Some((y, x, d)) = stack.pop() {
@@ -150,30 +155,32 @@ fn expr() {
         last = map.len();
     }
 
-    for (v, d) in &map {
-        println!("{v:?}:\t{d:?}")
-    }
+    // for (v, d) in &map {
+    //     println!("{v:?}:\t{d:?}")
+    // }
 
-    let mut draw = MAP
-        .iter()
-        .map(|r| {
-            r.iter()
-                .filter(|c| **c != b'\n')
-                .map(|c| *c as char)
-                .map(|c| if c == '.' { ' ' } else { c })
-                .collect::<Vec<_>>()
-        })
-        .collect::<Vec<_>>();
-    for (k, _) in map {
-        let (y, x, _) = k;
-        draw[y][x] = '*';
-    }
-    for r in draw {
-        for c in r {
-            print!("{c}")
-        }
-        println!()
-    }
+    // let mut draw = MAP
+    //     .iter()
+    //     .map(|r| {
+    //         r.iter()
+    //             .filter(|c| **c != b'\n')
+    //             .map(|c| *c as char)
+    //             .map(|c| if c == '.' { ' ' } else { c })
+    //             .collect::<Vec<_>>()
+    //     })
+    //     .collect::<Vec<_>>();
+    // for (k, _) in map {
+    //     let (y, x, _) = k;
+    //     draw[y][x] = '*';
+    // }
+    // for r in draw {
+    //     for c in r {
+    //         print!("{c}")
+    //     }
+    //     println!()
+    // }
+
+    map
 }
 
 pub fn part2() -> usize {
