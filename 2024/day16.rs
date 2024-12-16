@@ -15,10 +15,25 @@ fn find(g: u8, map: Map) -> (usize, usize) {
 
 matrixy::matrixy!("../inputs/2024/day16.input");
 fn successors((y, x, d): &(usize, usize, Direction)) -> Vec<((usize, usize, Direction), usize)> {
-    let mut r = vec![
-        ((*y, *x, d.rotate_l()), 1000),
-        ((*y, *x, d.rotate_r()), 1000),
-    ];
+    let mut r = Vec::new();
+    let (ky, kx) = match d.rotate_l() {
+        North => (y - 1, *x),
+        East => (*y, x + 1),
+        South => (y + 1, *x),
+        West => (*y, x - 1),
+    };
+    if MAP[ky][kx] != b'#' {
+        r.push(((ky, kx, d.rotate_l()), 1001));
+    }
+    let (ky, kx) = match d.rotate_r() {
+        North => (y - 1, *x),
+        East => (*y, x + 1),
+        South => (y + 1, *x),
+        West => (*y, x - 1),
+    };
+    if MAP[ky][kx] != b'#' {
+        r.push(((ky, kx, d.rotate_r()), 1001));
+    }
     let (dy, dx) = match d {
         North => (y - 1, *x),
         East => (*y, x + 1),
@@ -49,11 +64,32 @@ pub fn part2() -> usize {
         &(sy, sx, East),
         successors,
         |(y, x, _)| (*y, *x) == (ey, ex),
-        15, // My input only has 15 shortest paths
+        18,
     );
     paths.sort_by_key(|(_, s)| *s);
     let k = paths[0].1;
     paths.retain(|(_, s)| *s == k);
+
+    // let mut map = MAP
+    //     .iter()
+    //     .map(|v| {
+    //         v.iter()
+    //             .map(|c| *c as char)
+    //             .filter(|c| *c != '\n')
+    //             .collect::<Vec<_>>()
+    //     })
+    //     .collect::<Vec<_>>();
+    // for (p, _) in &paths {
+    //     for (y, x, _) in p {
+    //         map[*y][*x] = 'O';
+    //     }
+    // }
+    // for r in map {
+    //     for c in r {
+    //         print!("{c}");
+    //     }
+    //     println!()
+    // }
 
     paths
         .into_iter()
