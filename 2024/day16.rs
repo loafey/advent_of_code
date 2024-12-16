@@ -113,7 +113,7 @@ fn expr() {
             .map(|(k, v)| (*k, v[0]))
             .collect::<Vec<_>>();
         for (k, (d1, w1)) in &to_remove {
-            for (_, n) in &mut map {
+            for n in map.values_mut() {
                 for (d2, w2) in n {
                     // println!("{k:?} == {d2:?}");
                     if *d2 == *k {
@@ -164,10 +164,9 @@ fn expr() {
                 .collect::<Vec<_>>()
         })
         .collect::<Vec<_>>();
-    for (k, r) in map {
+    for (k, _) in map {
         let (y, x, _) = k;
         draw[y][x] = '*';
-        // println!("{k:?}:\t{r:?}");
     }
     for r in draw {
         for c in r {
