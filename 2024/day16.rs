@@ -1,4 +1,5 @@
 use pathfinding::prelude::{dijkstra, yen};
+use rustc_hash::FxHashSet;
 use utils::FindSome;
 use Direction::*;
 
@@ -70,7 +71,7 @@ pub fn part1() -> usize {
     .1
 }
 pub fn part2() -> usize {
-    let mut map = include_str!("../inputs/2024/day16.input")
+    let map = include_str!("../inputs/2024/day16.input")
         .lines()
         .filter(|s| !s.is_empty())
         .map(|s| s.chars().collect::<Vec<_>>())
@@ -97,28 +98,17 @@ pub fn part2() -> usize {
             r
         },
         |(y, x, _)| (*y, *x) == (ey, ex),
-        40,
+        15, // My input only has 15 shortest paths
     );
     paths.sort_by_key(|(_, s)| *s);
     let k = paths[0].1;
     paths.retain(|(_, s)| *s == k);
 
-    for (p, _) in paths {
-        for (y, x, _) in p {
-            map[y][x] = 'O';
-        }
-    }
-
-    for r in &map {
-        for c in r {
-            print!("{c}")
-        }
-        println!()
-    }
-
-    map.into_iter()
-        .flat_map(|v| v.into_iter().filter(|c| *c == 'O'))
-        .count()
+    paths
+        .into_iter()
+        .flat_map(|(v, _)| v.into_iter().map(|(y, x, _)| (y, x)))
+        .collect::<FxHashSet<_>>()
+        .len()
 }
 
 // 541
