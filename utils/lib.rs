@@ -12,6 +12,30 @@ use std::{
     sync::Arc,
 };
 
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+#[repr(u8)]
+#[allow(unused)]
+pub enum Direction {
+    North,
+    East,
+    South,
+    West,
+}
+impl Direction {
+    pub fn rotate_l(self) -> Self {
+        let d = self as u8;
+        if d == 0 {
+            Direction::West
+        } else {
+            unsafe { std::mem::transmute::<u8, Direction>(d - 1) }
+        }
+    }
+    pub fn rotate_r(self) -> Self {
+        let d = self as u8;
+        unsafe { std::mem::transmute::<u8, Direction>((d + 1) % 4) }
+    }
+}
+
 #[macro_export]
 macro_rules! first {
     ($x:expr) => {

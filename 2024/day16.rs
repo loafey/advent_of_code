@@ -1,33 +1,8 @@
 use pathfinding::prelude::{dijkstra, yen};
 use rustc_hash::FxHashSet;
-use utils::FindSome;
-use Direction::*;
+use utils::{Direction, Direction::*, FindSome};
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
-#[repr(u8)]
-#[allow(unused)]
-enum Direction {
-    North,
-    East,
-    South,
-    West,
-}
-impl Direction {
-    fn rotate_l(self) -> Self {
-        let d = self as u8;
-        if d == 0 {
-            West
-        } else {
-            unsafe { std::mem::transmute::<u8, Direction>(d - 1) }
-        }
-    }
-    fn rotate_r(self) -> Self {
-        let d = self as u8;
-        unsafe { std::mem::transmute::<u8, Direction>((d + 1) % 4) }
-    }
-}
-
-fn find(g: char, map: &[Vec<char>]) -> (usize, usize) {
+fn find(g: u8, map: Map) -> (usize, usize) {
     map.iter()
         .enumerate()
         .find_some(|(y, s)| {
@@ -38,65 +13,41 @@ fn find(g: char, map: &[Vec<char>]) -> (usize, usize) {
         .unwrap()
 }
 
-pub fn part1() -> usize {
-    let map = include_str!("../inputs/2024/day16.input")
-        .lines()
-        .filter(|s| !s.is_empty())
-        .map(|s| s.chars().collect::<Vec<_>>())
-        .collect::<Vec<_>>();
-    let (sy, sx) = find('S', &map);
-    let (ey, ex) = find('E', &map);
+matrixy::matrixy!("../inputs/2024/day16.input");
+fn successors((y, x, d): &(usize, usize, Direction)) -> Vec<((usize, usize, Direction), usize)> {
+    let mut r = vec![
+        ((*y, *x, d.rotate_l()), 1000),
+        ((*y, *x, d.rotate_r()), 1000),
+    ];
+    let (dy, dx) = match d {
+        North => (y - 1, *x),
+        East => (*y, x + 1),
+        South => (y + 1, *x),
+        West => (*y, x - 1),
+    };
+    if MAP[dy][dx] != b'#' {
+        r.push(((dy, dx, *d), 1));
+    }
+    r
+}
 
-    dijkstra(
-        &(sy, sx, East),
-        |(y, x, d)| {
-            let mut r = vec![
-                ((*y, *x, d.rotate_l()), 1000),
-                ((*y, *x, d.rotate_r()), 1000),
-            ];
-            let (dy, dx) = match d {
-                North => (y - 1, *x),
-                East => (*y, x + 1),
-                South => (y + 1, *x),
-                West => (*y, x - 1),
-            };
-            if map[dy][dx] != '#' {
-                r.push(((dy, dx, *d), 1));
-            }
-            r
-        },
-        |(y, x, _)| (*y, *x) == (ey, ex),
-    )
+pub fn part1() -> usize {
+    let (sy, sx) = find(b'S', MAP);
+    let (ey, ex) = find(b'E', MAP);
+
+    dijkstra(&(sy, sx, East), successors, |(y, x, _)| {
+        (*y, *x) == (ey, ex)
+    })
     .unwrap_or_default()
     .1
 }
 pub fn part2() -> usize {
-    let map = include_str!("../inputs/2024/day16.input")
-        .lines()
-        .filter(|s| !s.is_empty())
-        .map(|s| s.chars().collect::<Vec<_>>())
-        .collect::<Vec<_>>();
-    let (sy, sx) = find('S', &map);
-    let (ey, ex) = find('E', &map);
+    let (sy, sx) = find(b'S', MAP);
+    let (ey, ex) = find(b'E', MAP);
 
     let mut paths = yen(
         &(sy, sx, East),
-        |(y, x, d)| {
-            let mut r = vec![
-                ((*y, *x, d.rotate_l()), 1000),
-                ((*y, *x, d.rotate_r()), 1000),
-            ];
-            let (dy, dx) = match d {
-                North => (y - 1, *x),
-                East => (*y, x + 1),
-                South => (y + 1, *x),
-                West => (*y, x - 1),
-            };
-            if map[dy][dx] != '#' {
-                r.push(((dy, dx, *d), 1));
-            }
-            r
-        },
+        successors,
         |(y, x, _)| (*y, *x) == (ey, ex),
         15, // My input only has 15 shortest paths
     );
@@ -110,6 +61,3 @@ pub fn part2() -> usize {
         .collect::<FxHashSet<_>>()
         .len()
 }
-
-// 541
-// 590
