@@ -109,21 +109,41 @@ fn expr() {
     loop {
         let to_remove = map
             .iter()
-            .filter(|(m, v)| v.len() == 1)
+            .filter(|(m, v)| v.len() == 1 && !(m.0 == ey && m.1 == ex))
             .map(|(k, v)| (*k, v[0]))
             .collect::<Vec<_>>();
-        for (k, (d1, w1)) in to_remove {
-            for (m, n) in &mut map {
+        for (k, (d1, w1)) in &to_remove {
+            for (_, n) in &mut map {
                 for (d2, w2) in n {
                     // println!("{k:?} == {d2:?}");
-                    if *d2 == k {
-                        *d2 = d1;
+                    if *d2 == *k {
+                        *d2 = *d1;
                         *w2 += w1;
                         break;
                     }
                 }
             }
         }
+        for (k, _) in to_remove {
+            map.remove(&k);
+        }
+
+        let to_remove = map
+            .iter()
+            .filter(|(_, v)| v.is_empty())
+            .map(|(k, _)| *k)
+            .collect::<Vec<_>>();
+        for k in &to_remove {
+            for n in map.values_mut() {
+                if let Some((i, _)) = n.iter().enumerate().find(|(_, (k2, _))| *k == *k2) {
+                    n.remove(i);
+                }
+            }
+        }
+        for k in to_remove {
+            map.remove(&k);
+        }
+
         if last == map.len() {
             break;
         }
