@@ -1,6 +1,6 @@
 use Combo::*;
 use OpCodes::*;
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 enum Combo {
     Lit(i64),
     A,
@@ -9,7 +9,7 @@ enum Combo {
     Unreachable,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 enum OpCodes {
     Adv(Combo), // 0
     Bxl(i64),   // 1
@@ -44,7 +44,7 @@ impl From<(i64, i64)> for OpCodes {
     }
 }
 
-fn solve(mut a: i64, ins: &[i64], br: bool) -> Result<String, i64> {
+fn solve(mut a: i64, ins: &[OpCodes], br: bool) -> Result<String, i64> {
     let mut b = 0;
     let mut c = 0;
     let mut ip = 0;
@@ -62,7 +62,7 @@ fn solve(mut a: i64, ins: &[i64], br: bool) -> Result<String, i64> {
 
     let mut output = Vec::new();
     while ip < ins.len() {
-        let op = OpCodes::from((ins[ip], ins[ip + 1]));
+        let op = ins[ip];
         match op {
             Adv(cv) => a /= 2i64.pow(val!(cv) as u32),
             Bxl(cv) => b ^= cv,
@@ -83,7 +83,7 @@ fn solve(mut a: i64, ins: &[i64], br: bool) -> Result<String, i64> {
             Cdv(cv) => c = a / 2i64.pow(val!(cv) as u32),
         }
 
-        ip += 2;
+        ip += 1;
     }
     Ok(output.join(","))
 }
@@ -102,8 +102,12 @@ pub fn part1() -> String {
         .filter(|s| !s.is_empty())
         .map(|s| s.trim().parse::<i64>().unwrap())
         .collect::<Vec<_>>();
+    let mut ops = Vec::new();
+    for i in (0..ins.len()).step_by(2) {
+        ops.push(OpCodes::from((ins[i], ins[i + 1])));
+    }
 
-    solve(regs.next().unwrap(), &ins, false).unwrap()
+    solve(regs.next().unwrap(), &ops, false).unwrap()
 }
 pub fn part2() -> i64 {
     let ins = include_str!("../inputs/2024/day17.input")
@@ -117,6 +121,10 @@ pub fn part2() -> i64 {
         .filter(|s| !s.is_empty())
         .map(|s| s.trim().parse::<i64>().unwrap())
         .collect::<Vec<_>>();
+    let mut ops = Vec::new();
+    for i in (0..ins.len()).step_by(2) {
+        ops.push(OpCodes::from((ins[i], ins[i + 1])));
+    }
     let ins_string = ins
         .iter()
         .map(|s| format!("{s}"))
@@ -124,7 +132,7 @@ pub fn part2() -> i64 {
         .join(",");
 
     let input = ins.iter().copied().rev().collect::<Vec<_>>();
-    fn rec(base: i64, input: &[i64], ins: &[i64]) -> Vec<i64> {
+    fn rec(base: i64, input: &[i64], ins: &[OpCodes]) -> Vec<i64> {
         if input.is_empty() {
             return vec![base];
         }
@@ -139,11 +147,11 @@ pub fn part2() -> i64 {
         }
         ans
     }
-    let mut ans = rec(0, &input, &ins);
+    let mut ans = rec(0, &input, &ops);
     ans.sort();
 
     for a in ans {
-        let output = solve(a, &ins, false).unwrap();
+        let output = solve(a, &ops, false).unwrap();
         if output == ins_string {
             return a;
         }
