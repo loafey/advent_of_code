@@ -115,7 +115,7 @@ pub fn part2() -> i64 {
         .collect::<Vec<_>>();
     let ins_string = ins
         .iter()
-        .map(|s| format!("{s:02x}"))
+        .map(|s| format!("{s}"))
         .collect::<Vec<_>>()
         .join(",");
     let mut ip = 0;
@@ -124,22 +124,8 @@ pub fn part2() -> i64 {
     // let mut start =
     //              0b0000000000000000010_110000011111111111111111111111111111111000000; // extremly close
     //              0b0000000000000000010_110110011111111111111111111111111111111000000; //25986278 * 1353950;
-    let mut start = 8i64.pow(15);
-    let mut a = 0;
     let mut b = regs.next().unwrap();
     let mut c = regs.next().unwrap();
-
-    macro_rules! val {
-        ($cv:expr) => {
-            match $cv {
-                Combo::Lit(v) => v,
-                Combo::A => a,
-                Combo::B => b,
-                Combo::C => c,
-                Combo::Unreachable => panic!(),
-            }
-        };
-    }
 
     // for i in 0.. {
     //     let mut m = 8i64.pow(15) - i;
@@ -156,62 +142,82 @@ pub fn part2() -> i64 {
     //     }
     // }
 
-    let a = 8;
-    for i in 0..=100 {
-        let val = ((a % 8) ^ 4) ^ (a / 2i64.pow(((a % 8) ^ 4) as u32)) ^ 4;
-        if val == 0 {
-            println!("{i}: {val}",);
+    fn math(a: i64) -> i64 {
+        let mut b = a % 8;
+        b ^= 4;
+        let c = a / (1 << b);
+        b ^= c;
+        b ^= 4;
+        b % 8
+        // (((a % 8) ^ 4) ^ (a / 2i64.pow(((a % 8) ^ 4) as u32)) ^ 4) % 8
+    }
+    let input = &[0, 3, 3, 0, 5, 5, 4, 1, 1, 4, 5, 7, 4, 1, 4, 2];
+    // 27, 29
+    // let input = &[0, 3, 3, 0, 5, 5, 4, 1, 1, 4, 5, 7, 4, 1, 4, 2];
+    fn rec(base: i64, input: &[i64]) -> Vec<i64> {
+        if input.is_empty() {
+            return vec![base];
+        }
+
+        let mut ans = Vec::new();
+        for a in (base * 8)..=(base * 8 + 7) {
+            if math(a) == input[0] {
+                // println!("{a}: {}", math(a));
+                let mut r = rec(a, &input[1..]);
+                ans.append(&mut r);
+            }
+        }
+        ans
+    }
+    let mut ans = rec(0, input);
+    ans.sort();
+    // ans.retain(|s| *s > 129982742933520 && *s < 1255882649776144);
+    println!("{ans:?}",);
+
+    for mut a in ans {
+        let start = a;
+        ip = 0;
+        b = 0;
+        c = 0;
+        let mut output = Vec::new();
+        macro_rules! val {
+            ($cv:expr) => {
+                match $cv {
+                    Combo::Lit(v) => v,
+                    Combo::A => a,
+                    Combo::B => b,
+                    Combo::C => c,
+                    Combo::Unreachable => panic!(),
+                }
+            };
+        }
+
+        while ip < ins.len() {
+            let op = OpCodes::from((ins[ip], ins[ip + 1]));
+            match op {
+                Adv(cv) => a /= 1 << val!(cv),
+                Bxl(cv) => b ^= cv,
+                Bst(cv) => b = val!(cv) % 8,
+                Jnz(cv) => {
+                    if a != 0 {
+                        let j = val!(cv);
+                        ip = j as usize;
+                        continue;
+                    }
+                }
+                Bxc => b ^= c,
+                Out(cv) => output.push(format!("{}", val!(cv) % 8)),
+                Bdv(cv) => b = a / 2i64.pow(val!(cv) as u32),
+                Cdv(cv) => c = a / 2i64.pow(val!(cv) as u32),
+            }
+
+            ip += 2;
+        }
+
+        let output = output.join(",");
+        if output == ins_string {
+            return start;
         }
     }
-
     0
-
-    // let mut test = 0;
-    // let test_amount = 100000;
-    // loop {
-    //     if test == test_amount {
-    //         println!("\ntesting: {a} ({a:064b})");
-    //     }
-    //     ip = 0;
-    //     b = 0;
-    //     c = 0;
-    //     let mut output = Vec::new();
-    //     while ip < ins.len() {
-    //         let op = OpCodes::from((ins[ip], ins[ip + 1]));
-    //         match op {
-    //             Adv(cv) => a /= 2i64.pow(val!(cv) as u32),
-    //             Bxl(cv) => b ^= cv,
-    //             Bst(cv) => b = val!(cv) % 8,
-    //             Jnz(cv) => {
-    //                 if a != 0 {
-    //                     let j = val!(cv);
-    //                     ip = j as usize;
-    //                     continue;
-    //                 }
-    //             }
-    //             Bxc => b ^= c,
-    //             Out(cv) => output.push(format!("{:02x}", val!(cv) % 8)),
-    //             Bdv(cv) => b = a / 2i64.pow(val!(cv) as u32),
-    //             Cdv(cv) => c = a / 2i64.pow(val!(cv) as u32),
-    //         }
-
-    //         ip += 2;
-    //     }
-
-    //     let output = output.join(",");
-    //     if output == ins_string {
-    //         return start - 1;
-    //     } else {
-    //         if test == test_amount {
-    //             println!("got:      {output}");
-    //             println!("expected: {ins_string}");
-    //         }
-    //         test += 1;
-    //         if test > test_amount {
-    //             test = 0;
-    //         }
-    //         start += 1;
-    //         a = start;
-    //     }
-    // }
 }
