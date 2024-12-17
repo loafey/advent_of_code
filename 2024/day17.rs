@@ -44,7 +44,7 @@ impl From<(i64, i64)> for OpCodes {
     }
 }
 
-fn solve(mut a: i64, ins: &[i64]) -> String {
+fn solve(mut a: i64, ins: &[i64], br: bool) -> Result<String, i64> {
     let mut b = 0;
     let mut c = 0;
     let mut ip = 0;
@@ -68,6 +68,9 @@ fn solve(mut a: i64, ins: &[i64]) -> String {
             Bxl(cv) => b ^= cv,
             Bst(cv) => b = val!(cv) % 8,
             Jnz(cv) => {
+                if br {
+                    return Err(b % 8);
+                }
                 if a != 0 {
                     let j = val!(cv);
                     ip = j as usize;
@@ -82,7 +85,7 @@ fn solve(mut a: i64, ins: &[i64]) -> String {
 
         ip += 2;
     }
-    output.join(",")
+    Ok(output.join(","))
 }
 
 pub fn part1() -> String {
@@ -100,7 +103,7 @@ pub fn part1() -> String {
         .map(|s| s.trim().parse::<i64>().unwrap())
         .collect::<Vec<_>>();
 
-    solve(regs.next().unwrap(), &ins)
+    solve(regs.next().unwrap(), &ins, false).unwrap()
 }
 pub fn part2() -> i64 {
     let ins = include_str!("../inputs/2024/day17.input")
@@ -120,35 +123,27 @@ pub fn part2() -> i64 {
         .collect::<Vec<_>>()
         .join(",");
 
-    fn math(a: i64) -> i64 {
-        let mut b = a % 8;
-        b ^= 4;
-        let c = a / (1 << b);
-        b ^= c;
-        b ^= 4;
-        b % 8
-    }
     let input = ins.iter().copied().rev().collect::<Vec<_>>();
-    fn rec(base: i64, input: &[i64]) -> Vec<i64> {
+    fn rec(base: i64, input: &[i64], ins: &[i64]) -> Vec<i64> {
         if input.is_empty() {
             return vec![base];
         }
 
         let mut ans = Vec::new();
-        for a in (base * 8)..=(base * 8 + 7) {
-            if math(a) == input[0] {
+        for a in (base * 8)..(base * 8 + 8) {
+            if solve(a, ins, true).unwrap_err() == input[0] {
                 // println!("{a}: {}", math(a));
-                let mut r = rec(a, &input[1..]);
+                let mut r = rec(a, &input[1..], ins);
                 ans.append(&mut r);
             }
         }
         ans
     }
-    let mut ans = rec(0, &input);
+    let mut ans = rec(0, &input, &ins);
     ans.sort();
 
     for a in ans {
-        let output = solve(a, &ins);
+        let output = solve(a, &ins, false).unwrap();
         if output == ins_string {
             return a;
         }
