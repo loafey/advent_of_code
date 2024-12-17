@@ -1,0 +1,15 @@
+Bst(A)      // B = A % 8
+Bxl(4)      // B ^= 4
+Cdv(B)      // C = A / 2^B
+Bxc         // B ^= C
+Bxl(4)      // B ^= 4
+Out(B)      // print B
+Adv(Lit(3)) // A /= 2^3
+Jnz(Lit(0)) // if A != 0 restart
+
+2,4,1,4,7,5,4,1,1,4,5,5,0,3,3,0
+16
+
+16 digits = at least 8^15
+
+answer is somewhere between 8^15 and 8^16
