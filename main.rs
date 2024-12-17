@@ -63,7 +63,9 @@ fn format_time(time: Duration) -> String {
     } else {
         format!("{}ns", time.as_nanos())
     };
-    let color = if time.contains("µs") {
+    let color = if time.contains("ns") {
+        "👑"
+    } else if time.contains("µs") {
         "🦀"
     } else if time.contains("ms") {
         "💅"
