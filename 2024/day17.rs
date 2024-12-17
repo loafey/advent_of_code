@@ -156,54 +156,62 @@ pub fn part2() -> i64 {
     //     }
     // }
 
-    // 0
-
-    let mut test = 0;
-    let test_amount = 100000;
-    loop {
-        if test == test_amount {
-            println!("\ntesting: {a} ({a:064b})");
-        }
-        ip = 0;
-        b = 0;
-        c = 0;
-        let mut output = Vec::new();
-        while ip < ins.len() {
-            let op = OpCodes::from((ins[ip], ins[ip + 1]));
-            match op {
-                Adv(cv) => a /= 2i64.pow(val!(cv) as u32),
-                Bxl(cv) => b ^= cv,
-                Bst(cv) => b = val!(cv) % 8,
-                Jnz(cv) => {
-                    if a != 0 {
-                        let j = val!(cv);
-                        ip = j as usize;
-                        continue;
-                    }
-                }
-                Bxc => b ^= c,
-                Out(cv) => output.push(format!("{:02x}", val!(cv) % 8)),
-                Bdv(cv) => b = a / 2i64.pow(val!(cv) as u32),
-                Cdv(cv) => c = a / 2i64.pow(val!(cv) as u32),
-            }
-
-            ip += 2;
-        }
-
-        let output = output.join(",");
-        if output == ins_string {
-            return start - 1;
-        } else {
-            if test == test_amount {
-                println!("got:      {output}");
-                println!("expected: {ins_string}");
-            }
-            test += 1;
-            if test > test_amount {
-                test = 0;
-            }
-            start += 1;
-            a = start;
+    let a = 8;
+    for i in 0..=100 {
+        let val = ((a % 8) ^ 4) ^ (a / 2i64.pow(((a % 8) ^ 4) as u32)) ^ 4;
+        if val == 0 {
+            println!("{i}: {val}",);
         }
     }
+
+    0
+
+    // let mut test = 0;
+    // let test_amount = 100000;
+    // loop {
+    //     if test == test_amount {
+    //         println!("\ntesting: {a} ({a:064b})");
+    //     }
+    //     ip = 0;
+    //     b = 0;
+    //     c = 0;
+    //     let mut output = Vec::new();
+    //     while ip < ins.len() {
+    //         let op = OpCodes::from((ins[ip], ins[ip + 1]));
+    //         match op {
+    //             Adv(cv) => a /= 2i64.pow(val!(cv) as u32),
+    //             Bxl(cv) => b ^= cv,
+    //             Bst(cv) => b = val!(cv) % 8,
+    //             Jnz(cv) => {
+    //                 if a != 0 {
+    //                     let j = val!(cv);
+    //                     ip = j as usize;
+    //                     continue;
+    //                 }
+    //             }
+    //             Bxc => b ^= c,
+    //             Out(cv) => output.push(format!("{:02x}", val!(cv) % 8)),
+    //             Bdv(cv) => b = a / 2i64.pow(val!(cv) as u32),
+    //             Cdv(cv) => c = a / 2i64.pow(val!(cv) as u32),
+    //         }
+
+    //         ip += 2;
+    //     }
+
+    //     let output = output.join(",");
+    //     if output == ins_string {
+    //         return start - 1;
+    //     } else {
+    //         if test == test_amount {
+    //             println!("got:      {output}");
+    //             println!("expected: {ins_string}");
+    //         }
+    //         test += 1;
+    //         if test > test_amount {
+    //             test = 0;
+    //         }
+    //         start += 1;
+    //         a = start;
+    //     }
+    // }
 }
