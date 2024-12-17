@@ -43,26 +43,11 @@ impl From<(i64, i64)> for OpCodes {
         }
     }
 }
-pub fn part1() -> String {
-    let (regs, ins) = include_str!("../inputs/2024/day17.input")
-        .split_once("\n\n")
-        .unwrap();
-    let mut regs = regs
-        .split_whitespace()
-        .filter_map(|s| s.parse::<i64>().ok());
 
-    let ins = ins
-        .split([' ', ','])
-        .skip(1)
-        .filter(|s| !s.is_empty())
-        .map(|s| s.trim().parse::<i64>().unwrap())
-        .collect::<Vec<_>>();
+fn solve(mut a: i64, ins: &[i64]) -> String {
+    let mut b = 0;
+    let mut c = 0;
     let mut ip = 0;
-
-    let mut a = regs.next().unwrap();
-    let mut b = regs.next().unwrap();
-    let mut c = regs.next().unwrap();
-
     macro_rules! val {
         ($cv:expr) => {
             match $cv {
@@ -99,7 +84,8 @@ pub fn part1() -> String {
     }
     output.join(",")
 }
-pub fn part2() -> i64 {
+
+pub fn part1() -> String {
     let (regs, ins) = include_str!("../inputs/2024/day17.input")
         .split_once("\n\n")
         .unwrap();
@@ -113,34 +99,26 @@ pub fn part2() -> i64 {
         .filter(|s| !s.is_empty())
         .map(|s| s.trim().parse::<i64>().unwrap())
         .collect::<Vec<_>>();
+
+    solve(regs.next().unwrap(), &ins)
+}
+pub fn part2() -> i64 {
+    let ins = include_str!("../inputs/2024/day17.input")
+        .split_once("\n\n")
+        .unwrap()
+        .1;
+
+    let ins = ins
+        .split([' ', ','])
+        .skip(1)
+        .filter(|s| !s.is_empty())
+        .map(|s| s.trim().parse::<i64>().unwrap())
+        .collect::<Vec<_>>();
     let ins_string = ins
         .iter()
         .map(|s| format!("{s}"))
         .collect::<Vec<_>>()
         .join(",");
-    let mut ip = 0;
-
-    let _a_orig = regs.next().unwrap();
-    // let mut start =
-    //              0b0000000000000000010_110000011111111111111111111111111111111000000; // extremly close
-    //              0b0000000000000000010_110110011111111111111111111111111111111000000; //25986278 * 1353950;
-    let mut b = regs.next().unwrap();
-    let mut c = regs.next().unwrap();
-
-    // for i in 0.. {
-    //     let mut m = 8i64.pow(15) - i;
-    //     let mut c = 0;
-    //     while m != 0 {
-    //         m /= 8;
-    //         c += 1
-    //     }
-    //     if c < 16 {
-    //         println!("{c}: {}", 8i64.pow(14) - i);
-    //         break;
-    //     } else {
-    //         println!("{c}: {}", 8i64.pow(14) - i)
-    //     }
-    // }
 
     fn math(a: i64) -> i64 {
         let mut b = a % 8;
@@ -149,11 +127,8 @@ pub fn part2() -> i64 {
         b ^= c;
         b ^= 4;
         b % 8
-        // (((a % 8) ^ 4) ^ (a / 2i64.pow(((a % 8) ^ 4) as u32)) ^ 4) % 8
     }
-    let input = &[0, 3, 3, 0, 5, 5, 4, 1, 1, 4, 5, 7, 4, 1, 4, 2];
-    // 27, 29
-    // let input = &[0, 3, 3, 0, 5, 5, 4, 1, 1, 4, 5, 7, 4, 1, 4, 2];
+    let input = ins.iter().copied().rev().collect::<Vec<_>>();
     fn rec(base: i64, input: &[i64]) -> Vec<i64> {
         if input.is_empty() {
             return vec![base];
@@ -169,54 +144,13 @@ pub fn part2() -> i64 {
         }
         ans
     }
-    let mut ans = rec(0, input);
+    let mut ans = rec(0, &input);
     ans.sort();
-    // ans.retain(|s| *s > 129982742933520 && *s < 1255882649776144);
-    println!("{ans:?}",);
 
-    for mut a in ans {
-        let start = a;
-        ip = 0;
-        b = 0;
-        c = 0;
-        let mut output = Vec::new();
-        macro_rules! val {
-            ($cv:expr) => {
-                match $cv {
-                    Combo::Lit(v) => v,
-                    Combo::A => a,
-                    Combo::B => b,
-                    Combo::C => c,
-                    Combo::Unreachable => panic!(),
-                }
-            };
-        }
-
-        while ip < ins.len() {
-            let op = OpCodes::from((ins[ip], ins[ip + 1]));
-            match op {
-                Adv(cv) => a /= 1 << val!(cv),
-                Bxl(cv) => b ^= cv,
-                Bst(cv) => b = val!(cv) % 8,
-                Jnz(cv) => {
-                    if a != 0 {
-                        let j = val!(cv);
-                        ip = j as usize;
-                        continue;
-                    }
-                }
-                Bxc => b ^= c,
-                Out(cv) => output.push(format!("{}", val!(cv) % 8)),
-                Bdv(cv) => b = a / 2i64.pow(val!(cv) as u32),
-                Cdv(cv) => c = a / 2i64.pow(val!(cv) as u32),
-            }
-
-            ip += 2;
-        }
-
-        let output = output.join(",");
+    for a in ans {
+        let output = solve(a, &ins);
         if output == ins_string {
-            return start;
+            return a;
         }
     }
     0
