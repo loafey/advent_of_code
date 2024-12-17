@@ -147,8 +147,7 @@ pub fn part2() -> i64 {
         }
         ans
     }
-    let mut ans = rec(0, &input, &ops);
-    ans.sort();
+    let ans = rec(0, &input, &ops);
 
     for a in ans {
         let output = solve(a, &ops, false).unwrap();
