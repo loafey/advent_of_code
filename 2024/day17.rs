@@ -140,7 +140,6 @@ pub fn part2() -> i64 {
         let mut ans = Vec::new();
         for a in (base * 8)..(base * 8 + 8) {
             if solve(a, ins, true).unwrap_err() == input[0] {
-                // println!("{a}: {}", math(a));
                 let mut r = rec(a, &input[1..], ins);
                 ans.append(&mut r);
             }

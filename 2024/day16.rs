@@ -2,7 +2,7 @@ use pathfinding::prelude::{astar_bag, dijkstra};
 use rustc_hash::FxHashSet;
 use utils::{
     Direction::{self, *},
-    FindSome, NumTupleExt,
+    FindSome,
 };
 
 // This day was completely solved by my fantastic pathfinding lib :)
