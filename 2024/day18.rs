@@ -45,16 +45,6 @@ pub fn part1() -> usize {
     )
     .unwrap();
 
-    for (y, x) in path {
-        grid[y][x] = 'O'
-    }
-    for r in grid {
-        for c in r {
-            print!("{c}");
-        }
-        println!()
-    }
-
     len
 }
 pub fn part2() -> String {
