@@ -1,14 +1,19 @@
 use rayon::prelude::*;
 static mut COLORS: Vec<&'static str> = Vec::new();
 
-fn setup() -> impl Iterator<Item = &'static str> {
+fn solve(f: fn(&'static str) -> usize) -> usize {
     let (colors, designs) = include_str!("../inputs/2024/day19.input")
         .split_once("\n\n")
         .unwrap();
 
     let colors = colors.split(", ").collect::<Vec<_>>();
     unsafe { COLORS = colors };
-    designs.lines().filter(|s| !s.is_empty())
+    designs
+        .lines()
+        .filter(|s| !s.is_empty())
+        .par_bridge()
+        .map(f)
+        .sum()
 }
 
 #[memoize::memoize]
@@ -29,11 +34,8 @@ fn rec(design: &'static str) -> usize {
 }
 
 pub fn part1() -> usize {
-    setup()
-        .par_bridge()
-        .map(|design| (rec(design) > 0) as usize)
-        .sum()
+    solve(|design| (rec(design) > 0) as usize)
 }
 pub fn part2() -> usize {
-    setup().par_bridge().map(rec).sum()
+    solve(rec)
 }
