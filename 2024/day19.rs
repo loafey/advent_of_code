@@ -1,5 +1,8 @@
-use rayon::prelude::*;
+#![allow(static_mut_refs)]
+// why memoize this when you can have mutable global variables :)
 static mut COLORS: Vec<&'static str> = Vec::new();
+
+use rayon::prelude::*;
 
 fn solve(f: fn(&'static str) -> usize) -> usize {
     let (colors, designs) = include_str!("../inputs/2024/day19.input")
@@ -17,24 +20,18 @@ fn solve(f: fn(&'static str) -> usize) -> usize {
 }
 
 #[memoize::memoize]
-fn rec(design: &'static str) -> usize {
-    if design.is_empty() {
+fn rec(d: &'static str) -> usize {
+    if d.is_empty() {
         return 1;
     }
-
-    let mut okay = 0;
-    #[allow(static_mut_refs)]
-    for d in unsafe { &COLORS } {
-        if let Some(suffix) = design.strip_prefix(d) {
-            okay += rec(suffix);
-        }
-    }
-
-    okay
+    unsafe { &COLORS }
+        .iter()
+        .map(|c| d.strip_prefix(c).map(rec).unwrap_or_default())
+        .sum()
 }
 
 pub fn part1() -> usize {
-    solve(|design| (rec(design) > 0) as usize)
+    solve(|d| (rec(d) > 0) as usize)
 }
 pub fn part2() -> usize {
     solve(rec)
