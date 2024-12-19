@@ -1,8 +1,13 @@
-#![allow(static_mut_refs)]
+#![allow(static_mut_refs, mutable_transmutes)]
 // why memoize this when you can have mutable global variables :)
 static mut COLORS: Vec<&'static str> = Vec::new();
+#[thread_local]
+static CACHE: LazyCell<Cache> = LazyCell::new(Cache::default);
 
 use rayon::prelude::*;
+use rustc_hash::FxHashMap;
+type Cache = FxHashMap<usize, usize>;
+use std::{cell::LazyCell, mem::transmute};
 
 fn solve(f: fn(&'static str) -> usize) -> usize {
     let (colors, designs) = include_str!("../inputs/2024/day19.input")
@@ -15,19 +20,25 @@ fn solve(f: fn(&'static str) -> usize) -> usize {
         .lines()
         .filter(|s| !s.is_empty())
         .par_bridge()
-        .map(f)
+        .map(|d| {
+            unsafe { transmute::<&Cache, &mut Cache>(&*CACHE) }.clear();
+            f(d)
+        })
         .sum()
 }
 
-#[memoize::memoize]
 fn rec(d: &'static str) -> usize {
-    if d.is_empty() {
+    if let Some(v) = CACHE.get(&d.len()) {
+        return *v;
+    } else if d.is_empty() {
         return 1;
     }
-    unsafe { &COLORS }
+    let u = unsafe { &COLORS }
         .iter()
         .map(|c| d.strip_prefix(c).map(rec).unwrap_or_default())
-        .sum()
+        .sum::<usize>();
+    unsafe { transmute::<&Cache, &mut Cache>(&*CACHE) }.insert(d.len(), u);
+    u
 }
 
 pub fn part1() -> usize {
