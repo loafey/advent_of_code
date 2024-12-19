@@ -1,13 +1,27 @@
+use rayon::prelude::*;
+static mut COLORS: Vec<&'static str> = Vec::new();
+
+fn setup() -> impl Iterator<Item = &'static str> {
+    let (colors, designs) = include_str!("../inputs/2024/day19.input")
+        .split_once("\n\n")
+        .unwrap();
+
+    let colors = colors.split(", ").collect::<Vec<_>>();
+    unsafe { COLORS = colors };
+    designs.lines().filter(|s| !s.is_empty())
+}
+
 #[memoize::memoize]
-fn rec(design: &'static str, designs: Vec<&'static str>) -> usize {
+fn rec(design: &'static str) -> usize {
     if design.is_empty() {
         return 1;
     }
 
     let mut okay = 0;
-    for d in &designs {
+    #[allow(static_mut_refs)]
+    for d in unsafe { &COLORS } {
         if let Some(suffix) = design.strip_prefix(d) {
-            okay += rec(suffix, designs.clone());
+            okay += rec(suffix);
         }
     }
 
@@ -15,30 +29,11 @@ fn rec(design: &'static str, designs: Vec<&'static str>) -> usize {
 }
 
 pub fn part1() -> usize {
-    let (colors, designs) = include_str!("../inputs/2024/day19.input")
-        .split_once("\n\n")
-        .unwrap();
-
-    let colors = colors.split(", ").collect::<Vec<_>>();
-    let designs = designs.lines().filter(|s| !s.is_empty());
-
-    let mut sum = 0;
-    for design in designs {
-        sum += (rec(design, colors.clone()) > 0) as usize;
-    }
-    sum
+    setup()
+        .par_bridge()
+        .map(|design| (rec(design) > 0) as usize)
+        .sum()
 }
 pub fn part2() -> usize {
-    let (colors, designs) = include_str!("../inputs/2024/day19.input")
-        .split_once("\n\n")
-        .unwrap();
-
-    let colors = colors.split(", ").collect::<Vec<_>>();
-    let designs = designs.lines().filter(|s| !s.is_empty());
-
-    let mut sum = 0;
-    for design in designs {
-        sum += rec(design, colors.clone()) as usize;
-    }
-    sum
+    setup().par_bridge().map(rec).sum()
 }
