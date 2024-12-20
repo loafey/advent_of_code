@@ -1,6 +1,5 @@
-use std::collections::BTreeMap;
-
 use pathfinding::prelude::bfs;
+use rayon::prelude::*;
 use rustc_hash::{FxHashMap, FxHashSet};
 use utils::{FindSome, MatrixGet};
 
@@ -53,34 +52,36 @@ fn solve(r: usize) -> usize {
         .enumerate()
         .map(|(i, c)| (*c, i))
         .collect::<FxHashMap<_, _>>();
-    let mut sum = 0;
-    for (j, (y, x)) in path.iter().enumerate() {
-        let mut check = FxHashSet::default();
-        for r in 0..=r {
-            for offset in 0..=r {
-                let inv_offset = r - offset;
-                check.insert(((y + offset, x + inv_offset), r));
-                check.insert(((y + inv_offset, x - offset), r));
-                check.insert(((y - offset, x - inv_offset), r));
-                check.insert(((y - inv_offset, x + offset), r));
-            }
-        }
-        for (c, r) in check {
-            if let Some(i) = pos.get(&c) {
-                if j >= *i {
-                    continue;
-                }
-                let Some(diff) = (i - j).checked_sub(r) else {
-                    continue;
-                };
-                if diff >= 100 {
-                    sum += 1;
+    path.into_par_iter()
+        .enumerate()
+        .map(|(j, (y, x))| {
+            let mut sum = 0;
+            let mut check = FxHashSet::default();
+            for r in 1..=r {
+                for offset in 1..=r {
+                    let inv_offset = r - offset;
+                    check.insert(((y + offset, x + inv_offset), r));
+                    check.insert(((y + inv_offset, x - offset), r));
+                    check.insert(((y - offset, x - inv_offset), r));
+                    check.insert(((y - inv_offset, x + offset), r));
                 }
             }
-        }
-    }
-
-    sum
+            for (c, r) in check {
+                if let Some(i) = pos.get(&c) {
+                    if j >= *i {
+                        continue;
+                    }
+                    let Some(diff) = (i - j).checked_sub(r) else {
+                        continue;
+                    };
+                    if diff >= 100 {
+                        sum += 1;
+                    }
+                }
+            }
+            sum
+        })
+        .sum()
 }
 
 pub fn part1() -> usize {
