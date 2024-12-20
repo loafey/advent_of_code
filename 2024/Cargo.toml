@@ -13,6 +13,7 @@ rustc-hash = "2.1.0"
 memoize = { workspace = true }
 pathfinding = { workspace = true }
 matrixy = { workspace = true }
+paste = "1.0.15"
 
 [lib]
 path = "lib.rs"
