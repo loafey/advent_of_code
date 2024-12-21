@@ -82,8 +82,8 @@ pub fn part1() -> usize {
                 nums.push(*keypad_goal);
             }
         }
-        let nums = nums.iter().collect::<String>().parse::<i64>().unwrap();
-        let mut state = State {
+        let nums = nums.iter().collect::<String>().parse::<usize>().unwrap();
+        let state = State {
             proxy: ['A'; 3],
             goal: Vec::new(),
         };
@@ -101,7 +101,7 @@ pub fn part1() -> usize {
                         alike(&code, goal),
                     )
                 }));
-                macro_rules! m {
+                macro_rules! m1 {
                     ($c:expr) => {
                         moves.push((
                             State {
@@ -112,43 +112,94 @@ pub fn part1() -> usize {
                         ))
                     };
                 }
+                macro_rules! m2 {
+                    ($c:expr) => {
+                        moves.push((
+                            State {
+                                proxy: [proxy[0], proxy[1], $c],
+                                goal: goal.clone(),
+                            },
+                            alike(&code, goal),
+                        ))
+                    };
+                }
                 match (proxy[0], proxy[1]) {
-                    ('<', 'v') => m!('<'),
-                    ('<', '>') => m!('v'),
-                    ('<', 'A') => m!('^'),
-                    ('>', '<') => m!('v'),
-                    ('>', 'v') => m!('>'),
-                    ('>', '^') => m!('A'),
-                    ('^', 'v') => m!('^'),
-                    ('^', '>') => m!('A'),
-                    ('v', '^') => m!('v'),
-                    ('v', 'A') => m!('>'),
+                    ('<', 'v') => m1!('<'),
+                    ('<', '>') => m1!('v'),
+                    ('<', 'A') => m1!('^'),
+                    ('>', '<') => m1!('v'),
+                    ('>', 'v') => m1!('>'),
+                    ('>', '^') => m1!('A'),
+                    ('^', 'v') => m1!('^'),
+                    ('^', '>') => m1!('A'),
+                    ('v', '^') => m1!('v'),
+                    ('v', 'A') => m1!('>'),
+                    ('A', _) => match (proxy[1], proxy[2]) {
+                        ('<', '8') => m2!('7'),
+                        ('<', '9') => m2!('8'),
+                        ('<', '5') => m2!('4'),
+                        ('<', '6') => m2!('5'),
+                        ('<', '2') => m2!('1'),
+                        ('<', '3') => m2!('2'),
+                        ('<', 'A') => m2!('0'),
+                        ('>', '7') => m2!('8'),
+                        ('>', '8') => m2!('9'),
+                        ('>', '4') => m2!('5'),
+                        ('>', '5') => m2!('6'),
+                        ('>', '1') => m2!('2'),
+                        ('>', '2') => m2!('3'),
+                        ('>', '0') => m2!('A'),
+                        ('^', '4') => m2!('7'),
+                        ('^', '5') => m2!('8'),
+                        ('^', '6') => m2!('9'),
+                        ('^', '1') => m2!('4'),
+                        ('^', '2') => m2!('5'),
+                        ('^', '3') => m2!('6'),
+                        ('^', '0') => m2!('2'),
+                        ('^', 'A') => m2!('3'),
+                        ('v', '7') => m2!('4'),
+                        ('v', '8') => m2!('5'),
+                        ('v', '9') => m2!('6'),
+                        ('v', '4') => m2!('1'),
+                        ('v', '5') => m2!('2'),
+                        ('v', '6') => m2!('3'),
+                        ('v', '2') => m2!('0'),
+                        ('v', '3') => m2!('A'),
+                        ('A', x) => {
+                            let mut ng = goal.clone();
+                            ng.push(x);
+                            let alike = alike(&code, &ng);
+                            moves.push((
+                                State {
+                                    proxy: *proxy,
+                                    goal: ng,
+                                },
+                                alike,
+                            ))
+                        }
+                        _ => {}
+                    },
                     _ => {}
                 };
-                // moves.push((
-                //     State {
-                //         proxy: [proxy[0], proxy[2]],
-                //         goal: todo!(),
-                //     },
-                //     4,
-                // ));
 
                 moves
             },
-            |State { proxy, .. }| proxy[1] == '<',
-            // |State { goal, .. }| goal == &code,
+            |State { goal, .. }| goal == &code,
         );
-        println!("{res:?}");
+        if let Some(res) = res {
+            let res = res.0;
+            println!("{} * {nums} = {}", res.len() - 1, (res.len() - 1) * nums);
+            sum += (res.len() - 1) * nums;
+        }
     }
-    // println!("<v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A");
-    println!(
-        "
-029A: <vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A
-980A: <v<A>>^AAAvA^A<vA<AA>>^AvAA<^A>A<v<A>A>^AAAvA<^A>A<vA>^A<A>A
-179A: <v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A
-456A: <v<A>>^AA<vA<A>>^AAvAA<^A>A<vA>^A<A>A<vA>^A<A>A<v<A>A>^AAvA<^A>A
-379A: <v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A"
-    );
+    //     println!(
+    //         "
+    // 029A: <vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A
+    // 980A: <v<A>>^AAAvA^A<vA<AA>>^AvAA<^A>A<v<A>A>^AAAvA<^A>A<vA>^A<A>A
+    // 179A: <v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A
+    // 456A: <v<A>>^AA<vA<A>>^AAvAA<^A>A<vA>^A<A>A<vA>^A<A>A<v<A>A>^AAvA<^A>A
+    // 379A: <v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A"
+    //     );
     sum
 }
 // x < 213256
