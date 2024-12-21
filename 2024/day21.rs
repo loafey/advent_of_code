@@ -1,6 +1,6 @@
-use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
+use std::{collections::BTreeMap, rc::Rc};
 
-use pathfinding::prelude::{bfs, dijkstra};
+use pathfinding::prelude::dijkstra;
 use rayon::prelude::*;
 use rustc_hash::FxHashMap;
 use utils::{
@@ -394,149 +394,151 @@ pub fn part1() -> usize {
     0
 }
 pub fn part2() -> usize {
-    0
-    // let codes = include_str!("../inputs/2024/day21.input")
-    //     .lines()
-    //     .filter(|s| !s.is_empty())
-    //     .map(|s| s.chars().collect::<Vec<_>>())
-    //     .collect::<Vec<_>>();
-    // let dpad = dpad();
-    // let keypad = keypad();
+    let codes = include_str!("../inputs/2024/day21.input")
+        .lines()
+        .filter(|s| !s.is_empty())
+        .map(|s| s.chars().collect::<Vec<_>>())
+        .collect::<Vec<_>>();
+    let dpad = dpad();
+    let keypad = keypad();
 
-    // // let mut posses = ['A'; 5];
-    // codes
-    //     .into_iter()
-    //     .map(|code| {
-    //         let code = Memoize(Rc::new(code));
-    //         // let mut pos = posses[0];
-    //         // print!("{}: ", code.iter().collect::<String>());
-    //         let mut sum = 0;
-    //         let mut nums = Vec::new();
-    //         for keypad_goal in &*code {
-    //             if keypad_goal.is_numeric() {
-    //                 nums.push(*keypad_goal);
-    //             }
-    //         }
-    //         let nums = nums.iter().collect::<String>().parse::<usize>().unwrap();
-    //         let state = State {
-    //             proxy: ['A'; 25],
-    //             goal: Vec::new(),
-    //         };
+    // let mut posses = ['A'; 5];
+    codes
+        .into_iter()
+        .map(|code| {
+            let code = Memoize(Rc::new(code));
+            // let mut pos = posses[0];
+            // print!("{}: ", code.iter().collect::<String>());
+            let mut sum = 0;
+            let mut nums = Vec::new();
+            for keypad_goal in &*code {
+                if keypad_goal.is_numeric() {
+                    nums.push(*keypad_goal);
+                }
+            }
+            let nums = nums.iter().collect::<String>().parse::<usize>().unwrap();
+            let state = State {
+                proxy: ['A'; 25],
+                goal: Vec::new(),
+            };
 
-    //         let res = dijkstra(
-    //             &state,
-    //             |State { proxy, goal }| {
-    //                 let mut moves: Vec<(_, usize)> = Vec::new();
-    //                 moves.extend(dpad.get(&proxy[0]).unwrap().iter().map(|(d, c)| {
-    //                     (
-    //                         State {
-    //                             proxy: {
-    //                                 let mut copy = *proxy;
-    //                                 copy[0] = *c;
-    //                                 copy
-    //                             },
-    //                             goal: goal.clone(),
-    //                         },
-    //                         alike(&code, goal),
-    //                     )
-    //                 }));
+            let res = dijkstra(
+                &state,
+                |State { proxy, goal }| {
+                    let mut moves: Vec<(_, usize)> = Vec::new();
+                    moves.extend(dpad.get(&proxy[0]).unwrap().iter().map(|(d, c)| {
+                        (
+                            State {
+                                proxy: {
+                                    let mut copy = *proxy;
+                                    copy[0] = *c;
+                                    copy
+                                },
+                                goal: goal.clone(),
+                            },
+                            alike(&code, goal),
+                        )
+                    }));
 
-    //                 #[memoize::memoize]
-    //                 fn recur(
-    //                     a: usize,
-    //                     b: usize,
-    //                     moves: Memoize<RefCell<Vec<(State<25>, usize)>>>,
-    //                     proxy: [char; 25],
-    //                     goal: Vec<char>,
-    //                     code: Memoize<Vec<char>>,
-    //                 ) {
-    //                     macro_rules! m1 {
-    //                         ($layer:expr, $c:expr) => {
-    //                             moves.borrow_mut().push((
-    //                                 State {
-    //                                     proxy: {
-    //                                         let mut copy = proxy;
-    //                                         copy[$layer] = $c;
-    //                                         copy
-    //                                     },
-    //                                     goal: (goal).clone(),
-    //                                 },
-    //                                 alike(&code, (&*goal)),
-    //                             ))
-    //                         };
-    //                     }
-    //                     if b == 24 {
-    //                         match (proxy[a], proxy[b]) {
-    //                             ('<', '8') => m1!(2, '7'),
-    //                             ('<', '9') => m1!(2, '8'),
-    //                             ('<', '5') => m1!(2, '4'),
-    //                             ('<', '6') => m1!(2, '5'),
-    //                             ('<', '2') => m1!(2, '1'),
-    //                             ('<', '3') => m1!(2, '2'),
-    //                             ('<', 'A') => m1!(2, '0'),
-    //                             ('>', '7') => m1!(2, '8'),
-    //                             ('>', '8') => m1!(2, '9'),
-    //                             ('>', '4') => m1!(2, '5'),
-    //                             ('>', '5') => m1!(2, '6'),
-    //                             ('>', '1') => m1!(2, '2'),
-    //                             ('>', '2') => m1!(2, '3'),
-    //                             ('>', '0') => m1!(2, 'A'),
-    //                             ('^', '4') => m1!(2, '7'),
-    //                             ('^', '5') => m1!(2, '8'),
-    //                             ('^', '6') => m1!(2, '9'),
-    //                             ('^', '1') => m1!(2, '4'),
-    //                             ('^', '2') => m1!(2, '5'),
-    //                             ('^', '3') => m1!(2, '6'),
-    //                             ('^', '0') => m1!(2, '2'),
-    //                             ('^', 'A') => m1!(2, '3'),
-    //                             ('v', '7') => m1!(2, '4'),
-    //                             ('v', '8') => m1!(2, '5'),
-    //                             ('v', '9') => m1!(2, '6'),
-    //                             ('v', '4') => m1!(2, '1'),
-    //                             ('v', '5') => m1!(2, '2'),
-    //                             ('v', '6') => m1!(2, '3'),
-    //                             ('v', '2') => m1!(2, '0'),
-    //                             ('v', '3') => m1!(2, 'A'),
-    //                             ('A', x) => {
-    //                                 let mut ng = goal.clone();
-    //                                 ng.push(x);
-    //                                 let alike = alike(&*code, &ng);
-    //                                 moves.borrow_mut().push((State { proxy, goal: ng }, alike))
-    //                             }
-    //                             _ => {}
-    //                         }
-    //                     } else {
-    //                         match (proxy[0], proxy[1]) {
-    //                             ('<', 'v') => m1!(1, '<'),
-    //                             ('<', '>') => m1!(1, 'v'),
-    //                             ('<', 'A') => m1!(1, '^'),
-    //                             ('>', '<') => m1!(1, 'v'),
-    //                             ('>', 'v') => m1!(1, '>'),
-    //                             ('>', '^') => m1!(1, 'A'),
-    //                             ('^', 'v') => m1!(1, '^'),
-    //                             ('^', '>') => m1!(1, 'A'),
-    //                             ('v', '^') => m1!(1, 'v'),
-    //                             ('v', 'A') => m1!(1, '>'),
-    //                             ('A', _) => {
-    //                                 recur(a + 1, b + 1, moves, proxy, goal, code);
-    //                             }
-    //                             _ => {}
-    //                         };
-    //                     }
-    //                 }
-    //                 let moves = Memoize(RefCell::new(moves).into());
-    //                 recur(0, 1, moves.clone(), *proxy, goal.clone(), code.clone());
-    //                 let mvb = moves.borrow();
-    //                 mvb.clone()
-    //             },
-    //             |State { goal, .. }| goal == &*code,
-    //         );
-    //         if let Some(res) = res {
-    //             let res = res.0;
-    //             println!("{} * {nums} = {}", res.len() - 1, (res.len() - 1) * nums);
-    //             sum += (res.len() - 1) * nums;
-    //         }
-    //         sum
-    //     })
-    //     .sum()
+                    fn recur(
+                        a: usize,
+                        b: usize,
+                        moves: &mut Vec<(State<25>, usize)>,
+                        proxy: &[char; 25],
+                        goal: &Vec<char>,
+                        code: &Vec<char>,
+                    ) {
+                        macro_rules! m1 {
+                            ($layer:expr, $c:expr) => {
+                                moves.push((
+                                    State {
+                                        proxy: {
+                                            let mut copy = *proxy;
+                                            copy[$layer] = $c;
+                                            copy
+                                        },
+                                        goal: (goal).clone(),
+                                    },
+                                    alike(&code, (&*goal)),
+                                ))
+                            };
+                        }
+                        if b == 2 {
+                            match (proxy[a], proxy[b]) {
+                                ('<', '8') => m1!(2, '7'),
+                                ('<', '9') => m1!(2, '8'),
+                                ('<', '5') => m1!(2, '4'),
+                                ('<', '6') => m1!(2, '5'),
+                                ('<', '2') => m1!(2, '1'),
+                                ('<', '3') => m1!(2, '2'),
+                                ('<', 'A') => m1!(2, '0'),
+                                ('>', '7') => m1!(2, '8'),
+                                ('>', '8') => m1!(2, '9'),
+                                ('>', '4') => m1!(2, '5'),
+                                ('>', '5') => m1!(2, '6'),
+                                ('>', '1') => m1!(2, '2'),
+                                ('>', '2') => m1!(2, '3'),
+                                ('>', '0') => m1!(2, 'A'),
+                                ('^', '4') => m1!(2, '7'),
+                                ('^', '5') => m1!(2, '8'),
+                                ('^', '6') => m1!(2, '9'),
+                                ('^', '1') => m1!(2, '4'),
+                                ('^', '2') => m1!(2, '5'),
+                                ('^', '3') => m1!(2, '6'),
+                                ('^', '0') => m1!(2, '2'),
+                                ('^', 'A') => m1!(2, '3'),
+                                ('v', '7') => m1!(2, '4'),
+                                ('v', '8') => m1!(2, '5'),
+                                ('v', '9') => m1!(2, '6'),
+                                ('v', '4') => m1!(2, '1'),
+                                ('v', '5') => m1!(2, '2'),
+                                ('v', '6') => m1!(2, '3'),
+                                ('v', '2') => m1!(2, '0'),
+                                ('v', '3') => m1!(2, 'A'),
+                                ('A', x) => {
+                                    let mut ng = goal.clone();
+                                    ng.push(x);
+                                    let alike = alike(&code, &ng);
+                                    moves.push((
+                                        State {
+                                            proxy: *proxy,
+                                            goal: ng,
+                                        },
+                                        alike,
+                                    ))
+                                }
+                                _ => {}
+                            }
+                        } else {
+                            match (proxy[0], proxy[1]) {
+                                ('<', 'v') => m1!(1, '<'),
+                                ('<', '>') => m1!(1, 'v'),
+                                ('<', 'A') => m1!(1, '^'),
+                                ('>', '<') => m1!(1, 'v'),
+                                ('>', 'v') => m1!(1, '>'),
+                                ('>', '^') => m1!(1, 'A'),
+                                ('^', 'v') => m1!(1, '^'),
+                                ('^', '>') => m1!(1, 'A'),
+                                ('v', '^') => m1!(1, 'v'),
+                                ('v', 'A') => m1!(1, '>'),
+                                ('A', _) => {
+                                    recur(a + 1, b + 1, moves, proxy, goal, code);
+                                }
+                                _ => {}
+                            };
+                        }
+                    }
+                    recur(0, 1, &mut moves, &proxy, &goal, &code);
+                    moves
+                },
+                |State { goal, .. }| goal == &*code,
+            );
+            if let Some(res) = res {
+                let res = res.0;
+                println!("{} * {nums} = {}", res.len() - 1, (res.len() - 1) * nums);
+                sum += (res.len() - 1) * nums;
+            }
+            sum
+        })
+        .sum()
 }
