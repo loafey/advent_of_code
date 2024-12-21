@@ -66,16 +66,13 @@ pub fn part1() -> usize {
         }
         let nums = nums.iter().collect::<String>().parse::<i64>().unwrap();
         let mut keypad_pushes = Vec::new();
+        let code = code.into_iter().map(|c| (Up, c)).collect::<Vec<_>>();
 
         for i in 0..3 {
             let mut dpad_pushes = Vec::new();
             // let mut pos = posses[1 + i];
             let mut pos = 'A';
-            for (dpad_goal, ch) in if keypad_pushes.is_empty() {
-                code.iter().map(|c| (Up, *c)).collect::<Vec<_>>()
-            } else {
-                keypad_pushes
-            } {
+            for (dpad_goal, ch) in if i == 0 { code.clone() } else { keypad_pushes } {
                 let dpad_goal = if i == 0 {
                     ch
                 } else if ch == 'P' {
