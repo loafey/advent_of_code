@@ -1,4 +1,4 @@
-use pathfinding::prelude::bfs;
+use pathfinding::prelude::{bfs, dijkstra};
 use rustc_hash::FxHashMap;
 use utils::{Direction, Direction::*};
 
@@ -44,6 +44,24 @@ fn print_path(path: &[(Direction, char)]) {
     println!()
 }
 
+fn alike(a: &[char], b: &[char]) -> usize {
+    let mut sum = 0;
+    for (a, b) in a.iter().zip(b) {
+        if a == b {
+            sum += 1;
+        } else {
+            break;
+        }
+    }
+    a.len() - sum
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+struct State<const N: usize> {
+    proxy: [char; N],
+    goal: Vec<char>,
+}
+
 pub fn part1() -> usize {
     let mut sum = 0;
     let codes = include_str!("../inputs/2024/day21.input")
@@ -57,7 +75,7 @@ pub fn part1() -> usize {
     // let mut posses = ['A'; 5];
     for code in codes {
         // let mut pos = posses[0];
-        print!("{}: ", code.iter().collect::<String>());
+        // print!("{}: ", code.iter().collect::<String>());
         let mut nums = Vec::new();
         for keypad_goal in &code {
             if keypad_goal.is_numeric() {
@@ -65,45 +83,62 @@ pub fn part1() -> usize {
             }
         }
         let nums = nums.iter().collect::<String>().parse::<i64>().unwrap();
-        let mut keypad_pushes = Vec::new();
-        let code = code.into_iter().map(|c| (Up, c)).collect::<Vec<_>>();
+        let mut state = State {
+            proxy: ['A'; 3],
+            goal: Vec::new(),
+        };
 
-        for i in 0..3 {
-            let mut dpad_pushes = Vec::new();
-            // let mut pos = posses[1 + i];
-            let mut pos = 'A';
-            for (dpad_goal, ch) in if i == 0 { code.clone() } else { keypad_pushes } {
-                let dpad_goal = if i == 0 {
-                    ch
-                } else if ch == 'P' {
-                    'A'
-                } else {
-                    match dpad_goal {
-                        Direction::Up => '^',
-                        Direction::Right => '>',
-                        Direction::Down => 'v',
-                        Direction::Left => '<',
-                    }
+        let res = dijkstra(
+            &state,
+            |State { proxy, goal }| {
+                let mut moves: Vec<(_, usize)> = Vec::new();
+                moves.extend(dpad.get(&proxy[0]).unwrap().iter().map(|(d, c)| {
+                    (
+                        State {
+                            proxy: [*c, proxy[1], proxy[2]],
+                            goal: goal.clone(),
+                        },
+                        alike(&code, goal),
+                    )
+                }));
+                macro_rules! m {
+                    ($c:expr) => {
+                        moves.push((
+                            State {
+                                proxy: [proxy[0], $c, proxy[2]],
+                                goal: goal.clone(),
+                            },
+                            alike(&code, goal),
+                        ))
+                    };
+                }
+                match (proxy[0], proxy[1]) {
+                    ('<', 'v') => m!('<'),
+                    ('<', '>') => m!('v'),
+                    ('<', 'A') => m!('^'),
+                    ('>', '<') => m!('v'),
+                    ('>', 'v') => m!('>'),
+                    ('>', '^') => m!('A'),
+                    ('^', 'v') => m!('^'),
+                    ('^', '>') => m!('A'),
+                    ('v', '^') => m!('v'),
+                    ('v', 'A') => m!('>'),
+                    _ => {}
                 };
-                let path = bfs(
-                    &(Up, pos),
-                    |(_, c)| {
-                        if i == 0 { &keypad } else { &dpad }
-                            .get(c)
-                            .cloned()
-                            .unwrap()
-                    },
-                    |(_, c)| *c == dpad_goal,
-                )
-                .unwrap();
-                dpad_pushes.extend_from_slice(&path[1..]);
-                dpad_pushes.push((Up, 'P'));
-                pos = dpad_goal;
-            }
-            keypad_pushes = dpad_pushes;
-        }
-        print_path(&keypad_pushes);
-        sum += nums as usize * keypad_pushes.len();
+                // moves.push((
+                //     State {
+                //         proxy: [proxy[0], proxy[2]],
+                //         goal: todo!(),
+                //     },
+                //     4,
+                // ));
+
+                moves
+            },
+            |State { proxy, .. }| proxy[1] == '<',
+            // |State { goal, .. }| goal == &code,
+        );
+        println!("{res:?}");
     }
     // println!("<v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A");
     println!(
