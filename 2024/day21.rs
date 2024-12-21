@@ -57,41 +57,28 @@ pub fn part1() -> usize {
     // let mut posses = ['A'; 5];
     for code in codes {
         // let mut pos = posses[0];
-        let mut pos = 'A';
         print!("{}: ", code.iter().collect::<String>());
-        let mut keypad_pushes = Vec::new();
         let mut nums = Vec::new();
-        for keypad_goal in code {
+        for keypad_goal in &code {
             if keypad_goal.is_numeric() {
-                nums.push(keypad_goal);
+                nums.push(*keypad_goal);
             }
-            let path = bfs(
-                &(Up, pos),
-                |(_, c)| keypad.get(c).cloned().unwrap_or_default(),
-                |(_, c)| *c == keypad_goal,
-            )
-            .unwrap();
-            keypad_pushes.extend_from_slice(&path[1..]);
-            keypad_pushes.push((Up, 'P'));
-            pos = keypad_goal;
         }
         let nums = nums.iter().collect::<String>().parse::<i64>().unwrap();
-        // posses[0] = pos;
-        // println!("{keypad_pushes:?}");
-        // print_path(&keypad_pushes);
-        // println!("    <A^A>^^AvvvA");
+        let mut keypad_pushes = Vec::new();
 
-        // let arr = [
-        //     "v<<A>>^A<A>AvA<^AA>A<vAAA>^A",
-        //     "<vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A",
-        // ];
-
-        for i in 0..2 {
+        for i in 0..3 {
             let mut dpad_pushes = Vec::new();
             // let mut pos = posses[1 + i];
             let mut pos = 'A';
-            for (dpad_goal, ch) in keypad_pushes {
-                let dpad_goal = if ch == 'P' {
+            for (dpad_goal, ch) in if keypad_pushes.is_empty() {
+                code.iter().map(|c| (Up, *c)).collect::<Vec<_>>()
+            } else {
+                keypad_pushes
+            } {
+                let dpad_goal = if i == 0 {
+                    ch
+                } else if ch == 'P' {
                     'A'
                 } else {
                     match dpad_goal {
@@ -103,7 +90,12 @@ pub fn part1() -> usize {
                 };
                 let path = bfs(
                     &(Up, pos),
-                    |(_, c)| dpad.get(c).cloned().unwrap(),
+                    |(_, c)| {
+                        if i == 0 { &keypad } else { &dpad }
+                            .get(c)
+                            .cloned()
+                            .unwrap()
+                    },
                     |(_, c)| *c == dpad_goal,
                 )
                 .unwrap();
@@ -111,42 +103,9 @@ pub fn part1() -> usize {
                 dpad_pushes.push((Up, 'P'));
                 pos = dpad_goal;
             }
-            // posses[i + 1] = pos;
             keypad_pushes = dpad_pushes;
-            for i in 0..keypad_pushes.len() - 2 {
-                let a = keypad_pushes[i];
-                let b = keypad_pushes[i + 1];
-                let c = keypad_pushes[i + 2];
-                if a.1 == 'P' || b.1 == 'P' || c.1 == 'P' {
-                    continue;
-                }
-                // print!("{:?} ", [a.0, b.0, c.0]);
-                match [a.0, b.0, c.0] {
-                    [Right, Up, Right]
-                    | [Right, Down, Right]
-                    | [Left, Up, Left]
-                    | [Left, Down, Left]
-                    | [Up, Left, Up]
-                    | [Up, Right, Up]
-                    | [Down, Left, Down]
-                    | [Down, Right, Down] => {
-                        keypad_pushes[i] = a;
-                        keypad_pushes[i + 1] = c;
-                        keypad_pushes[i + 2] = b;
-                    }
-                    _ => {}
-                }
-            }
-            // println!();
-            // print_path(&keypad_pushes);
-            // println!("    {}", arr[i]);
         }
         print_path(&keypad_pushes);
-        // println!(
-        //     "{nums} * {} = {}",
-        //     keypad_pushes.len(),
-        //     nums as usize * keypad_pushes.len()
-        // );
         sum += nums as usize * keypad_pushes.len();
     }
     // println!("<v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A");
