@@ -69,7 +69,7 @@ use chrono::format::Item;
 use rayon::iter::IterBridge;
 
 #[derive(Clone, PartialEq, Eq)]
-struct Memoize<T>(Rc<T>);
+pub struct Memoize<T>(pub Rc<T>);
 impl<T> std::hash::Hash for Memoize<T> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         0.hash(state);
