@@ -22,28 +22,28 @@ matrixy::matrixy!("../inputs/2024/day16.input");
 fn successors((y, x, d): &(usize, usize, Direction)) -> Vec<((usize, usize, Direction), usize)> {
     let mut r = Vec::new();
     let (ky, kx) = match d.rotate_l() {
-        North => (y - 1, *x),
-        East => (*y, x + 1),
-        South => (y + 1, *x),
-        West => (*y, x - 1),
+        Up => (y - 1, *x),
+        Right => (*y, x + 1),
+        Down => (y + 1, *x),
+        Left => (*y, x - 1),
     };
     if MAP[ky][kx] != b'#' {
         r.push(((ky, kx, d.rotate_l()), 1001));
     }
     let (ky, kx) = match d.rotate_r() {
-        North => (y - 1, *x),
-        East => (*y, x + 1),
-        South => (y + 1, *x),
-        West => (*y, x - 1),
+        Up => (y - 1, *x),
+        Right => (*y, x + 1),
+        Down => (y + 1, *x),
+        Left => (*y, x - 1),
     };
     if MAP[ky][kx] != b'#' {
         r.push(((ky, kx, d.rotate_r()), 1001));
     }
     let (dy, dx) = match d {
-        North => (y - 1, *x),
-        East => (*y, x + 1),
-        South => (y + 1, *x),
-        West => (*y, x - 1),
+        Up => (y - 1, *x),
+        Right => (*y, x + 1),
+        Down => (y + 1, *x),
+        Left => (*y, x - 1),
     };
     if MAP[dy][dx] != b'#' {
         r.push(((dy, dx, *d), 1));
@@ -55,7 +55,7 @@ pub fn part1() -> usize {
     let (sy, sx) = find(b'S', MAP);
     let (ey, ex) = find(b'E', MAP);
 
-    dijkstra(&(sy, sx, East), successors, |(y, x, _)| {
+    dijkstra(&(sy, sx, Right), successors, |(y, x, _)| {
         (*y, *x) == (ey, ex)
     })
     .unwrap_or_default()
@@ -67,7 +67,7 @@ pub fn part2() -> usize {
     let (ey, ex) = find(b'E', MAP);
 
     astar_bag(
-        &(sy, sx, East),
+        &(sy, sx, Right),
         successors,
         |_| 0,
         |(y, x, _)| (*y, *x) == (ey, ex),

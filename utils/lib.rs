@@ -16,16 +16,16 @@ use std::{
 #[repr(u8)]
 #[allow(unused)]
 pub enum Direction {
-    North,
-    East,
-    South,
-    West,
+    Up,
+    Right,
+    Down,
+    Left,
 }
 impl Direction {
     pub fn rotate_l(self) -> Self {
         let d = self as u8;
         if d == 0 {
-            Direction::West
+            Direction::Left
         } else {
             unsafe { std::mem::transmute::<u8, Direction>(d - 1) }
         }
