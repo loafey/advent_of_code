@@ -31,13 +31,13 @@ pub fn part1() -> i64 {
     sum
 }
 
-fn math(code: i64) -> (i64, i64, i64) {
+fn math(code: i64) -> (i64, i64, i8) {
     let p1 = code.mix(code * 64).prune();
     let p2 = p1.mix(p1 / 32).prune();
     let p3 = p2.mix(p2 * 2048).prune();
     let price = p3 % 10;
     let change = (p3 % 10) - (code % 10);
-    (p3, price, change)
+    (p3, price, change as i8)
 }
 
 pub fn part2() -> i64 {
@@ -46,7 +46,7 @@ pub fn part2() -> i64 {
         .filter(|s| !s.is_empty())
         .map(|s| s.parse::<i64>().unwrap())
         .collect::<Vec<_>>();
-    let mut lookup: BTreeMap<VecDeque<i64>, BTreeMap<i64, i64>> = BTreeMap::default();
+    let mut lookup: FxHashMap<i32, FxHashMap<i64, i64>> = FxHashMap::default();
     for code in &codes {
         let og_code = *code;
         let mut code = *code;
@@ -56,11 +56,9 @@ pub fn part2() -> i64 {
             seq.push_back(change);
             if seq.len() > 4 {
                 seq.pop_front();
-                lookup
-                    .entry(seq.clone())
-                    .or_default()
-                    .entry(og_code)
-                    .or_insert(price);
+                let r: [i8; 4] = [seq[0], seq[1], seq[2], seq[3]];
+                let r = unsafe { std::mem::transmute::<[i8; 4], i32>(r) };
+                lookup.entry(r).or_default().entry(og_code).or_insert(price);
             }
             code = nc;
         }
