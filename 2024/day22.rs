@@ -1,5 +1,6 @@
 use rayon::prelude::*;
-use std::collections::VecDeque;
+use rustc_hash::FxHashMap;
+use std::collections::{BTreeMap, VecDeque};
 
 trait Nummy {
     fn mix(self, rhs: Self) -> Self;
@@ -45,46 +46,28 @@ pub fn part2() -> i64 {
         .filter(|s| !s.is_empty())
         .map(|s| s.parse::<i64>().unwrap())
         .collect::<Vec<_>>();
-    (-9..=9)
-        .into_par_iter()
-        .map(|x| {
-            let mut max_sum = 0;
-            for y in -9..=9 {
-                if x == y {
-                    continue;
-                }
-                for z in -9..=9 {
-                    if y == z {
-                        continue;
-                    }
-                    for w in -9..=9 {
-                        if w == z {
-                            continue;
-                        }
-                        let sequence = [x, y, z, w];
-                        let mut sum = 0;
-                        for code in &codes {
-                            let mut code = *code;
-                            let mut seq = VecDeque::new();
-                            for _ in 0..2000 {
-                                let (nc, price, change) = math(code);
-                                seq.push_back(change);
-                                if seq.len() > 4 {
-                                    seq.pop_front();
-                                }
-                                if seq == sequence {
-                                    sum += price;
-                                    break;
-                                }
-                                code = nc;
-                            }
-                        }
-                        max_sum = max_sum.max(sum);
-                    }
-                }
+    let mut lookup: BTreeMap<VecDeque<i64>, BTreeMap<i64, i64>> = BTreeMap::default();
+    for code in &codes {
+        let og_code = *code;
+        let mut code = *code;
+        let mut seq = VecDeque::new();
+        for _ in 0..2000 {
+            let (nc, price, change) = math(code);
+            seq.push_back(change);
+            if seq.len() > 4 {
+                seq.pop_front();
+                lookup
+                    .entry(seq.clone())
+                    .or_default()
+                    .entry(og_code)
+                    .or_insert(price);
             }
-            max_sum
-        })
+            code = nc;
+        }
+    }
+    lookup
+        .into_values()
+        .map(|v| v.into_values().sum())
         .max()
         .unwrap_or_default()
 }
