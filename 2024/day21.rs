@@ -1,5 +1,5 @@
 #![allow(static_mut_refs)]
-use std::{marker::PhantomData, sync::LazyLock};
+use std::sync::LazyLock;
 
 use pathfinding::prelude::dijkstra;
 use rustc_hash::{FxHashMap, FxHashSet};

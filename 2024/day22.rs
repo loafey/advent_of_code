@@ -1,6 +1,5 @@
-use rayon::prelude::*;
 use rustc_hash::FxHashMap;
-use std::collections::{BTreeMap, VecDeque};
+use std::collections::VecDeque;
 
 trait Nummy {
     fn mix(self, rhs: Self) -> Self;
