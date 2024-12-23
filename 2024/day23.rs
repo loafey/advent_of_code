@@ -36,6 +36,26 @@ pub fn part1() -> i64 {
     }
     ans
 }
+
+fn recurr(
+    map: &FxHashMap<&'static str, FxHashSet<&'static str>>,
+    cons: BTreeSet<&'static str>,
+) -> BTreeSet<BTreeSet<&'static str>> {
+    let mut res = BTreeSet::new();
+
+    let mut cons_res = cons.clone();
+    for c in cons {
+        for k in map.get(c).unwrap() {
+            let kk = map.get(k).unwrap();
+            if cons_res.iter().all(|k| kk.contains(k)) {
+                cons_res.insert(k);
+            }
+        }
+    }
+    res.insert(cons_res);
+    res
+}
+
 pub fn part2() -> String {
     let mut map: FxHashMap<&'static str, FxHashSet<&'static str>> = FxHashMap::default();
     include_str!("../inputs/2024/day23.input")
@@ -47,26 +67,6 @@ pub fn part2() -> String {
             map.entry(b).or_default().insert(a);
         });
 
-    // let mut combos = BTreeSet::new();
-    fn recurr(
-        map: &FxHashMap<&'static str, FxHashSet<&'static str>>,
-        cons: BTreeSet<&'static str>,
-    ) -> BTreeSet<BTreeSet<&'static str>> {
-        let mut res = BTreeSet::new();
-
-        let mut cons_res = cons.clone();
-        for c in cons {
-            for k in map.get(c).unwrap() {
-                let kk = map.get(k).unwrap();
-                if cons_res.iter().all(|k| kk.contains(k)) {
-                    cons_res.insert(k);
-                }
-            }
-        }
-        res.insert(cons_res);
-
-        res
-    }
     let mut combos = BTreeSet::new();
     for (c, k) in &map {
         for k in k {
