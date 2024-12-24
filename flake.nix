@@ -35,6 +35,7 @@
             openssl
             gcc
             cargo-flamegraph
+            graphviz
           ];
         };
       in
