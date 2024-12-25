@@ -26,6 +26,7 @@ pub fn gen_days(item: TokenStream) -> TokenStream {
             p.file_name()
                 .map(|s| s != "mod.rs" && s != "lib.rs" && s != "Cargo.toml")
                 .unwrap_or_default()
+                && p.extension().map(|s| s == "rs").unwrap_or_default()
         })
         .filter_map(|s| s.file_name().map(|s| s.to_string_lossy().to_string()))
         .filter(|s| !s.ends_with(".input"))
