@@ -1,7 +1,9 @@
 #![allow(static_mut_refs)]
-use std::sync::LazyLock;
 
-use pathfinding::prelude::dijkstra;
+// Big shoutout to: https://www.reddit.com/r/adventofcode/comments/1hjx0x4/2024_day_21_quick_tutorial_to_solve_part_2_in/
+// I couldnt do it on my own, but i wanted to finish all stars :(
+
+use pathfinding::prelude::astar_bag_collect;
 use rustc_hash::{FxHashMap, FxHashSet};
 use utils::Direction::{self, *};
 
@@ -31,214 +33,144 @@ fn keypad() -> FxHashMap<char, Vec<(Direction, char)>> {
     map
 }
 
-fn alike(b: &[char]) -> usize {
-    let mut sum = 0;
-    for (a, b) in unsafe { &CODE }.iter().zip(b) {
-        if a == b {
-            sum += 1;
-        } else {
-            break;
-        }
-    }
-    unsafe { &CODE }.len() - sum
-}
+pub fn solve(len: usize) -> usize {
+    let keypad = keypad();
+    let dpad = dpad();
+    let mut paths: FxHashMap<char, FxHashMap<char, FxHashSet<String>>> = FxHashMap::default();
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-struct State {
-    proxy: [char; 26],
-    goal: Vec<char>,
-}
-
-fn recur(
-    limit: usize,
-    a: usize,
-    b: usize,
-    moves: &mut FxHashSet<(State, usize)>,
-    proxy: &[char; 26],
-    goal: &Vec<char>,
-) {
-    let code = unsafe { &CODE };
-    macro_rules! m1 {
-        ($layer:expr, $c:expr) => {{
-            moves.insert((
-                State {
-                    proxy: {
-                        let mut copy = *proxy;
-                        copy[$layer] = $c;
-                        copy
-                    },
-                    goal: (goal).clone(),
+    macro_rules! inps {
+        ($pad:expr, $a:expr, $b:expr) => {
+            let sols = astar_bag_collect(
+                &(Up, *$a),
+                |(_, a)| {
+                    $pad.get(a)
+                        .cloned()
+                        .unwrap_or_default()
+                        .into_iter()
+                        .map(|a| (a, 1))
+                        .collect::<Vec<_>>()
                 },
-                alike(&*goal),
-            ));
-        }};
-    }
-    if b == limit {
-        match (proxy[a], proxy[b]) {
-            ('<', '8') => m1!(limit, '7'),
-            ('<', '9') => m1!(limit, '8'),
-            ('<', '5') => m1!(limit, '4'),
-            ('<', '6') => m1!(limit, '5'),
-            ('<', '2') => m1!(limit, '1'),
-            ('<', '3') => m1!(limit, '2'),
-            ('<', 'A') => m1!(limit, '0'),
-            ('>', '7') => m1!(limit, '8'),
-            ('>', '8') => m1!(limit, '9'),
-            ('>', '4') => m1!(limit, '5'),
-            ('>', '5') => m1!(limit, '6'),
-            ('>', '1') => m1!(limit, '2'),
-            ('>', '2') => m1!(limit, '3'),
-            ('>', '0') => m1!(limit, 'A'),
-            ('^', '4') => m1!(limit, '7'),
-            ('^', '5') => m1!(limit, '8'),
-            ('^', '6') => m1!(limit, '9'),
-            ('^', '1') => m1!(limit, '4'),
-            ('^', '2') => m1!(limit, '5'),
-            ('^', '3') => m1!(limit, '6'),
-            ('^', '0') => m1!(limit, '2'),
-            ('^', 'A') => m1!(limit, '3'),
-            ('v', '7') => m1!(limit, '4'),
-            ('v', '8') => m1!(limit, '5'),
-            ('v', '9') => m1!(limit, '6'),
-            ('v', '4') => m1!(limit, '1'),
-            ('v', '5') => m1!(limit, '2'),
-            ('v', '6') => m1!(limit, '3'),
-            ('v', '2') => m1!(limit, '0'),
-            ('v', '3') => m1!(limit, 'A'),
-            ('A', x) => {
-                let mut ng = goal.clone();
-                ng.push(x);
-                if ng.len() > 4
-                    || !match ng.len() {
-                        1 => ng[0] == code[0],
-                        2 => ng[0] == code[0] && ng[1] == code[1],
-                        3 => ng[0] == code[0] && ng[1] == code[1] && ng[2] == code[2],
-                        4 => {
-                            ng[0] == code[0]
-                                && ng[1] == code[1]
-                                && ng[2] == code[2]
-                                && ng[3] == code[3]
-                        }
-                        _ => panic!(),
-                    }
-                {
-                    return;
-                };
-                let alike = alike(&ng);
-                moves.insert((
-                    State {
-                        proxy: *proxy,
-                        goal: ng,
-                    },
-                    alike,
-                ));
-            }
-            _ => {}
-        }
-    } else {
-        match (proxy[a], proxy[b]) {
-            ('<', 'v') => m1!(b, '<'),
-            ('<', '>') => m1!(b, 'v'),
-            ('<', 'A') => m1!(b, '^'),
-            ('>', '<') => m1!(b, 'v'),
-            ('>', 'v') => m1!(b, '>'),
-            ('>', '^') => m1!(b, 'A'),
-            ('^', 'v') => m1!(b, '^'),
-            ('^', '>') => m1!(b, 'A'),
-            ('v', '^') => m1!(b, 'v'),
-            ('v', 'A') => m1!(b, '>'),
-            ('A', _) => {
-                recur(limit, a + 1, b + 1, moves, proxy, goal);
-            }
-            _ => {}
-        };
-    }
-}
-
-fn movy(limit: usize, state: State) -> FxHashSet<(State, usize)> {
-    let State { proxy, goal } = state.clone();
-    let mut moves: FxHashSet<(_, usize)> = FxHashSet::default();
-    moves.extend(DPAD.get(&proxy[0]).unwrap().iter().map(|(_, c)| {
-        (
-            State {
-                proxy: {
-                    let mut copy = proxy;
-                    copy[0] = *c;
-                    copy
-                },
-                goal: goal.clone(),
-            },
-            alike(&goal),
-        )
-    }));
-
-    recur(limit, 0, 1, &mut moves, &proxy, &goal);
-    // println!("{}", moves.len());
-    moves
-}
-
-static mut CODE: Vec<char> = Vec::new();
-static DPAD: LazyLock<FxHashMap<char, Vec<(Direction, char)>>> = LazyLock::new(dpad);
-fn solve(limit: usize) -> usize {
-    let codes = include_str!("../inputs/2024/day21.input")
-        .lines()
-        .filter(|s| !s.is_empty())
-        .map(|s| s.chars().collect::<Vec<_>>())
-        .collect::<Vec<_>>();
-
-    // let mut posses = ['A'; 5];
-    codes
-        .into_iter()
-        .map(|code| {
-            unsafe { CODE = code };
-            // let mut pos = posses[0];
-            // print!("{}: ", code.iter().collect::<String>());
-            let mut sum = 0;
-            let mut nums = Vec::new();
-            for keypad_goal in unsafe { &CODE } {
-                if keypad_goal.is_numeric() {
-                    nums.push(*keypad_goal);
+                |_| 0,
+                |(_, a)| a == $b,
+            );
+            if let Some((sols, _)) = sols {
+                let r = paths.entry(*$a).or_default().entry(*$b).or_default();
+                for s in sols {
+                    r.insert(
+                        s.into_iter()
+                            .skip(1)
+                            .map(|(a, _)| match a {
+                                Up => '^',
+                                Down => 'v',
+                                Left => '<',
+                                Right => '>',
+                            })
+                            .collect(),
+                    );
                 }
             }
-            let nums = nums.iter().collect::<String>().parse::<usize>().unwrap();
-            let state = State {
-                proxy: ['A'; 26],
-                goal: Vec::new(),
-            };
+        };
+    }
 
-            let res = dijkstra(
-                &state,
-                |s| movy(limit, s.clone()),
-                |State { goal, .. }| goal == unsafe { &CODE },
+    for a in keypad.keys() {
+        for b in keypad.keys() {
+            inps!(keypad, a, b);
+        }
+    }
+    for a in dpad.keys() {
+        for b in dpad.keys() {
+            inps!(dpad, a, b);
+        }
+    }
+
+    fn build_path(
+        map: &FxHashMap<char, FxHashMap<char, FxHashSet<String>>>,
+        keys: &str,
+        a: char,
+        cur_path: String,
+        result: &mut Vec<String>,
+    ) {
+        if keys.is_empty() {
+            result.push(cur_path);
+            return;
+        }
+        let b = keys.chars().next().unwrap();
+        for p in &map[&a][&b] {
+            let mut cur_path = cur_path.clone();
+            cur_path += p;
+            cur_path += "A";
+            build_path(map, &keys[1..], b, cur_path, result);
+        }
+    }
+
+    static mut MAP: Option<FxHashMap<char, FxHashMap<char, FxHashSet<String>>>> = None;
+    unsafe { MAP = Some(paths) };
+
+    #[memoize::memoize]
+    fn shortest_path(keys: String, depth: usize) -> usize {
+        if depth == 0 {
+            return keys.len();
+        }
+
+        let mut total = 0;
+        let splat = keys.split('A').collect::<Vec<_>>();
+        let len = splat.len();
+        for (i, p) in splat.into_iter().enumerate() {
+            let p = if i + 1 == len {
+                p.to_string()
+            } else {
+                format!("{p}A")
+            };
+            let mut sub_seqs = Vec::new();
+            build_path(
+                unsafe { MAP.as_ref().unwrap() },
+                &p,
+                'A',
+                String::new(),
+                &mut sub_seqs,
             );
-            if let Some(res) = res {
-                let res = res.0;
-                println!("{} * {nums} = {}", res.len() - 1, (res.len() - 1) * nums);
-                sum += (res.len() - 1) * nums;
-            }
-            sum
-        })
-        .sum()
+            let min = sub_seqs
+                .into_iter()
+                .map(|sub_seq| shortest_path(sub_seq, depth - 1))
+                .min()
+                .unwrap_or_default();
+            total += min;
+        }
+
+        total
+    }
+
+    let mut tot = 0;
+    for c in include_str!("../inputs/2024/day21.input")
+        .lines()
+        .filter(|s| !s.is_empty())
+    {
+        let num = c
+            .chars()
+            .filter(|c| c.is_numeric())
+            .collect::<String>()
+            .parse::<usize>()
+            .unwrap();
+        let mut p = Vec::new();
+        build_path(
+            unsafe { MAP.as_ref().unwrap() },
+            c,
+            'A',
+            String::new(),
+            &mut p,
+        );
+        tot += num
+            * p.into_iter()
+                .map(|p| shortest_path(p, len))
+                .min()
+                .unwrap_or_default();
+    }
+    tot
 }
 
 pub fn part1() -> usize {
     solve(2)
 }
 pub fn part2() -> usize {
-    let mut last = std::time::Duration::default();
-    for size in 25..=25 {
-        let time = std::time::Instant::now();
-        let ans = solve(size);
-        let t = time.elapsed();
-        println!(
-            "{}:\t{ans}, took {:?} ({}%)",
-            size,
-            t,
-            ((t.as_secs_f64() / last.as_secs_f64()) * 100.0) as usize
-        );
-        last = t;
-        // ans
-    }
-
-    0
+    solve(25)
 }
