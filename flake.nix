@@ -1,5 +1,4 @@
 {
-
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
@@ -14,33 +13,51 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         overlays = [ fenix.overlays.default ];
-        pkgs = import nixpkgs {
-          inherit system overlays;
-        };
-        toolchain = with fenix.packages.${system};  combine [
-          minimal.cargo
-          minimal.rustc
-          latest.clippy
-          latest.rust-src
-          latest.rustfmt
-        ];
+        pkgs = import nixpkgs { inherit system overlays; };
+        toolchain = with fenix.packages.${system};
+          combine [
+            minimal.cargo
+            minimal.rustc
+            latest.clippy
+            latest.rust-src
+            latest.rustfmt
+            targets.wasm32-unknown-unknown.latest.rust-std
+            targets.x86_64-unknown-linux-gnu.latest.rust-std
+          ];
 
-        pkg = (naersk.lib.${system}.override {
+        fetchy = (naersk.lib.${system}.override {
           cargo = toolchain;
           rustc = toolchain;
         }).buildPackage {
           src = ./.;
-          nativeBuildInputs = with pkgs; [
-            pkg-config
-            openssl
-            gcc
-            cargo-flamegraph
-            graphviz
-          ];
+          nativeBuildInputs = with pkgs; [ ] ++ min-pkgs;
         };
-      in
-      {
-        defaultPackage = pkg;
-        devShell = pkg;
+
+        min-pkgs = with pkgs; [ pkg-config openssl nodejs ];
+      in {
+        defaultPackage = fetchy;
+
+        packages = { fetchy = fetchy; };
+
+        devShell = (naersk.lib.${system}.override {
+          cargo = toolchain;
+          rustc = toolchain;
+        }).buildPackage {
+          src = ./.;
+          nativeBuildInputs = with pkgs; [ ] ++ min-pkgs;
+          LIBCLANG_PATH = "${pkgs.llvmPackages.libclang.lib}/lib";
+          TS_RS_EXPORT_DIR = "./../../obsidian/src/bindings";
+
+          # installPhase = ''
+          #   ls
+          #   install -m755 -D sys/libsteam_api.so $out/lib/libsteam_api.so
+          # '';
+
+          shellHook = ''
+            export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:${
+              pkgs.lib.makeLibraryPath min-pkgs
+            }:$(dirname $(dirname $out))/sys/"
+          '';
+        };
       });
 }
