@@ -17,6 +17,7 @@ fn main() {
 
     let benchmark = std::env::args().filter(|s| s == "--benchmark").count() == 1;
     let table = std::env::args().filter(|s| s == "--table").count() == 1;
+    let spec = std::env::args().filter(|s| s == "-s").count() == 1;
     let num = std::env::args()
         .nth(1)
         .and_then(|s| s.parse::<usize>().ok());
@@ -47,6 +48,28 @@ fn main() {
         println!("╍ Running day {num} ╍");
 
         year!().run_day(num)
+    } else if spec {
+        let mut args = std::env::args().skip(2);
+        let Some(year) = args.next().and_then(|s| s.parse::<usize>().ok()) else {
+            return;
+        };
+        let Some(day) = args.next().and_then(|s| s.parse::<usize>().ok()) else {
+            return;
+        };
+        let Some(part1) = args.next().and_then(|s| s.parse::<usize>().ok()) else {
+            return;
+        };
+        let part1 = part1 == 1;
+        let table = match year {
+            2018 => aoc_2018::table(),
+            2019 => aoc_2019::table(),
+            2020 => aoc_2020::table(),
+            2022 => aoc_2022::table(),
+            2023 => aoc_2023::table(),
+            2024 => aoc_2024::table(),
+            _ => return,
+        };
+        table.benchmark_day_json(day, part1);
     } else {
         println!("╍ Running current day ╍");
         year!().run_current_day()
