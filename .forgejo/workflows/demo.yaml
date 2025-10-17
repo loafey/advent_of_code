@@ -1,0 +1,7 @@
+on: [push]
+jobs:
+  test:
+    runs-on: docker
+    steps:
+      - shell: sh
+        run: echo All Good
