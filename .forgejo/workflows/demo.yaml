@@ -1,7 +1,15 @@
 on: [push]
 jobs:
-  test:
+  benchmarks:
     runs-on: docker
     steps:
-      - shell: sh
-        run: echo All Good
+    - name: Checkout repo
+      uses: actions/checkout@v4
+    - name: Install Rust
+      uses: https://github.com/continuwuity/continuwuity/.forgejo/actions/rust-toolchain@v0.5.0-rc.7
+    - name: Benchmarks
+      run: |
+        cargo -V
+      # - uses: https://github.com/actions-rust-lang/setup-rust-toolchain@v1
+      # - run: cargo -V
+          
