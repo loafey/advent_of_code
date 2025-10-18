@@ -1,38 +1,21 @@
-# AoC Benchmarks (mango-pc)
-## 2024 Rust solutions 🤠 
-| Day | Part 1 avg | Best | Worst | Part 2 avg | Best | Worst |
-| --- | --- | --- | --- | --- | --- | --- |
-|1|🦀: 108µs|🦀: 102µs|🦀: 318µs|🦀: 104µs|🦀: 99µs|🦀: 166µs|
-|2|🦀: 86µs|🦀: 82µs|🦀: 166µs|🦀: 254µs|🦀: 246µs|🦀: 386µs|
-|3|🦀: 116µs|🦀: 113µs|🦀: 220µs|🦀: 120µs|🦀: 112µs|🦀: 266µs|
-|4|🦀: 84µs|🦀: 79µs|🦀: 152µs|🦀: 83µs|🦀: 75µs|🦀: 214µs|
-|5|🦀: 203µs|🦀: 177µs|🦀: 513µs|🦀: 186µs|🦀: 168µs|🦀: 377µs|
-|6|🦀: 55µs|🦀: 50µs|🦀: 180µs|💅: 7ms|💅: 6ms|💅: 13ms|
-|7|🦀: 348µs|🦀: 263µs|🦀: 1784µs|💅: 5ms|💅: 4ms|💅: 9ms|
-|8|🦀: 11µs|🦀: 10µs|🦀: 49µs|🦀: 24µs|🦀: 22µs|🦀: 68µs|
-|9|🦀: 653µs|🦀: 619µs|🦀: 1956µs|💅: 24ms|💅: 22ms|💅: 39ms|
-|10|🦀: 219µs|🦀: 131µs|🦀: 1152µs|🦀: 101µs|🦀: 43µs|🦀: 1102µs|
-|11|🦀: 208µs|🦀: 200µs|🦀: 366µs|💅: 7ms|💅: 6ms|💅: 9ms|
-|12|🦀: 1358µs|🦀: 1039µs|💅: 3ms|💅: 51ms|💅: 41ms|💅: 82ms|
-|13|🦀: 82µs|🦀: 78µs|🦀: 334µs|🦀: 84µs|🦀: 80µs|🦀: 312µs|
-|14|🦀: 168µs|🦀: 162µs|🦀: 254µs|🦀: 196µs|🦀: 144µs|🦀: 1137µs|
-|15|🦀: 576µs|🦀: 556µs|🦀: 832µs|🦀: 1141µs|🦀: 1076µs|🦀: 1931µs|
-|16|🦀: 1198µs|🦀: 1166µs|🦀: 1745µs|💅: 8ms|💅: 8ms|💅: 13ms|
-|17|👑: 1439ns|👑: 1402ns|🦀: 14µs|🦀: 189µs|🦀: 182µs|🦀: 309µs|
-|18|🦀: 393µs|🦀: 383µs|🦀: 633µs|💅: 4ms|💅: 4ms|💅: 6ms|
-|19|🦀: 230µs|🦀: 145µs|💅: 5ms|🦀: 227µs|🦀: 130µs|💅: 2ms|
-|20|❌|❌|❌|❌|❌|❌|
-|21|❌|❌|❌|❌|❌|❌|
-|22|❌|❌|❌|❌|❌|❌|
-|23|❌|❌|❌|❌|❌|❌|
-|24|❌|❌|❌|❌|❌|❌|
-|25|❌|❌|❌|❌|❌|❌|
+# Advent of Code - Benchmarks 
+The specs the server running these benchmarks:
+* CPU: AMD Ryzen 7 5825U (16) @ 4.55 GHz
+* GPU: AMD Barcelo
+* Memory: 16 GB
+* Swap: 16 GB
 
-| Total average time | Total best time | Total worst time |
-| --- | --- | --- |
-| 118.392192ms | 103.292362ms | 202.328764ms |
+Each part of each day runs with a maximum of 4GB memory, gets 1000 seconds to benchmark 1000 iterations of the part.
+If memory or the timer runs out, the benchmark is not displayed here. This is to keep my electricity bills cheaper and server stable 🦀
 
-| Average average time | Average best time | Average worst time |
-| --- | --- | --- |
-| 4.735687ms | 4.131694ms | 8.09315ms |
-
+![2025](https://loafey.se/advent_of_code/benchmarks/2025.svg)
+![2024](https://loafey.se/advent_of_code/benchmarks/2024.svg)
+![2023](https://loafey.se/advent_of_code/benchmarks/2023.svg)
+![2022](https://loafey.se/advent_of_code/benchmarks/2022.svg)
+![2021](https://loafey.se/advent_of_code/benchmarks/2021.svg)
+![2020](https://loafey.se/advent_of_code/benchmarks/2020.svg)
+![2019](https://loafey.se/advent_of_code/benchmarks/2019.svg)
+![2018](https://loafey.se/advent_of_code/benchmarks/2018.svg)
+![2017](https://loafey.se/advent_of_code/benchmarks/2017.svg)
+![2016](https://loafey.se/advent_of_code/benchmarks/2016.svg)
+![2015](https://loafey.se/advent_of_code/benchmarks/2015.svg)
