@@ -1,0 +1,7 @@
+/target
+/inputs
+/.direnv
+perf.data
+perf.data.old
+flamegraph.svg
+*.dot
