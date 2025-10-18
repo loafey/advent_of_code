@@ -5,8 +5,15 @@ jobs:
     steps:
     - name: Checkout repo
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
     - name: Install Rust
       uses: https://github.com/continuwuity/continuwuity/.forgejo/actions/rust-toolchain@v0.5.0-rc.7
+    - name: Install jq
+      run: | 
+        apt update
+        apt install -y jq
     - name: Fetch Inputs
       run: |
         mkdir -p ~/.ssh/ 
@@ -15,6 +22,20 @@ jobs:
         eval `ssh-agent -s`
         ssh-add - <<< '${{ secrets.SSH_KEY }}'
         git clone ssh://git@100.74.251.100:2222/loafey/advent_of_code_inputs.git inputs
+    - name: Compile
+      run: |
+        cargo build --release
     - name: Benchmarks
       run: |
         bash run-benchmark.sh
+    - name: Publish Data 
+      run : | 
+        git switch -c benchmark-data origin/benchmark-data
+        git config --global user.email "loafeytron@loafey.se"
+        git config --global user.name "loafeytron"
+        rm -rf benchmarks
+        mv benchmarks-data benchmarks
+        mv index-temp.html index.html
+        git add .
+        git commit -m "Update benchmark data"
+        git push
