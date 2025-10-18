@@ -1,5 +1,5 @@
-use utils::load_string;
 use std::ops::Range;
+use utils::load_string;
 
 type Map = Vec<(Range<usize>, usize)>;
 
@@ -62,8 +62,8 @@ pub fn part2() -> usize {
 
     // Cred to Sebastian Selander for this idea, https://github.com/sebastianselander
     let seeds = seeds
-        .array_chunks::<2>()
-        .map(|[r1, r2]| *r1..r1 + r2)
+        .chunks_exact(2)
+        .map(|r| r[0]..r[0] + r[1])
         .collect::<Vec<_>>();
     let start = seeds.iter().map(|v| v.start).min().unwrap_or_default();
 

@@ -1,7 +1,7 @@
 [package]
 name = "advent_of_code"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [[bin]]
 name = "advent_of_code"
@@ -12,7 +12,7 @@ draw = []
 
 [dependencies]
 aoc_table = { workspace = true }
-rayon = { workspace = true}
+rayon = { workspace = true }
 aoc_2024 = { path = "2024" }
 aoc_2023 = { path = "2023" }
 aoc_2022 = { path = "2022" }
@@ -36,4 +36,3 @@ zipperoni = { git = "https://github.com/loafey/zipperoni" }
 pathfinding = "4.11.0"
 euclid = "0.22.11"
 arrayvec = "0.7.6"
-

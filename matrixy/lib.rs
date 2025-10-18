@@ -6,7 +6,7 @@ use proc_macro::{Span, TokenStream};
 
 #[proc_macro]
 pub fn matrixy(item: TokenStream) -> TokenStream {
-    let mut source_path = Span::call_site().source_file().path();
+    let mut source_path = PathBuf::from(Span::call_site().file());
     source_path.pop();
     let f = format!("{item}");
     let file_path = PathBuf::from(&f[1..(f.len() - 1)]);
