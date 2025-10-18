@@ -1,7 +1,7 @@
 mkdir benchmarks-data
 
 YEARS=(
-    2025
+    # 2025
     2024
     2023
     2022
@@ -37,15 +37,15 @@ for year in "${YEARS[@]}"; do
         part2=$(ulimit -v 4000000 -t 100 && ./target/release/advent_of_code -s $year $day 2)
         if [ -n "$part1" ]; then
             output="$output<text x=\"105\" y=\"$y\" fill=\"white\">$(echo "$part1" | jq .avg -r)</text>"
-            output="$output<text x=\"305\" y=\"$y\" fill=\"white\">$(echo "$part1" | jq .worst -r)</text>"
-            output="$output<text x=\"505\" y=\"$y\" fill=\"white\">$(echo "$part1" | jq .best -r)</text>"
+            output="$output<text x=\"305\" y=\"$y\" fill=\"white\">$(echo "$part1" | jq .best -r)</text>"
+            output="$output<text x=\"505\" y=\"$y\" fill=\"white\">$(echo "$part1" | jq .worst -r)</text>"
         else
             output="$output<text x=\"105\" y=\"$y\" fill=\"red\">Missing, timeout or OOM!</text>"
         fi
         if [ -n "$part2" ]; then
             output="$output<text x=\"705\" y=\"$y\" fill=\"white\">$(echo "$part2" | jq .avg -r)</text>"
-            output="$output<text x=\"905\" y=\"$y\" fill=\"white\">$(echo "$part2" | jq .worst -r)</text>"
-            output="$output<text x=\"1105\" y=\"$y\" fill=\"white\">$(echo "$part2" | jq .best -r)</text>"
+            output="$output<text x=\"905\" y=\"$y\" fill=\"white\">$(echo "$part2" | jq .best -r)</text>"
+            output="$output<text x=\"1105\" y=\"$y\" fill=\"white\">$(echo "$part2" | jq .worst -r)</text>"
         else 
             output="$output<text x=\"705\" y=\"$y\" fill=\"red\">Missing, timeout or OOM!</text>"
         fi
