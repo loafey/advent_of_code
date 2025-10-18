@@ -7,4 +7,6 @@ flamegraph.svg
 perf.data
 perf.data.old
 benchmarks/
+benchmarks-data/
 *.dot
+index-temp.html

@@ -1,4 +1,4 @@
-mkdir benchmarks
+mkdir benchmarks-data
 
 YEARS=(
     2025
@@ -13,7 +13,8 @@ YEARS=(
     2016
     2015
 )
-cargo build --release
+site="<!DOCTYPE html><html><head><meta charset=\"UTF-8\" /><title>Advent of Code</title></head><body>"
+
 for year in "${YEARS[@]}"; do
     output="<svg height=\"830\" width=\"1300\" xmlns=\"http://www.w3.org/2000/svg\">"
     output="$output<rect width=\"100%\" height=\"100%\" fill=\"%230D1117\" />"
@@ -50,5 +51,8 @@ for year in "${YEARS[@]}"; do
         fi
     done
     output="$output</svg>"
-    echo "$output" > benchmarks/$year.svg
+    echo "$output" > benchmarks-data/$year.svg
+    site="$site<img src=\"https://loafey.se/advent_of_code/benchmarks/$year.svg\">"
 done
+site="$site</body></html>"
+echo "$site" > index-temp.html
