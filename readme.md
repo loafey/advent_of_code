@@ -5,7 +5,7 @@ The specs the server running these benchmarks:
 * Memory: 16 GB
 * Swap: 16 GB
 
-Each part of each day runs with a maximum of 4GB memory, gets 1000 seconds to benchmark 1000 iterations of the part.
+Each part of each day runs with a maximum of 4GB memory, gets 100 seconds to benchmark 100 iterations of the part.
 If memory or the timer runs out, the benchmark is not displayed here. This is to keep my electricity bills cheaper and server stable 🦀
 
 ![2025](https://loafey.se/advent_of_code/benchmarks/2025.svg)

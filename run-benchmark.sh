@@ -33,8 +33,8 @@ for year in "${YEARS[@]}"; do
         echo "$year - $day"
         y=$(echo $(($day*30+60))) 
         output="$output<text x=\"5\" y=\"$y\" fill=\"white\">Day $day:</text>"
-        part1=$(ulimit -v 4000000 -t 1000 && ./target/release/advent_of_code -s $year $day 1)
-        part2=$(ulimit -v 4000000 -t 1000 && ./target/release/advent_of_code -s $year $day 2)
+        part1=$(ulimit -v 4000000 -t 100 && ./target/release/advent_of_code -s $year $day 1)
+        part2=$(ulimit -v 4000000 -t 100 && ./target/release/advent_of_code -s $year $day 2)
         if [ -n "$part1" ]; then
             output="$output<text x=\"105\" y=\"$y\" fill=\"white\">$(echo "$part1" | jq .avg -r)</text>"
             output="$output<text x=\"305\" y=\"$y\" fill=\"white\">$(echo "$part1" | jq .worst -r)</text>"
