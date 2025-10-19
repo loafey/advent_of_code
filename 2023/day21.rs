@@ -1,6 +1,6 @@
-use utils::{load_matrix_then, MatrixGet};
-use std::collections::VecDeque;
 use Spot::*;
+use std::collections::VecDeque;
+use utils::{MatrixGet, load_matrix_then};
 
 #[derive(Clone, Copy)]
 enum Spot {
@@ -233,7 +233,7 @@ pub fn part2() -> usize {
     //         } // Chunk::Done(a) => a,
     //     })
     //     .sum()
-    0
+    panic!()
 }
 
 // Works but ungodly slow
