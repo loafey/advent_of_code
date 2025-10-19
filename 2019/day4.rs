@@ -35,5 +35,5 @@ pub fn part1() -> usize {
 }
 
 pub fn part2() -> i32 {
-    0
+    panic!()
 }

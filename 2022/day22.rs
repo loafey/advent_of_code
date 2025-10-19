@@ -211,5 +211,5 @@ pub fn part1() -> usize {
 
 pub fn part2() -> i32 {
     // println!("{:?}", input_p2());
-    0
+    panic!()
 }

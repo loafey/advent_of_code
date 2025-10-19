@@ -165,5 +165,5 @@ pub fn part2() -> i32 {
     // let (state, rules) = parse_input();
 
     // calc(50000000000, state, rules)
-    0
+    panic!()
 }

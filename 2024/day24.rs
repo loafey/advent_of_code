@@ -190,20 +190,20 @@ pub fn part2() -> i64 {
         num_test += 1;
     }
 
-    eprintln!(
-        "{:?}",
-        BTreeSet::from(["z07", "gmt", "cbj", "qjj", "z18", "dmn", "z35", "cfk"])
-            .into_iter()
-            .collect::<Vec<_>>()
-            .join(",")
-    );
-    eprintln!(
-        "{:?}",
-        BTreeSet::from(["aaa", "eee", "ooo", "z99", "bbb", "ccc", "aoc", "z24"])
-            .into_iter()
-            .collect::<Vec<_>>()
-            .join(",")
-    );
+    // eprintln!(
+    //     "{:?}",
+    //     BTreeSet::from(["z07", "gmt", "cbj", "qjj", "z18", "dmn", "z35", "cfk"])
+    //         .into_iter()
+    //         .collect::<Vec<_>>()
+    //         .join(",")
+    // );
+    // eprintln!(
+    //     "{:?}",
+    //     BTreeSet::from(["aaa", "eee", "ooo", "z99", "bbb", "ccc", "aoc", "z24"])
+    //         .into_iter()
+    //         .collect::<Vec<_>>()
+    //         .join(",")
+    // );
     0
 }
 // cbj,cfk,dmn,gmt,qjj,z07,z18,z35

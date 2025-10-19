@@ -39,8 +39,8 @@ pub fn part1() -> isize {
     let device = adapters.iter().max().unwrap() + 3;
 
     solver(0, adapters, device, Vec::new());
-    eprintln!("{device}");
-    0
+    // eprintln!("{device}");
+    panic!()
 }
 
 pub fn part2() -> usize {
