@@ -31,7 +31,6 @@ fn solver(current: isize, input: Vec<isize>, goal: isize, res: Vec<isize>) -> is
             return current;
         }
     }
-    eprintln!("{res:?}");
     current
 }
 

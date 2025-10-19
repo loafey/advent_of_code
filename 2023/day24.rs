@@ -201,7 +201,6 @@ pub fn part2() -> i64 {
         .skip(15)
         .par_bridge()
         .map(|(i, stone)| {
-            eprintln!("Working on stone \x1b[32m{i}\x1b[0m");
             let max_x = stone.1.x.abs() as i64 * 4;
             let max_y = stone.1.y.abs() as i64 * 4;
             let max_z = stone.1.z.abs() as i64 * 4;
