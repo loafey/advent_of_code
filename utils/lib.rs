@@ -453,7 +453,7 @@ pub fn ascii_4_art_to_string(a: &[Vec<char>; 6], gap: usize) -> String {
                 res += "H"
             }
             _ => {
-                cutout.iter().for_each(|c| println!("{c:?}"));
+                cutout.iter().for_each(|c| eprintln!("{c:?}"));
                 panic!("Unknown char!");
             }
         };

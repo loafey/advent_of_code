@@ -54,14 +54,14 @@ fn simulate(grid: &mut [Vec<char>], min_x: usize) {
             grid.iter().enumerate().for_each(|(y, r)| {
                 r.iter().enumerate().for_each(|(x, c)| {
                     if y == sand[1] && x == sand[0] {
-                        print!("ø");
+                        eprint!("ø");
                     } else {
-                        print!("{c}");
+                        eprint!("{c}");
                     }
                 });
-                println!()
+                eprintln!()
             });
-            println!();
+            eprintln!();
             std::thread::sleep_ms(16);
         }
 

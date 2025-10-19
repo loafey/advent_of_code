@@ -53,9 +53,9 @@ pub fn part1() -> i64 {
                 .any(|c| c > 5)
             {
                 sum += 1;
-                println!("Lock {l:?} and key {k:?}: don't overlap")
+                eprintln!("Lock {l:?} and key {k:?}: don't overlap")
             } else {
-                println!("Lock {l:?} and key {k:?}: overlap")
+                eprintln!("Lock {l:?} and key {k:?}: overlap")
             }
         }
     }

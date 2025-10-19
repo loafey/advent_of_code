@@ -1,7 +1,7 @@
-use utils::{load_string, IteratorEvalExt as _};
 use euclid::default::{Point2D, Point3D, Vector2D, Vector3D};
 use rayon::iter::{ParallelBridge, ParallelIterator as _};
 use std::{collections::HashSet, fmt::Debug};
+use utils::{IteratorEvalExt as _, load_string};
 
 fn parse_p3(s: &str) -> [f64; 3] {
     s.split(", ")
@@ -143,9 +143,9 @@ pub fn part1() -> usize {
                 ok += 1;
                 // println!("         \x1b[32mOk collision\x1b[0m: {intersection:?}");
             } //else {
-              // println!("    \x1b[31mInvalid collision\x1b[0m: {intersection:?}")
-              // }
-              // println!();
+            // println!("    \x1b[31mInvalid collision\x1b[0m: {intersection:?}")
+            // }
+            // println!();
 
             // i += 1;
         }
@@ -201,7 +201,7 @@ pub fn part2() -> i64 {
         .skip(15)
         .par_bridge()
         .map(|(i, stone)| {
-            println!("Working on stone \x1b[32m{i}\x1b[0m");
+            eprintln!("Working on stone \x1b[32m{i}\x1b[0m");
             let max_x = stone.1.x.abs() as i64 * 4;
             let max_y = stone.1.y.abs() as i64 * 4;
             let max_z = stone.1.z.abs() as i64 * 4;

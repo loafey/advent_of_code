@@ -167,7 +167,7 @@ pub fn part2() -> i64 {
                 _ => panic!(),
             };
             // if a_s == "x00" {
-            // println!("{a_s}({a}) {op} {b_s}({b}) = {res}");
+            // eprintln!("{a_s}({a}) {op} {b_s}({b}) = {res}");
             // }
             if t.starts_with('z') {
                 z_map.insert(t, res);
@@ -181,23 +181,23 @@ pub fn part2() -> i64 {
         let x = to_num(x_map);
         let y = to_num(y_map);
         let start = format!("{num_test} {y_test}: {x} + {y} = ");
-        println!("{start}{}", x + y);
+        eprintln!("{start}{}", x + y);
         let z = to_num(z_map);
-        println!("{}{}", " ".repeat(start.len()), z);
+        eprintln!("{}{}", " ".repeat(start.len()), z);
         if x + y != z {
             break;
         }
         num_test += 1;
     }
 
-    println!(
+    eprintln!(
         "{:?}",
         BTreeSet::from(["z07", "gmt", "cbj", "qjj", "z18", "dmn", "z35", "cfk"])
             .into_iter()
             .collect::<Vec<_>>()
             .join(",")
     );
-    println!(
+    eprintln!(
         "{:?}",
         BTreeSet::from(["aaa", "eee", "ooo", "z99", "bbb", "ccc", "aoc", "z24"])
             .into_iter()

@@ -33,18 +33,8 @@ fn parse_input() -> (Vec<char>, Vec<(Vec<char>, char)>) {
     (initial_state, rules)
 }
 
-#[allow(dead_code)]
-fn print_state(v: &[char]) {
-    v /*[EXTRA_LEN - 3..v.len()]*/
-        .iter()
-        .for_each(|c| print!("{c}"));
-    println!()
-}
-
 fn calc(limit: usize, mut state: Vec<char>, rules: Vec<(Vec<char>, char)>) -> i32 {
     for _ in 0..limit {
-        // print!("{i}:\t");
-        // print_state(&state);
         let mut new = vec![state[0], state[1]];
 
         for i in 2..state.len() - 2 {

@@ -1,7 +1,7 @@
 use rand::seq::SliceRandom;
 
-use utils::load_string;
 use std::collections::{BTreeSet as Set, HashMap as Map};
+use utils::load_string;
 
 fn input() -> Map<String, Set<String>> {
     let mut map = load_string("inputs/2023/day25.input")
@@ -115,10 +115,10 @@ pub fn part1() -> usize {
                 sizes.insert(a, 1);
             }
         });
-    println!("{sizes:?}");
+    eprintln!("{sizes:?}");
     0
 }
 
 pub fn part2() -> usize {
-    0
+    panic!()
 }

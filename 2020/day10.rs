@@ -31,7 +31,7 @@ fn solver(current: isize, input: Vec<isize>, goal: isize, res: Vec<isize>) -> is
             return current;
         }
     }
-    println!("{res:?}");
+    eprintln!("{res:?}");
     current
 }
 
@@ -40,10 +40,10 @@ pub fn part1() -> isize {
     let device = adapters.iter().max().unwrap() + 3;
 
     solver(0, adapters, device, Vec::new());
-    println!("{device}");
+    eprintln!("{device}");
     0
 }
 
 pub fn part2() -> usize {
-    0
+    panic!()
 }
