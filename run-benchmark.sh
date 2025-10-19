@@ -67,8 +67,6 @@ for year in "${YEARS[@]}"; do
             else
                 output="$output<text x=\"305\" y=\"$y\" fill=\"red\">🖨️❗</text>"
             fi
-        else
-            output="$output<text x=\"305\" y=\"$y\" fill=\"red\">👻</text>"
         fi
         if [ -n "$part2" ]; then
             avg=$(echo "$part2" | jq .avg -r)
@@ -81,8 +79,6 @@ for year in "${YEARS[@]}"; do
             else
                 output="$output<text x=\"905\" y=\"$y\" fill=\"red\">🖨️❗</text>"
             fi
-        else 
-            output="$output<text x=\"905\" y=\"$y\" fill=\"red\">👻</text>"
         fi
     done
     output="$output</svg>"
