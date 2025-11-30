@@ -13,6 +13,7 @@ draw = []
 [dependencies]
 aoc_table = { workspace = true }
 rayon = { workspace = true }
+aoc_2025 = { path = "2025" }
 aoc_2024 = { path = "2024" }
 aoc_2023 = { path = "2023" }
 aoc_2022 = { path = "2022" }

@@ -1,0 +1,18 @@
+[package]
+name = "aoc_2025"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gen_days = { workspace = true }
+aoc_table = { workspace = true }
+utils = { workspace = true }
+arrayvec = { workspace = true }
+rayon = { workspace = true }
+rustc-hash = "2.1.0"
+memoize = { workspace = true }
+pathfinding = { workspace = true }
+matrixy = { workspace = true }
+
+[lib]
+path = "lib.rs"

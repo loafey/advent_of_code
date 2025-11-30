@@ -4,7 +4,7 @@ use aoc_table::table_gen::BenchmarkResults;
 
 macro_rules! year {
     () => {
-        aoc_2024::table()
+        aoc_2025::table()
     };
 }
 
@@ -35,7 +35,7 @@ fn main() {
         );
         println!(
             "{}\n",
-            format_benchmark(aoc_2024::table().run_benchmarks(10000, true))
+            format_benchmark(aoc_2025::table().run_benchmarks(10000, true))
         );
         // println!("{}\n", format_benchmark(aoc_2023::table().run_benchmarks()));
         // println!("{}\n", format_benchmark(aoc_2022::table().run_benchmarks()));
@@ -67,6 +67,7 @@ fn main() {
             2022 => aoc_2022::table(),
             2023 => aoc_2023::table(),
             2024 => aoc_2024::table(),
+            2025 => aoc_2024::table(),
             _ => return,
         };
         table.benchmark_day_json(day, part1);
@@ -100,8 +101,9 @@ fn format_time(time: Duration) -> String {
 
 #[allow(clippy::type_complexity)]
 fn format_benchmark((s, v): (String, Vec<BenchmarkResults>)) -> String {
-    let mut s =
-        format!("## {s} \n| Day | Part 1 avg | Best | Worst | Part 2 avg | Best | Worst |\n| --- | --- | --- | --- | --- | --- | --- |");
+    let mut s = format!(
+        "## {s} \n| Day | Part 1 avg | Best | Worst | Part 2 avg | Best | Worst |\n| --- | --- | --- | --- | --- | --- | --- |"
+    );
 
     let mut total_time_avg = Duration::default();
     let mut total_time_best = Duration::default();

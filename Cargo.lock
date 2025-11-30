@@ -12,6 +12,7 @@ dependencies = [
  "aoc_2022",
  "aoc_2023",
  "aoc_2024",
+ "aoc_2025",
  "aoc_table",
  "rayon",
 ]
@@ -96,6 +97,21 @@ dependencies = [
 
 [[package]]
 name = "aoc_2024"
+version = "0.1.0"
+dependencies = [
+ "aoc_table",
+ "arrayvec",
+ "gen_days",
+ "matrixy",
+ "memoize",
+ "pathfinding",
+ "rayon",
+ "rustc-hash",
+ "utils",
+]
+
+[[package]]
+name = "aoc_2025"
 version = "0.1.0"
 dependencies = [
  "aoc_table",
