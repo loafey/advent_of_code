@@ -1,7 +1,7 @@
 mkdir benchmarks-data 2> /dev/null
 
 YEARS=(
-    # 2025
+    2025
     2024
     2023
     2022
