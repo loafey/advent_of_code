@@ -4,19 +4,16 @@ enum Turn {
     Right(i64),
 }
 
-fn input() -> Vec<Turn> {
-    include_str!("../inputs/2025/day1.input")
-        .lines()
-        .map(|l| {
-            let (dir, num) = l.split_at(1);
-            let num = num.parse::<i64>().unwrap();
-            match dir {
-                "L" => Turn::Left(num),
-                "R" => Turn::Right(num),
-                _ => unreachable!(),
-            }
-        })
-        .collect()
+fn input() -> impl Iterator<Item = Turn> {
+    include_str!("../inputs/2025/day1.input").lines().map(|l| {
+        let (dir, num) = l.split_at(1);
+        let num = num.parse::<i64>().unwrap();
+        match dir {
+            "L" => Turn::Left(num),
+            "R" => Turn::Right(num),
+            _ => unreachable!(),
+        }
+    })
 }
 
 pub fn part1() -> i64 {
