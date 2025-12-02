@@ -102,6 +102,7 @@ pub trait FindSome<A, B> {
     fn find_some(self, f: impl Fn(A) -> Option<B>) -> Option<B>;
 }
 impl<I: Iterator<Item = A>, A, B> FindSome<A, B> for I {
+    #[inline(always)]
     fn find_some(self, f: impl Fn(A) -> Option<B>) -> Option<B> {
         for i in self {
             if let Some(b) = f(i) {
@@ -640,3 +641,13 @@ macro_rules! gen_num_exts {
     };
 }
 gen_num_exts!(u8, i8, u16, i16, u32, i32, u64, i64, u128, i128, usize, isize);
+
+pub trait Run: Sized {
+    fn run<F: FnOnce(Self) -> B, B>(self, f: F) -> B;
+}
+impl<T> Run for T {
+    #[inline(always)]
+    fn run<F: FnOnce(Self) -> B, B>(self, f: F) -> B {
+        f(self)
+    }
+}

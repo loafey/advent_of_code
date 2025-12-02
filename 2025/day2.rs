@@ -1,3 +1,5 @@
+use utils::NumExt;
+
 fn input() -> impl Iterator<Item = (u64, u64)> {
     include_str!("../inputs/2025/day2.input")
         .split(',')
@@ -11,8 +13,7 @@ pub fn part1() -> u64 {
     let mut sum = 0;
     for (a, b) in input() {
         for i in a..=b {
-            let str = format!("{i}");
-            let (a, b) = str.split_at(str.len() / 2);
+            let (a, b) = i.split();
             if a == b {
                 sum += i;
             }
@@ -23,30 +24,14 @@ pub fn part1() -> u64 {
 
 // this is not very nice :)
 pub fn part2() -> u64 {
-    let mut sum = 0;
-    for (a, b) in input() {
-        'outer: for i in a..=b {
-            let str = format!("{i}");
-            for p in 1..((str.len() / 2) + 1) {
-                let mut bucket = Vec::new();
-                let mut temp = String::new();
-                for (ind, c) in str.chars().enumerate() {
-                    temp.push(c);
-                    if (ind + 1) % p == 0 {
-                        bucket.push(temp);
-                        temp = String::new();
-                    }
-                }
-                if !temp.is_empty() {
-                    bucket.push(temp);
-                }
-                let first = &bucket[0];
-                if bucket.iter().all(|v| v == first) {
-                    sum += i;
-                    continue 'outer;
-                }
-            }
-        }
-    }
+    let sum = input()
+        .flat_map(|(a, b)| {
+            (a..=b).filter(|i| {
+                let s = i.to_string();
+                (1..=(s.len() / 2))
+                    .any(|p| s.matches(&s[..p]).map(str::len).sum::<usize>() == s.len())
+            })
+        })
+        .sum();
     sum
 }
