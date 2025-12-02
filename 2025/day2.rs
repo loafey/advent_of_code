@@ -31,6 +31,7 @@ pub fn part2() -> u64 {
             (a..=b).filter(|i| {
                 let s = i.to_string();
                 (1..=(s.len() / 2))
+                    .filter(|p| s.len() % p == 0)
                     .any(|p| s.matches(&s[..p]).map(str::len).sum::<usize>() == s.len())
             })
         })
