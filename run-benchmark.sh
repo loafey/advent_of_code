@@ -29,6 +29,13 @@ emoji () {
 
 textSettings=""
 for year in "${YEARS[@]}"; do
+    height="830"
+    cap="25"
+    if [ "$year" -gt "2024" ]; then
+        cap="12"
+        height="415"
+    fi
+
     output="<svg height=\"830\" width=\"1300\" xmlns=\"http://www.w3.org/2000/svg\">"
     output="$output<style>"
     output="$output text { font-family: \"Arial\", monospace; }"
@@ -50,7 +57,8 @@ for year in "${YEARS[@]}"; do
     output="$output<text x=\"705\" y=\"60\" $textSettings>Average</text>"
     output="$output<text x=\"905\" y=\"60\" $textSettings>Best</text>"
     output="$output<text x=\"1105\" y=\"60\" $textSettings>Worst</text>"
-    for day in $(seq 1 25); do
+
+    for day in $(seq 1 "$cap"); do
         echo "$year - $day"
         y=$(echo $(($day*30+60))) 
         output="$output<text x=\"5\" y=\"$y\" $textSettings>Day $day:</text>"
