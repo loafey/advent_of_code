@@ -33,7 +33,7 @@ for year in "${YEARS[@]}"; do
     cap="25"
     if [ "$year" -gt "2024" ]; then
         cap="12"
-        height="415"
+        height="440"
     fi
 
     output="<svg height=\"$height\" width=\"1300\" xmlns=\"http://www.w3.org/2000/svg\">"
