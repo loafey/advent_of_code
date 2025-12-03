@@ -36,7 +36,7 @@ for year in "${YEARS[@]}"; do
         height="415"
     fi
 
-    output="<svg height=\"830\" width=\"1300\" xmlns=\"http://www.w3.org/2000/svg\">"
+    output="<svg height=\"$height\" width=\"1300\" xmlns=\"http://www.w3.org/2000/svg\">"
     output="$output<style>"
     output="$output text { font-family: \"Arial\", monospace; }"
     output="$output rect { fill: transparent }"
