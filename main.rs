@@ -67,7 +67,7 @@ fn main() {
             2022 => aoc_2022::table(),
             2023 => aoc_2023::table(),
             2024 => aoc_2024::table(),
-            2025 => aoc_2024::table(),
+            2025 => aoc_2025::table(),
             _ => return,
         };
         table.benchmark_day_json(day, part1);
