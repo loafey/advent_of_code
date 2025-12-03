@@ -26,6 +26,5 @@ pub fn part1() -> u64 {
 }
 
 pub fn part2() -> u64 {
-    println!("173300819005913");
     input().map(|bank| solve(12, &bank[..])).sum()
 }
