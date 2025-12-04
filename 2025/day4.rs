@@ -22,7 +22,6 @@ fn input() -> Vec<Vec<Item>> {
 
 fn remove_rolls(matrix: &mut Vec<Vec<Item>>) -> u64 {
     let mut ans = 0;
-    let mut removable = Vec::new();
     for y in 0..matrix.len() {
         for x in 0..matrix[y].len() {
             if !matches!(matrix[y][x], Item::Roll) {
@@ -44,13 +43,10 @@ fn remove_rolls(matrix: &mut Vec<Vec<Item>>) -> u64 {
                 .count()
                 < 4
             {
-                removable.push((y, x));
+                matrix[y][x] = Item::Empty;
                 ans += 1
             }
         }
-    }
-    for (y, x) in removable {
-        matrix[y][x] = Item::Empty;
     }
     ans
 }
