@@ -1,4 +1,4 @@
-use std::ops::RangeInclusive;
+use std::{collections::BTreeSet, ops::RangeInclusive};
 
 fn input() -> (Vec<RangeInclusive<u64>>, impl Iterator<Item = u64>) {
     let (top, bot) = include_str!("../inputs/2025/day5.input")
@@ -19,12 +19,21 @@ pub fn part1() -> u64 {
     let (mut ranges, ingd) = input();
     ranges.sort_by_key(|r| *r.start());
     let mut ok = 0;
+    let mut ingd = ingd.collect::<Vec<u64>>();
+    ingd.sort();
     for i in ingd {
-        for r in &ranges {
+        let mut to_remove = Vec::new();
+        for (ri, r) in ranges.iter().enumerate() {
             if r.contains(&i) {
                 ok += 1;
                 break;
             }
+            if *r.end() < i {
+                to_remove.push(ri);
+            }
+        }
+        for (o, r) in to_remove.into_iter().enumerate() {
+            ranges.remove(r - o);
         }
     }
     ok
