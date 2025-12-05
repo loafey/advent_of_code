@@ -16,7 +16,8 @@ fn input() -> (Vec<RangeInclusive<u64>>, Vec<u64>) {
 }
 
 pub fn part1() -> u64 {
-    let (ranges, ingd) = input();
+    let (mut ranges, ingd) = input();
+    ranges.sort_by_key(|r| *r.start());
     let mut ok = 0;
     for i in ingd {
         for r in &ranges {
