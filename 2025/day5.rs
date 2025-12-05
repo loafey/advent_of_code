@@ -1,4 +1,4 @@
-use std::{ops::RangeInclusive, u64};
+use std::ops::RangeInclusive;
 
 fn input() -> (Vec<RangeInclusive<u64>>, Vec<u64>) {
     let (top, bot) = include_str!("../inputs/2025/day5.input")
