@@ -1,6 +1,6 @@
 use std::ops::RangeInclusive;
 
-fn input() -> (Vec<RangeInclusive<u64>>, Vec<u64>) {
+fn input() -> (Vec<RangeInclusive<u64>>, impl Iterator<Item = u64>) {
     let (top, bot) = include_str!("../inputs/2025/day5.input")
         .split_once("\n\n")
         .unwrap();
@@ -11,7 +11,7 @@ fn input() -> (Vec<RangeInclusive<u64>>, Vec<u64>) {
             a.parse().unwrap()..=b.parse().unwrap()
         })
         .collect();
-    let bot = bot.lines().map(|s| s.parse().unwrap()).collect();
+    let bot = bot.lines().map(|s| s.parse().unwrap());
     (top, bot)
 }
 
