@@ -8,10 +8,10 @@ fn input() -> (Vec<RangeInclusive<u64>>, impl Iterator<Item = u64>) {
         .lines()
         .map(|s| {
             let (a, b) = s.split_once("-").unwrap();
-            a.parse().unwrap()..=b.parse().unwrap()
+            a.parse::<u64>().unwrap()..=b.parse::<u64>().unwrap()
         })
         .collect();
-    let bot = bot.lines().map(|s| s.parse().unwrap());
+    let bot = bot.lines().map(|s| s.parse::<u64>().unwrap());
     (top, bot)
 }
 
