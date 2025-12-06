@@ -6,7 +6,7 @@ enum Op {
     Add,
 }
 
-fn input() -> Vec<(Vec<u64>, Op)> {
+fn p1_parser() -> Vec<(Vec<u64>, Op)> {
     let mut output: Vec<(Vec<u64>, Op)> = Vec::new();
     for l in include_str!("../inputs/2025/day6.input").lines() {
         if l.contains('*') || l.contains('+') {
@@ -35,23 +35,7 @@ fn input() -> Vec<(Vec<u64>, Op)> {
     output
 }
 
-pub fn part1() -> u64 {
-    let mut sum = 0;
-    for (v, op) in input() {
-        let mut iter = v.into_iter();
-        let mut result = iter.next().unwrap();
-        for v in iter {
-            match op {
-                Op::Mul => result *= v,
-                Op::Add => result += v,
-            }
-        }
-        sum += result
-    }
-    sum
-}
-
-fn input2() -> Vec<(Vec<u64>, Op)> {
+fn p2_parser() -> Vec<(Vec<u64>, Op)> {
     let mut output: Vec<(Vec<u64>, Op)> = Vec::new();
     let matrix: Vec<Vec<char>> = include_str!("../inputs/2025/day6.input")
         .lines()
@@ -59,7 +43,6 @@ fn input2() -> Vec<(Vec<u64>, Op)> {
         .collect();
     let matrix = matrix.transpose();
     for group in matrix.split(|c| c.iter().all(|c| c.is_whitespace())) {
-        println!();
         let mut op = Op::Add;
         let mut nums = Vec::new();
         for (i, l) in group.iter().enumerate() {
@@ -83,9 +66,9 @@ fn input2() -> Vec<(Vec<u64>, Op)> {
     output
 }
 
-pub fn part2() -> u64 {
+fn solve(input: fn() -> Vec<(Vec<u64>, Op)>) -> u64 {
     let mut sum = 0;
-    for (v, op) in input2() {
+    for (v, op) in input() {
         let mut iter = v.into_iter();
         let mut result = iter.next().unwrap();
         for v in iter {
@@ -97,4 +80,12 @@ pub fn part2() -> u64 {
         sum += result
     }
     sum
+}
+
+pub fn part1() -> u64 {
+    solve(p1_parser)
+}
+
+pub fn part2() -> u64 {
+    solve(p2_parser)
 }
