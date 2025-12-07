@@ -1,5 +1,5 @@
 use Map::*;
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeSet, HashMap, HashSet};
 use utils::{MatrixGet, Run};
 
 enum Map {
@@ -32,10 +32,10 @@ fn input() -> (Vec<Vec<Map>>, (usize, usize)) {
 
 pub fn part1() -> u64 {
     let (map, start) = input();
-    let mut beams = HashSet::from([start]);
+    let mut beams = BTreeSet::from([start]);
     let mut splits = 0;
     'outer: loop {
-        let mut new_beams = HashSet::new();
+        let mut new_beams = BTreeSet::new();
         for (y, x) in beams {
             match map.mget(y, x, 1, 0) {
                 Some(m) => match m {
