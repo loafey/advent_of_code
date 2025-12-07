@@ -1,9 +1,9 @@
+use Map::*;
 use std::{
     cell::{LazyCell, RefCell},
     collections::{HashMap, HashSet},
 };
 use utils::MatrixGet;
-use Map::*;
 
 enum Map {
     Empty,

@@ -651,3 +651,64 @@ impl<T> Run for T {
         f(self)
     }
 }
+
+pub mod cached_stack {
+    use std::collections::{HashMap, HashSet, VecDeque};
+    pub use StackAction::*;
+
+    pub struct CachedStack {
+        stack: VecDeque<(usize, usize)>,
+        in_stack: HashSet<(usize, usize)>,
+        cache: HashMap<(usize, usize), usize>,
+    }
+    impl CachedStack {
+        pub fn new(start: (usize, usize)) -> Self {
+            CachedStack {
+                stack: VecDeque::from([start]),
+                in_stack: Default::default(),
+                cache: Default::default(),
+            }
+        }
+        fn push(&mut self, val: (usize, usize), back: bool) {
+            if !self.in_stack.contains(&val) {
+                if back {
+                    self.stack.push_back(val);
+                } else {
+                    self.stack.push_front(val);
+                }
+                self.in_stack.insert(val);
+            }
+        }
+        fn pop(&mut self) -> Option<(usize, usize)> {
+            let val = self.stack.pop_back()?;
+            self.in_stack.remove(&val);
+            Some(val)
+        }
+        fn cache(&mut self, key: (usize, usize), value: usize) {
+            self.cache.insert(key, value);
+        }
+        pub fn get_value(&self, key: (usize, usize)) -> Option<&usize> {
+            self.cache.get(&key)
+        }
+
+        pub fn compute<F: Fn(&mut CachedStack, (usize, usize)) -> Vec<StackAction>>(
+            &mut self,
+            f: F,
+        ) {
+            while let Some(value) = self.pop() {
+                for action in f(self, value) {
+                    match action {
+                        StackAction::Front(val) => self.push(val, false),
+                        StackAction::Back(val) => self.push(val, true),
+                        StackAction::Cache(key, value) => self.cache(key, value),
+                    }
+                }
+            }
+        }
+    }
+    pub enum StackAction {
+        Front((usize, usize)),
+        Back((usize, usize)),
+        Cache((usize, usize), usize),
+    }
+}
