@@ -2,8 +2,8 @@ use std::{
     cell::{LazyCell, RefCell},
     collections::{HashMap, HashSet},
 };
-
 use utils::MatrixGet;
+use Map::*;
 
 enum Map {
     Empty,
@@ -19,11 +19,11 @@ fn input() -> (Vec<Vec<Map>>, (usize, usize)) {
             l.chars()
                 .enumerate()
                 .map(|(x, c)| match c {
-                    '.' => Map::Empty,
-                    '^' => Map::Split,
+                    '.' => Empty,
+                    '^' => Split,
                     'S' => {
                         start_pos = (y, x);
-                        Map::Empty
+                        Empty
                     }
                     _ => unreachable!(),
                 })
@@ -42,8 +42,8 @@ pub fn part1() -> u64 {
         for (y, x) in beams {
             match map.mget(y, x, 1, 0) {
                 Some(m) => match m {
-                    Map::Empty => drop(new_beams.insert((y + 1, x))),
-                    Map::Split => {
+                    Empty => drop(new_beams.insert((y + 1, x))),
+                    Split => {
                         new_beams.insert((y + 1, x - 1));
                         new_beams.insert((y + 1, x + 1));
                         splits += 1;
@@ -65,8 +65,8 @@ fn count_paths((y, x): (usize, usize), map: &[Vec<Map>]) -> usize {
     }
     let val = match map.mget(y + 1, x, 1, 0) {
         Some(m) => match m {
-            Map::Empty => count_paths((y + 1, x), map),
-            Map::Split => count_paths((y + 1, x - 1), map) + count_paths((y + 1, x + 1), map),
+            Empty => count_paths((y + 1, x), map),
+            Split => count_paths((y + 1, x - 1), map) + count_paths((y + 1, x + 1), map),
         },
         None => 1,
     };
