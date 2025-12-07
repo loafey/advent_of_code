@@ -57,10 +57,9 @@ pub fn part1() -> u64 {
     splits
 }
 
+#[thread_local]
+static CACHE: LazyCell<RefCell<HashMap<(usize, usize), usize>>> = LazyCell::new(Default::default);
 fn count_paths((y, x): (usize, usize), map: &[Vec<Map>]) -> usize {
-    #[thread_local]
-    static CACHE: LazyCell<RefCell<HashMap<(usize, usize), usize>>> =
-        LazyCell::new(Default::default);
     if let Some(val) = CACHE.borrow().get(&(y, x)) {
         return *val;
     }
@@ -77,5 +76,7 @@ fn count_paths((y, x): (usize, usize), map: &[Vec<Map>]) -> usize {
 
 pub fn part2() -> usize {
     let (map, start) = input();
-    count_paths(start, &map)
+    let res = count_paths(start, &map);
+    CACHE.borrow_mut().clear();
+    res
 }
