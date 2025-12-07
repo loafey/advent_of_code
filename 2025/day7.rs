@@ -1,6 +1,6 @@
 use Map::*;
 use std::collections::{HashMap, HashSet};
-use utils::MatrixGet;
+use utils::{MatrixGet, Run};
 
 enum Map {
     Empty,
@@ -76,6 +76,5 @@ fn count_paths(
 }
 
 pub fn part2() -> usize {
-    let (map, start) = input();
-    count_paths(start, &map, &mut HashMap::new())
+    input().run(|(m, s)| count_paths(s, &m, &mut HashMap::new()))
 }
