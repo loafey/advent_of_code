@@ -57,26 +57,28 @@ pub fn part1() -> u64 {
     splits
 }
 
-#[thread_local]
-static CACHE: LazyCell<RefCell<HashMap<(usize, usize), usize>>> = LazyCell::new(Default::default);
-fn count_paths((y, x): (usize, usize), map: &[Vec<Map>]) -> usize {
-    if let Some(val) = CACHE.borrow().get(&(y, x)) {
+fn count_paths(
+    (y, x): (usize, usize),
+    map: &[Vec<Map>],
+    cache: &mut HashMap<(usize, usize), usize>,
+) -> usize {
+    if let Some(val) = cache.get(&(y, x)) {
         return *val;
     }
     let val = match map.mget(y + 1, x, 1, 0) {
         Some(m) => match m {
-            Empty => count_paths((y + 1, x), map),
-            Split => count_paths((y + 1, x - 1), map) + count_paths((y + 1, x + 1), map),
+            Empty => count_paths((y + 1, x), map, cache),
+            Split => {
+                count_paths((y + 1, x - 1), map, cache) + count_paths((y + 1, x + 1), map, cache)
+            }
         },
         None => 1,
     };
-    CACHE.borrow_mut().insert((y, x), val);
+    cache.insert((y, x), val);
     val
 }
 
 pub fn part2() -> usize {
     let (map, start) = input();
-    let res = count_paths(start, &map);
-    CACHE.borrow_mut().clear();
-    res
+    count_paths(start, &map, &mut HashMap::new())
 }
