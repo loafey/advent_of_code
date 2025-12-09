@@ -61,7 +61,7 @@ pub fn part2() -> i64 {
                 let mut count = 0;
                 for mut m in positions {
                     let mut collisions = 0;
-                    while m.0 <= max_x && m.1 <= max_y {
+                    while m.0 <= max_x + 10 && m.1 <= max_y + 10 {
                         for r in &ranges {
                             if r.0.contains(&m.0) && r.1.contains(&m.1) {
                                 collisions += 1;
