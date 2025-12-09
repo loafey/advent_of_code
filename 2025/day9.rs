@@ -53,26 +53,34 @@ pub fn part2() -> i64 {
             let a = &input[a];
             let mut max = 0;
             for b in &input {
-                if a == b {
+                if a == b || a.0 == b.0 || a.1 == b.1 {
                     continue;
                 }
 
-                let mut m = (a.0.min(b.0) + 1, a.1.min(b.1) + 1);
-                let max_size = (a.0.max(b.0), a.1.max(b.1));
-                let slope = (max_size.1 - m.1) as f64 / (max_size.0 - m.0) as f64;
-                let intercept = max_size.1 as f64 - slope * max_size.0 as f64;
+                let (min_x, max_x) = ((a.0.min(b.0)), (a.0.max(b.0)));
+                let (min_y, max_y) = ((a.1.min(b.1)), (a.1.max(b.1)));
+                if max_x - min_x < 2 || max_y - min_y < 2 {
+                    continue;
+                }
+
+                let edges = [
+                    (min_x..=max_x, min_y..=min_y),
+                    (min_x..=min_x, min_y..=max_y),
+                    (min_x..=max_x, max_y..=max_y),
+                    (max_x..=max_x, min_y..=max_y),
+                ];
                 let mut ok = true;
-                println!("{a:?} -> {b:?}");
-                for x in m.0..max_size.0 {
-                    m.0 = x;
-                    for r in &ranges {
-                        if r.0.contains(&m.0) && r.1.contains(&m.1) {
-                            ok = false;
-                            break;
+                'outer: for (x_range, y_range) in edges {
+                    for x in x_range.clone() {
+                        for y in y_range.clone() {
+                            for r in &ranges {
+                                if r.0.contains(&x) && r.1.contains(&y) {
+                                    ok = false;
+                                    break 'outer;
+                                }
+                            }
                         }
                     }
-                    m.1 = (slope * m.0 as f64 + intercept) as i64;
-                    println!("{m:?}")
                 }
                 if ok {
                     let x_len = (a.0 - (b.0 + 1)).abs();
