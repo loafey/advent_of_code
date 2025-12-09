@@ -57,25 +57,24 @@ pub fn part2() -> i64 {
                     continue;
                 }
 
-                let positions = [*a, *b, (a.0, b.1), (a.1, b.0)];
-                let mut count = 0;
-                for mut m in positions {
-                    let mut collisions = 0;
-                    while m.0 <= max_x + 10 && m.1 <= max_y + 10 {
-                        for r in &ranges {
-                            if r.0.contains(&m.0) && r.1.contains(&m.1) {
-                                collisions += 1;
-                            }
+                let mut m = (a.0.min(b.0) + 1, a.1.min(b.1) + 1);
+                let max_size = (a.0.max(b.0), a.1.max(b.1));
+                let slope = (max_size.1 - m.1) as f64 / (max_size.0 - m.0) as f64;
+                let intercept = max_size.1 as f64 - slope * max_size.0 as f64;
+                let mut ok = true;
+                println!("{a:?} -> {b:?}");
+                for x in m.0..max_size.0 {
+                    m.0 = x;
+                    for r in &ranges {
+                        if r.0.contains(&m.0) && r.1.contains(&m.1) {
+                            ok = false;
+                            break;
                         }
-                        m.0 += 1;
-                        m.1 += 1;
                     }
-                    if collisions % 2 != 0 {
-                        count += 1;
-                    }
+                    m.1 = (slope * m.0 as f64 + intercept) as i64;
+                    println!("{m:?}")
                 }
-
-                if count == 4 {
+                if ok {
                     let x_len = (a.0 - (b.0 + 1)).abs();
                     let y_len = (a.1 - (b.1 + 1)).abs();
                     max = max.max(y_len * x_len)
