@@ -6,7 +6,7 @@ use std::{collections::HashMap, io::Write, path::PathBuf};
 struct Machine {
     indicator_lights: Vec<bool>,
     button_wiring: Vec<Vec<usize>>,
-    voltage_req: Vec<u64>,
+    voltage_req: Vec<u16>,
 }
 
 fn input() -> Vec<Machine> {
@@ -124,17 +124,19 @@ fn jolt_me(
     result
 }
 
-fn astar_me(state: Vec<u64>, inputs: Vec<Vec<usize>>, goal: Vec<u64>) -> u64 {
+fn astar_me(state: u128, inputs: Vec<u128>, goal: u128) -> u128 {
     astar(
         &state,
         |s| {
             let mut new = Vec::new();
             for i in &inputs {
-                let mut new_state = s.clone();
-                for i in i {
-                    new_state[*i] += 1;
-                }
-                let bad = new_state.iter().zip(goal.iter()).any(|(a, b)| a > b);
+                let mut new_state = *s;
+                new_state += *i;
+
+                let bad = parts(new_state)
+                    .iter()
+                    .zip(parts(goal).iter())
+                    .any(|(a, b)| a > b);
                 if !bad {
                     new.push((new_state, 1))
                 }
@@ -142,11 +144,13 @@ fn astar_me(state: Vec<u64>, inputs: Vec<Vec<usize>>, goal: Vec<u64>) -> u64 {
             new
         },
         |p| {
-            (p.iter()
-                .zip(goal.iter())
-                .map(|(a, b)| if a > b { 100000000 } else { (b - a).pow(2) })
-                .sum::<u64>() as f64)
-                .sqrt() as u64
+            (parts(*p)
+                .iter()
+                .zip(parts(goal).iter())
+                .map(|(a, b)| (*a as u128, *b as u128))
+                .map(|(a, b)| if a > b { 1000 } else { (b - a).pow(2) })
+                .sum::<u128>() as f64)
+                .sqrt() as u128
         },
         |s| s == &goal,
     )
@@ -164,21 +168,48 @@ pub fn part1() -> usize {
         .sum()
 }
 
-pub fn part2() -> u64 {
+fn vec_to_num(nums: Vec<u16>) -> u128 {
+    let mut result = 0;
+    for (i, num) in nums.into_iter().enumerate() {
+        result += num as u128 * (1000u128.pow(i as u32))
+    }
+    result
+}
+
+fn vec_to_adder(nums: Vec<u16>) -> u128 {
+    nums.into_iter().map(|num| 1000u128.pow(num as u32)).sum()
+}
+
+fn parts(num: u128) -> [u16; 10] {
+    let mut result = [0u16; 10];
+    for i in 0..10 {
+        result[i] = ((num % 1000u128.pow(i as u32 + 1)) / 1000u128.pow(i as u32)) as u16
+    }
+    result
+}
+
+pub fn part2() -> u128 {
     let input = input();
     input
         .into_iter()
         .enumerate()
-        // .par_bridge()
+        .par_bridge()
         .map(|(c, i)| {
             let cache = format!("cache/2025_10_p2_{c}");
+            let wiring = i
+                .button_wiring
+                .into_iter()
+                .map(|v| v.into_iter().map(|a| a as u16).collect::<Vec<_>>())
+                .map(vec_to_adder)
+                .collect();
+            let string_start = format!("{c}: {}D - ", i.voltage_req.len() as u128);
+            let goal = vec_to_num(i.voltage_req);
             if PathBuf::from(&cache).exists() {
+                println!("{string_start}✅...");
                 return std::fs::read_to_string(&cache).unwrap().parse().unwrap();
             }
-            println!("{c}: {}D", i.voltage_req.len());
-            let state = vec![0; i.voltage_req.len()];
-            let ans = astar_me(state, i.button_wiring, i.voltage_req);
-            println!("   got {ans} clicks");
+            println!("{string_start}❗️...");
+            let ans = astar_me(0, wiring, goal);
             if PathBuf::from("cache").exists() {
                 std::fs::File::create(&cache)
                     .unwrap()
