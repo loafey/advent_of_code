@@ -142,10 +142,11 @@ fn astar_me(state: Vec<u64>, inputs: Vec<Vec<usize>>, goal: Vec<u64>) -> u64 {
             new
         },
         |p| {
-            p.iter()
+            (p.iter()
                 .zip(goal.iter())
-                .map(|(a, b)| if a > b { 100000 } else { b - a })
-                .sum::<u64>()
+                .map(|(a, b)| if a > b { 100000000 } else { (b - a).pow(2) })
+                .sum::<u64>() as f64)
+                .sqrt() as u64
         },
         |s| s == &goal,
     )
@@ -164,7 +165,8 @@ pub fn part1() -> usize {
 }
 
 pub fn part2() -> u64 {
-    input()
+    let input = input();
+    input
         .into_iter()
         .enumerate()
         // .par_bridge()
