@@ -1,10 +1,7 @@
 use good_lp::{
     Expression, ProblemVariables, Solution, SolverModel, Variable, constraint, default_solver,
-    variable, variables,
+    variable,
 };
-use pathfinding::directed::astar::astar;
-use rayon::prelude::*;
-use std::{collections::HashMap, io::Write, path::PathBuf};
 
 #[derive(Debug)]
 struct Machine {
@@ -75,57 +72,6 @@ fn turn_on(state: Vec<bool>, inputs: Vec<Vec<usize>>, goal: Vec<bool>, depth: us
         min = min.min(val);
     }
     1 + min
-}
-
-fn jolt_me(
-    state: Vec<u64>,
-    inputs: Vec<Vec<usize>>,
-    goal: Vec<u64>,
-    depth: usize,
-    cache: &mut HashMap<(Vec<u64>, Vec<Vec<usize>>), usize>,
-) -> usize {
-    if let Some(cached) = cache.get(&(state.clone(), inputs.clone())) {
-        return *cached;
-    }
-    fn inner(
-        state: Vec<u64>,
-        inputs: Vec<Vec<usize>>,
-        goal: Vec<u64>,
-        depth: usize,
-        cache: &mut HashMap<(Vec<u64>, Vec<Vec<usize>>), usize>,
-    ) -> usize {
-        if depth == 0 {
-            return 1000;
-        }
-        let mut new_states = Vec::new();
-        'outer: for i in &inputs {
-            let mut new_state = state.clone();
-            for i in i {
-                new_state[*i] += 1;
-            }
-            if new_state == goal {
-                return 1;
-            }
-            for (a, b) in new_state.iter().zip(goal.iter()) {
-                if a > b {
-                    continue 'outer;
-                }
-            }
-            new_states.push(new_state);
-        }
-        if new_states.is_empty() {
-            return 1000;
-        }
-        let mut min = usize::MAX;
-        for new_state in new_states {
-            let val = jolt_me(new_state, inputs.clone(), goal.clone(), depth - 1, cache);
-            min = min.min(val);
-        }
-        1 + min
-    }
-    let result = inner(state.clone(), inputs.clone(), goal, depth, cache);
-    cache.insert((state, inputs), result);
-    result
 }
 
 pub fn part1() -> usize {
