@@ -62,8 +62,8 @@ for year in "${YEARS[@]}"; do
         echo "$year - $day"
         y=$(echo $(($day*30+60))) 
         output="$output<text x=\"5\" y=\"$y\" $textSettings>Day $day:</text>"
-        part1=$(ulimit -v 4000000 -t 100 && ./target/release/advent_of_code -s $year $day 1)
-        part2=$(ulimit -v 4000000 -t 100 && ./target/release/advent_of_code -s $year $day 2)
+        part1=$(ulimit -v 4000000 -t 600 && ./target/release/advent_of_code -s $year $day 1)
+        part2=$(ulimit -v 4000000 -t 600 && ./target/release/advent_of_code -s $year $day 2)
         if [ -n "$part1" ]; then
             avg=$(echo "$part1" | jq .avg -r)
             best=$(echo "$part1" | jq .best -r)
