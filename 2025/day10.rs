@@ -1,3 +1,8 @@
+use std::{
+    collections::HashMap,
+    hash::{DefaultHasher, Hash, Hasher},
+};
+
 use good_lp::{
     Expression, ProblemVariables, Solution, SolverModel, Variable, constraint, default_solver,
     variable,
@@ -50,28 +55,51 @@ fn input() -> Vec<Machine> {
         .collect()
 }
 
-#[memoize::memoize]
-fn turn_on(state: Vec<bool>, inputs: Vec<Vec<usize>>, goal: Vec<bool>, depth: usize) -> usize {
-    if depth == 0 {
-        return 100;
+fn turn_on(
+    state: Vec<bool>,
+    inputs: &[Vec<usize>],
+    goal: &[bool],
+    cache: &mut HashMap<u64, usize>,
+    depth: usize,
+) -> usize {
+    let mut hasher = DefaultHasher::new();
+    state.hash(&mut hasher);
+    depth.hash(&mut hasher);
+    let hash_num = hasher.finish();
+    if let Some(hit) = cache.get(&hash_num) {
+        return *hit;
     }
-    let mut new_states = Vec::new();
-    for i in &inputs {
-        let mut new_state = state.clone();
-        for i in i {
-            new_state[*i] = !new_state[*i];
+    fn inner(
+        state: Vec<bool>,
+        inputs: &[Vec<usize>],
+        goal: &[bool],
+        cache: &mut HashMap<u64, usize>,
+        depth: usize,
+    ) -> usize {
+        if depth == 0 {
+            return 100;
         }
-        if new_state == goal {
-            return 1;
+        let mut new_states = Vec::new();
+        for i in inputs {
+            let mut new_state = state.clone();
+            for i in i {
+                new_state[*i] = !new_state[*i];
+            }
+            if new_state == goal {
+                return 1;
+            }
+            new_states.push(new_state);
         }
-        new_states.push(new_state);
+        let mut min = usize::MAX;
+        for new_state in new_states {
+            let val = turn_on(new_state, inputs, goal, cache, depth - 1);
+            min = min.min(val);
+        }
+        1 + min
     }
-    let mut min = usize::MAX;
-    for new_state in new_states {
-        let val = turn_on(new_state, inputs.clone(), goal.clone(), depth - 1);
-        min = min.min(val);
-    }
-    1 + min
+    let res = inner(state.clone(), inputs, goal, cache, depth);
+    cache.insert(hash_num, res);
+    res
 }
 
 pub fn part1() -> usize {
@@ -79,7 +107,13 @@ pub fn part1() -> usize {
         .into_iter()
         .map(|i| {
             let state = vec![false; i.indicator_lights.len()];
-            turn_on(state, i.button_wiring, i.indicator_lights, 10)
+            turn_on(
+                state,
+                &i.button_wiring,
+                &i.indicator_lights,
+                &mut HashMap::new(),
+                6,
+            )
         })
         .sum()
 }
