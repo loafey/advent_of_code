@@ -1,3 +1,7 @@
+use good_lp::{
+    Expression, ProblemVariables, Solution, SolverModel, constraint, default_solver, variable,
+    variables,
+};
 use pathfinding::directed::astar::astar;
 use rayon::prelude::*;
 use std::{collections::HashMap, io::Write, path::PathBuf};
@@ -124,40 +128,6 @@ fn jolt_me(
     result
 }
 
-fn astar_me(state: u128, inputs: Vec<u128>, goal: u128) -> u128 {
-    astar(
-        &state,
-        |s| {
-            let mut new = Vec::new();
-            for i in &inputs {
-                let mut new_state = *s;
-                new_state += *i;
-
-                let bad = parts(new_state)
-                    .iter()
-                    .zip(parts(goal).iter())
-                    .any(|(a, b)| a > b);
-                if !bad {
-                    new.push((new_state, 1))
-                }
-            }
-            new
-        },
-        |p| {
-            (parts(*p)
-                .iter()
-                .zip(parts(goal).iter())
-                .map(|(a, b)| (*a as u128, *b as u128))
-                .map(|(a, b)| if a > b { 1000 } else { (b - a).pow(2) })
-                .sum::<u128>() as f64)
-                .sqrt() as u128
-        },
-        |s| s == &goal,
-    )
-    .map(|a| a.1)
-    .unwrap_or_default()
-}
-
 pub fn part1() -> usize {
     input()
         .into_iter()
@@ -168,55 +138,74 @@ pub fn part1() -> usize {
         .sum()
 }
 
-fn vec_to_num(nums: Vec<u16>) -> u128 {
-    let mut result = 0;
+fn vec_to_num(nums: Vec<u16>) -> f64 {
+    let mut result = 0.0;
     for (i, num) in nums.into_iter().enumerate() {
-        result += num as u128 * (1000u128.pow(i as u32))
+        result += num as f64 * (1000f64.powi(i as i32))
     }
     result
 }
 
-fn vec_to_adder(nums: Vec<u16>) -> u128 {
-    nums.into_iter().map(|num| 1000u128.pow(num as u32)).sum()
+fn vec_to_adder(nums: Vec<u16>) -> f64 {
+    nums.into_iter().map(|num| 1000f64.powi(num as i32)).sum()
 }
 
-fn parts(num: u128) -> [u16; 10] {
+fn parts(num: f64) -> [u16; 10] {
     let mut result = [0u16; 10];
     for i in 0..10 {
-        result[i] = ((num % 1000u128.pow(i as u32 + 1)) / 1000u128.pow(i as u32)) as u16
+        result[i] = ((num % 1000f64.powi(i as i32 + 1)) / 1000f64.powi(i as i32)) as u16
     }
     result
 }
 
-pub fn part2() -> u128 {
+pub fn part2() -> u64 {
     let input = input();
-    input
-        .into_iter()
-        .enumerate()
-        .par_bridge()
-        .map(|(c, i)| {
-            let cache = format!("cache/2025_10_p2_{c}");
-            let wiring = i
-                .button_wiring
-                .into_iter()
-                .map(|v| v.into_iter().map(|a| a as u16).collect::<Vec<_>>())
-                .map(vec_to_adder)
-                .collect();
-            let string_start = format!("{c}: {}D - ", i.voltage_req.len() as u128);
-            let goal = vec_to_num(i.voltage_req);
-            if PathBuf::from(&cache).exists() {
-                println!("{string_start}✅...");
-                return std::fs::read_to_string(&cache).unwrap().parse().unwrap();
+    let mut sum = 0;
+    for problem in input {
+        println!("{problem:?}");
+        let answer = vec_to_num(problem.voltage_req.clone());
+
+        let mut vars = ProblemVariables::new();
+        let mut names = Vec::new();
+        let mut char = 'a';
+        for button in &problem.button_wiring {
+            let value = vec_to_adder(button.clone().into_iter().map(|s| s as u16).collect());
+            let variable = variable().min(0).name(format!("{char}")).integer();
+            char = (char as u8 + 1) as char;
+            names.push((vars.add(variable), value));
+        }
+        let cloned_names = names.clone();
+        let mut formula = Expression::from(0);
+        for (var, value) in names {
+            formula += var * value;
+        }
+        // println!("solving: {formula:?} = {answer}");
+        let mut solver = vars.minimise(formula.clone()).using(default_solver);
+        solver.set_parameter("loglevel", "0");
+        for (i, (var, value)) in cloned_names.iter().enumerate() {
+            for button in &problem.button_wiring[i] {
+                let req = problem.voltage_req[*button];
+                solver = solver.with(constraint!(*var <= req));
+                solver = solver.with(constraint!(*var >= 0));
             }
-            println!("{string_start}❗️...");
-            let ans = astar_me(0, wiring, goal);
-            if PathBuf::from("cache").exists() {
-                std::fs::File::create(&cache)
-                    .unwrap()
-                    .write_all(format!("{ans}").as_bytes())
-                    .unwrap();
-            }
-            ans
-        })
-        .sum()
+        }
+        solver = solver.with(constraint!(formula == answer));
+        let ans = solver.solve().unwrap();
+        let my_output = cloned_names
+            .iter()
+            .map(|(v, val)| ans.value(*v) * *val)
+            .sum::<f64>();
+        println!(
+            "🐈 {:?}: {} ({}) - {}",
+            cloned_names
+                .iter()
+                .map(|(v, _)| ans.value(*v))
+                .collect::<Vec<_>>(),
+            my_output,
+            if my_output == answer { "✅" } else { "❗️" },
+            cloned_names.iter().map(|(v, _)| ans.value(*v)).sum::<f64>()
+        );
+        sum += cloned_names.iter().map(|(v, _)| ans.value(*v)).sum::<f64>() as u64;
+    }
+    sum
 }
