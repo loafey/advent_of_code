@@ -1,4 +1,4 @@
-use utils::{load_string, MatrixGet};
+use utils::{MatrixGet, load_string};
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 enum Map {
@@ -94,8 +94,10 @@ pub fn part1() -> usize {
 }
 pub fn part2() -> usize {
     work(&inputs(load_string("inputs/2023/day3.input")), |m, v| {
-        (m == Gear && v.len() == 2)
-            .then(|| v[0] * v[1])
-            .unwrap_or_default()
+        if m == Gear && v.len() == 2 {
+            v[0] * v[1]
+        } else {
+            Default::default()
+        }
     })
 }

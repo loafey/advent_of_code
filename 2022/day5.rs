@@ -1,6 +1,6 @@
+use std::collections::{BTreeMap, VecDeque};
 use utils::load_string;
 use utils::{bset_pop_top, bset_push_top, parse};
-use std::collections::{BTreeMap, VecDeque};
 
 fn parse_input(deque_func: fn(&mut VecDeque<char>, char)) -> String {
     let binding = load_string("inputs/2022/day5.input");
@@ -17,7 +17,7 @@ fn parse_input(deque_func: fn(&mut VecDeque<char>, char)) -> String {
             .flat_map(|s| {
                 s.chars()
                     .enumerate()
-                    .filter(|(i, _)| (i + MOD) % 2 == 0)
+                    .filter(|(i, _)| (i + MOD).is_multiple_of(2))
                     .step_by(2)
                     .filter(|(_, c)| c.is_alphabetic())
                     .map(|(i, c)| ((i / 4) + 1, c))

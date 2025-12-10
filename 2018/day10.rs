@@ -34,7 +34,7 @@ pub fn part1() -> &'static str {
         })
         .collect::<Vec<_>>();
 
-    let mut second = 0;
+    let mut _second = 0;
     loop {
         const X_MAX: usize = 150;
         const Y_MAX: usize = 10;
@@ -65,14 +65,14 @@ pub fn part1() -> &'static str {
         }
 
         if test_count == lights.len() {
-            // println!("Second {second}: {min_pos_y}");
+            // println!("Second {_second}: {min_pos_y}");
             // arr.into_iter().for_each(|r| {
             //     r.into_iter().for_each(|c| print!("{c}"));
             //     println!()
             // });
             break;
         }
-        second += 1;
+        _second += 1;
     }
 
     "XPFXXXKL (uncomment print statement)"

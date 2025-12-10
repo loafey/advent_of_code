@@ -5,7 +5,7 @@ use proc_macro::TokenStream;
 #[proc_macro]
 pub fn gen_days(item: TokenStream) -> TokenStream {
     let path = format!("{item}");
-    let mut name = path.split('/').last().unwrap();
+    let mut name = path.split('/').next_back().unwrap();
     if name.ends_with('"') {
         name = &name[..name.len() - 1];
     }

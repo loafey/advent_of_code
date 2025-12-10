@@ -1,5 +1,5 @@
-use utils::{load_string, MatrixGet};
 use std::collections::HashMap;
+use utils::{MatrixGet, load_string};
 
 use pathfinding::directed::dijkstra::dijkstra_all;
 type Map = HashMap<(usize, usize, char), Vec<(usize, usize, char)>>;
@@ -158,25 +158,25 @@ pub fn part2() -> usize {
     let mut stack = vec![(0, 0)];
     while let Some((y, x)) = stack.pop() {
         ascii[y][x] = true;
-        if let Some(left) = ascii.mget(y, x, 0, -1) {
-            if !left {
-                stack.push((y, x - 1))
-            }
+        if let Some(left) = ascii.mget(y, x, 0, -1)
+            && !left
+        {
+            stack.push((y, x - 1))
         }
-        if let Some(right) = ascii.mget(y, x, 0, 1) {
-            if !right {
-                stack.push((y, x + 1))
-            }
+        if let Some(right) = ascii.mget(y, x, 0, 1)
+            && !right
+        {
+            stack.push((y, x + 1))
         }
-        if let Some(up) = ascii.mget(y, x, -1, 0) {
-            if !up {
-                stack.push((y - 1, x))
-            }
+        if let Some(up) = ascii.mget(y, x, -1, 0)
+            && !up
+        {
+            stack.push((y - 1, x))
         }
-        if let Some(down) = ascii.mget(y, x, 1, 0) {
-            if !down {
-                stack.push((y + 1, x))
-            }
+        if let Some(down) = ascii.mget(y, x, 1, 0)
+            && !down
+        {
+            stack.push((y + 1, x))
         }
     }
 

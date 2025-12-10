@@ -92,7 +92,7 @@ fn solver() -> HashMap<String, usize> {
         let mut to_remove = Vec::new();
         memory
             .iter()
-            .filter(|(_, v)| v.iter().map(|l| l.is_file()).all(|x| x))
+            .filter(|(_, v)| v.iter().all(|l| l.is_file()))
             .for_each(|(key, l)| {
                 annotated.insert(key.clone(), l.iter().map(|l| l.size()).sum::<usize>());
                 to_remove.push(key.clone());

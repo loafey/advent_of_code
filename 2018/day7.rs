@@ -77,7 +77,7 @@ pub fn part2() -> usize {
     let mut workers = [Worker::new(); 5];
 
     let mut time = 0;
-    while !dependencies.is_empty() || workers.iter().map(|w| w.has_task()).any(|mk| mk) {
+    while !dependencies.is_empty() || workers.iter().any(|w| w.has_task()) {
         for w in &mut workers {
             if w.is_done() {
                 if let Some(di) = w.task {

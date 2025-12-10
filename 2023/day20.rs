@@ -1,6 +1,6 @@
-use std::collections::{HashMap, HashSet, VecDeque};
-use utils::{load_string, IteratorEvalExt, NumExt};
 use Type::*;
+use std::collections::{HashMap, HashSet, VecDeque};
+use utils::{IteratorEvalExt, NumExt, load_string};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Type {
@@ -44,10 +44,10 @@ fn input() -> Map {
 
     for (s, m) in map.iter().map(|(a, b)| (a.clone(), b.clone())).eval() {
         for con in &m.connected {
-            if conjucations.contains(con) {
-                if let Conjuction { state } = &mut map.get_mut(con).unwrap().mtype {
-                    state.insert(s.clone(), false);
-                }
+            if conjucations.contains(con)
+                && let Conjuction { state } = &mut map.get_mut(con).unwrap().mtype
+            {
+                state.insert(s.clone(), false);
             }
         }
     }

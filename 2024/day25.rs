@@ -49,7 +49,7 @@ pub fn part1() -> i64 {
                 .iter()
                 .zip(k)
                 .map(|(a, b)| (*a, *b))
-                .map(|(a, b)| (a + b))
+                .map(|(a, b)| a + b)
                 .any(|c| c > 5)
             {
                 sum += 1;

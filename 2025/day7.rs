@@ -1,5 +1,5 @@
 use Map::*;
-use std::collections::{BTreeSet, HashMap, HashSet};
+use std::collections::{BTreeSet, HashMap};
 use utils::{MatrixGet, Run};
 
 enum Map {

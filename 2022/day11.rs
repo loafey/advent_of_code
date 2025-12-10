@@ -64,7 +64,7 @@ fn solver<const N: usize>(mut monkeys: Vec<Monkey>, differ: Box<dyn Fn(u128) -> 
                     (fun, 0) => fun(i, i),
                     (fun, x) => fun(i, *x),
                 });
-                let monke = monkeys[m].actions[(new % monkeys[m].test != 0) as usize];
+                let monke = monkeys[m].actions[!new.is_multiple_of(monkeys[m].test) as usize];
                 monkeys[monke].items.push(new)
             }
         }

@@ -21,7 +21,5 @@ pub fn part1() -> usize {
 }
 
 pub fn part2() -> usize {
-    load_input()
-        .filter(|(a, b, x, y)| (a <= y && b >= x))
-        .count()
+    load_input().filter(|(a, b, x, y)| a <= y && b >= x).count()
 }

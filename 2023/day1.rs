@@ -3,7 +3,11 @@ use utils::load_string;
 fn solver(s: &str) -> i64 {
     let mut s = s.chars().filter(|c| c.is_ascii_digit());
     let first = s.next().unwrap();
-    let next = if let Some(c) = s.last() { c } else { first };
+    let next = if let Some(c) = s.next_back() {
+        c
+    } else {
+        first
+    };
     format!("{first}{next}").parse::<i64>().unwrap()
 }
 
