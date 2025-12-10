@@ -16,6 +16,10 @@ jobs:
       run: | 
         apt update
         apt install -y jq
+    - name: Install CBC
+      run: | 
+        apt update
+        apt install -y coinor-cbc coinor-libcbc-dev
     - name: Fetch Inputs
       run: |
         mkdir -p ~/.ssh/ 
