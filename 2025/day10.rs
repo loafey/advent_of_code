@@ -1,6 +1,6 @@
 use good_lp::{
-    Expression, ProblemVariables, Solution, SolverModel, constraint, default_solver, variable,
-    variables,
+    Expression, ProblemVariables, Solution, SolverModel, Variable, constraint, default_solver,
+    variable, variables,
 };
 use pathfinding::directed::astar::astar;
 use rayon::prelude::*;
@@ -138,63 +138,39 @@ pub fn part1() -> usize {
         .sum()
 }
 
-fn vec_to_num(nums: Vec<u16>) -> f64 {
-    let mut result = 0.0;
-    for (i, num) in nums.into_iter().enumerate() {
-        result += num as f64 * (1000f64.powi(i as i32))
-    }
-    result
-}
-
-fn vec_to_adder(nums: Vec<u16>) -> f64 {
-    nums.into_iter().map(|num| 1000f64.powi(num as i32)).sum()
-}
-
-fn parts(num: f64) -> [u16; 10] {
-    let mut result = [0u16; 10];
-    for i in 0..10 {
-        result[i] = ((num % 1000f64.powi(i as i32 + 1)) / 1000f64.powi(i as i32)) as u16
-    }
-    result
-}
-
 pub fn part2() -> u64 {
     let input = input();
     input
         .into_iter()
         .map(|problem| {
-            let answer = vec_to_num(problem.voltage_req.clone());
-
             let mut vars = ProblemVariables::new();
             let mut names = Vec::new();
-            let mut formula = Expression::from(0);
+            let mut values: Vec<(_, Vec<Variable>)> = problem
+                .voltage_req
+                .clone()
+                .into_iter()
+                .map(|v| (v as i32, Vec::new()))
+                .collect();
             let mut press_formula = Expression::from(0);
-            println!("{answer}");
             for button in &problem.button_wiring {
-                let value = vec_to_adder(button.clone().into_iter().map(|s| s as u16).collect());
                 let variable = variable().min(0).integer();
                 let variable = vars.add(variable);
-                names.push((variable, value));
-                formula += variable * value;
+                for b in button {
+                    values[*b].1.push(variable);
+                }
+                names.push(variable);
                 press_formula += variable;
             }
-            // println!("solving: {formula:?} = {answer}");
             let mut solver = vars.minimise(press_formula.clone()).using(default_solver);
             solver.set_parameter("loglevel", "0");
-            solver = solver.with(constraint!(formula == answer));
+
+            for (max_val, vars) in values {
+                let expr = vars.into_iter().sum::<Expression>();
+                solver = solver.with(constraint!(expr == max_val));
+            }
+
             let ans = solver.solve().unwrap();
-            let my_output = names
-                .iter()
-                .map(|(v, val)| ans.value(*v) * *val)
-                .sum::<f64>();
-            println!(
-                "🐈 {:?}: {} == {answer} ({}) - {}",
-                names.iter().map(|(v, _)| ans.value(*v)).collect::<Vec<_>>(),
-                my_output,
-                if my_output == answer { "✅" } else { "❗️" },
-                names.iter().map(|(v, _)| ans.value(*v)).sum::<f64>()
-            );
-            names.iter().map(|(v, _)| ans.value(*v)).sum::<f64>() as u64
+            names.iter().map(|v| ans.value(*v)).sum::<f64>() as u64
         })
         .sum()
 }
