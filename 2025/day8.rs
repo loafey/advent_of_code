@@ -91,9 +91,7 @@ pub fn part1() -> usize {
 pub fn part2() -> i64 {
     let nodes = input();
     let mut circuits: HashSet<(Coord, Coord)> = HashSet::new();
-    let mut i = 0;
     let (a, b) = loop {
-        i += 1;
         let mut shortest = (f64::MAX, Coord::default(), Coord::default());
         for x in 0..nodes.len() {
             for y in (x + 1)..nodes.len() {
@@ -112,9 +110,6 @@ pub fn part2() -> i64 {
             circuits.insert((shortest.1, shortest.2));
         }
         let buckets = buckify(circuits.clone());
-        if i % 100 == 0 {
-            println!("{}", buckets.len());
-        }
         if buckets.len() == 1 && buckets[0].len() == nodes.len() {
             break (shortest.1, shortest.2);
         }
