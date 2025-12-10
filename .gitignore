@@ -10,3 +10,4 @@ benchmarks/
 benchmarks-data/
 *.dot
 index-temp.html
+cache/
