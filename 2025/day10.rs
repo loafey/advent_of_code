@@ -175,7 +175,7 @@ pub fn part2() -> u64 {
             if PathBuf::from(&cache).exists() {
                 return std::fs::read_to_string(&cache).unwrap().parse().unwrap();
             }
-            println!("{c}");
+            println!("{c}: {}D", i.voltage_req.len());
             let state = vec![0; i.voltage_req.len()];
             let ans = astar_me(state, i.button_wiring, i.voltage_req);
             println!("   got {ans} clicks");
