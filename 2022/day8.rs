@@ -11,10 +11,10 @@ fn load_input() -> Vec<Vec<u32>> {
 pub fn part1() -> usize {
     Zipper2D::from(&load_input())
         .filter(|(left, right, tree, up, down)| {
-            left.iter().map(|i| i < *tree).all(|c| c)
-                || right.iter().map(|i| i < *tree).all(|c| c)
-                || up.iter().map(|i| i < tree).all(|c| c)
-                || down.iter().map(|i| i < tree).all(|c| c)
+            left.iter().all(|i| i < *tree)
+                || right.iter().all(|i| i < *tree)
+                || up.iter().all(|i| i < tree)
+                || down.iter().all(|i| i < tree)
         })
         .count()
 }

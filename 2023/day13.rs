@@ -1,4 +1,4 @@
-use utils::{load_string, MatrixTrans, SliceTools};
+use utils::{MatrixTrans, SliceTools, load_string};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 enum ReflectionLine {
@@ -31,18 +31,18 @@ fn parse() -> Vec<Vec<Vec<char>>> {
 
 fn check(block: &[Vec<char>], f: fn(usize) -> ReflectionLine, single: bool) -> ReflectionLine {
     'crugno: for (i, x) in block.windows(2).enumerate() {
-        if let [r1, r2] = x {
-            if r1.diff(r2).unwrap() <= 1 {
-                let mut mut_dif = 0;
-                for (x, y) in (0..i + 1).rev().zip(i + 1..block.len()) {
-                    mut_dif += block[x].diff(&block[y]).unwrap();
-                    if mut_dif > 1 {
-                        continue 'crugno;
-                    }
+        if let [r1, r2] = x
+            && r1.diff(r2).unwrap() <= 1
+        {
+            let mut mut_dif = 0;
+            for (x, y) in (0..i + 1).rev().zip(i + 1..block.len()) {
+                mut_dif += block[x].diff(&block[y]).unwrap();
+                if mut_dif > 1 {
+                    continue 'crugno;
                 }
-                if mut_dif == 0 && !single || mut_dif == 1 && single {
-                    return f(i + 1);
-                }
+            }
+            if mut_dif == 0 && !single || mut_dif == 1 && single {
+                return f(i + 1);
             }
         }
     }

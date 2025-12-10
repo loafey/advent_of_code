@@ -1,4 +1,4 @@
-use std::{collections::BTreeSet, ops::RangeInclusive};
+use std::ops::RangeInclusive;
 
 fn input() -> (Vec<RangeInclusive<u64>>, impl Iterator<Item = u64>) {
     let (top, bot) = include_str!("../inputs/2025/day5.input")

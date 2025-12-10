@@ -1,8 +1,4 @@
-use std::{
-    collections::{BTreeMap, BTreeSet},
-    fs::File,
-    io::Write,
-};
+use std::{collections::BTreeMap, fs::File, io::Write};
 
 use rustc_hash::FxHashMap;
 
@@ -180,7 +176,7 @@ pub fn part2() -> i64 {
 
         let x = to_num(x_map);
         let y = to_num(y_map);
-        let start = format!("{num_test} {y_test}: {x} + {y} = ");
+        let _start = format!("{num_test} {y_test}: {x} + {y} = ");
         //eprintln!("{start}{}", x + y);
         let z = to_num(z_map);
         // eprintln!("{}{}", " ".repeat(start.len()), z);

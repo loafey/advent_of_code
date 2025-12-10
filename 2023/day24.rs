@@ -197,10 +197,9 @@ pub fn part2() -> i64 {
 
     stones
         .iter()
-        .enumerate()
         .skip(15)
         .par_bridge()
-        .map(|(i, stone)| {
+        .map(|stone| {
             let max_x = stone.1.x.abs() as i64 * 4;
             let max_y = stone.1.y.abs() as i64 * 4;
             let max_z = stone.1.z.abs() as i64 * 4;

@@ -83,8 +83,8 @@ fn contains_shiny(which: String, map: Wrapper) -> usize {
 
     (entry.contains_key("shiny gold")
         || entry
-            .iter()
-            .map(|(entry, _)| contains_shiny(entry.clone(), map.clone()))
+            .keys()
+            .map(|entry| contains_shiny(entry.clone(), map.clone()))
             .sum::<usize>()
             > 0) as usize
 }
@@ -109,7 +109,6 @@ pub fn part1() -> usize {
     let parsed = parser(input);
     parsed
         .keys()
-        .cloned()
         .map(|s| contains_shiny(s.to_string(), parsed.clone()))
         .sum()
 }
