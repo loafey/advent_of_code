@@ -1,5 +1,3 @@
-use rayon::prelude::*;
-
 #[allow(clippy::type_complexity)]
 fn input() -> (Vec<usize>, Vec<((usize, usize), Vec<usize>)>) {
     let mut shapes = Vec::new();
@@ -31,7 +29,7 @@ fn input() -> (Vec<usize>, Vec<((usize, usize), Vec<usize>)>) {
 
 pub fn part1() -> u64 {
     let (shapes, goals) = input();
-    let goals: Vec<(_, Vec<usize>)> = goals
+    let goals: Vec<(_, usize)> = goals
         .into_iter()
         .map(|(matrix, goals)| {
             (
@@ -39,17 +37,14 @@ pub fn part1() -> u64 {
                 goals
                     .into_iter()
                     .enumerate()
-                    .flat_map(|(i, a)| vec![i; a])
-                    .collect::<Vec<_>>(),
+                    .map(|(i, a)| shapes[i] * a)
+                    .sum::<usize>(),
             )
         })
         .collect::<Vec<_>>();
     goals
         .into_iter()
-        .par_bridge()
-        .map(|((x, y), indexes)| {
-            (indexes.iter().map(|s| shapes[*s]).sum::<usize>() <= x * y) as u64
-        })
+        .map(|((x, y), indexes)| (indexes <= x * y) as u64)
         .sum()
 }
 
