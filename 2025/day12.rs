@@ -1,4 +1,4 @@
-use rayon::prelude::*;
+use rayon::{iter, prelude::*};
 use std::{collections::HashSet, io::Write, path::PathBuf};
 use utils::{MatrixGet, MatrixTrans};
 
@@ -67,11 +67,15 @@ fn apply(
     Some(matrix)
 }
 
-fn solve(matrix: Vec<Vec<bool>>, shapes: &[Vec<Vec<bool>>], goals: &[usize]) -> bool {
+fn solve(matrix: Vec<Vec<bool>>, shapes: &[Vec<Vec<bool>>], goals: &[(usize, usize)]) -> bool {
+    let free = count_free(&matrix);
+    if goals.iter().any(|(_, v)| free < *v) {
+        return false;
+    }
     if goals.is_empty() {
         return true;
     }
-    let (index, goals) = (goals[0], &goals[1..]);
+    let (index, goals) = (goals[0].0, &goals[1..]);
 
     let shape = shapes[index].clone();
     #[allow(clippy::type_complexity)]
@@ -97,17 +101,8 @@ fn with_shape(
     matrix: Vec<Vec<bool>>,
     shape: Vec<Vec<bool>>,
     shapes: &[Vec<Vec<bool>>],
-    goals: &[usize],
+    goals: &[(usize, usize)],
 ) -> bool {
-    if count_free(&matrix)
-        < count_taken(&shape)
-            + goals
-                .iter()
-                .map(|s| count_taken(&shapes[*s]))
-                .sum::<usize>()
-    {
-        return false;
-    }
     for y in 0..matrix.len() {
         for x in 0..matrix[y].len() {
             if let Some(new) = apply(x, y, &shape, matrix.clone())
@@ -154,6 +149,21 @@ pub fn part1() -> u64 {
                     .into_iter()
                     .enumerate()
                     .flat_map(|(i, a)| vec![i; a])
+                    .collect::<Vec<_>>(),
+            )
+        })
+        .collect::<Vec<_>>();
+    let goals = goals
+        .into_iter()
+        .map(|(coord, v)| {
+            let mut total_size = 0;
+            (
+                coord,
+                v.into_iter()
+                    .map(|i| {
+                        total_size += count_taken(&shapes[i]);
+                        (i, total_size)
+                    })
                     .collect::<Vec<_>>(),
             )
         })
