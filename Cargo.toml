@@ -37,3 +37,4 @@ zipperoni = { git = "https://github.com/loafey/zipperoni" }
 pathfinding = "4.11.0"
 euclid = "0.22.11"
 arrayvec = "0.7.6"
+good_lp = "1.14.2"

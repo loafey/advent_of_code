@@ -33,7 +33,7 @@
           nativeBuildInputs = with pkgs; [ ] ++ min-pkgs;
         };
 
-        min-pkgs = with pkgs; [ pkg-config openssl nodejs jq cargo-flamegraph ];
+        min-pkgs = with pkgs; [ pkg-config openssl nodejs jq cargo-flamegraph cbc ];
       in {
         defaultPackage = fetchy;
 
