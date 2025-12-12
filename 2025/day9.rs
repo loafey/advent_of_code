@@ -35,7 +35,7 @@ pub fn part2() -> i64 {
     let mut min_y = i64::MAX;
     let input = input
         .into_iter()
-        .map(|(x, y)| (x / 100, y / 100, x, y))
+        .map(|(x, y)| (x / 182, y / 182, x, y))
         .collect::<Vec<_>>();
     for (x, y, _, _) in &input {
         max_x = max_x.max(*x);
@@ -92,27 +92,29 @@ pub fn part2() -> i64 {
             }
         }
     }
-    let mut max_value = 0;
-    for a in 0..input.len() {
-        println!("{a}/{}", input.len());
-        let a = &input[a];
-        for b in &input {
-            let (mix, miy) = (a.0.min(b.0), a.1.min(b.1));
-            let (max, may) = (a.0.max(b.0), a.1.max(b.1));
-            let mut valid_combo = true;
-            'outer: for x in mix..=max {
-                for y in miy..=may {
-                    if matrix[(y - min_y + 1) as usize][(x - min_x + 1) as usize] != '.' {
-                        valid_combo = false;
-                        break 'outer;
+    (0..input.len())
+        .par_bridge()
+        .map(|a| {
+            let mut max_value = 0;
+            let a = &input[a];
+            for b in &input {
+                let (mix, miy) = (a.0.min(b.0), a.1.min(b.1));
+                let (max, may) = (a.0.max(b.0), a.1.max(b.1));
+                let mut valid_combo = true;
+                'outer: for x in mix..=max {
+                    for y in miy..=may {
+                        if matrix[(y - min_y + 1) as usize][(x - min_x + 1) as usize] != '.' {
+                            valid_combo = false;
+                            break 'outer;
+                        }
                     }
                 }
+                if valid_combo {
+                    max_value = max_value.max(((a.2 - b.2).abs() + 1) * ((a.3 - b.3).abs() + 1))
+                }
             }
-            if valid_combo {
-                max_value = max_value.max(((a.2 - b.2).abs() + 1) * ((a.3 - b.3).abs() + 1))
-            }
-        }
-    }
-
-    max_value
+            max_value
+        })
+        .max()
+        .unwrap_or_default()
 }
